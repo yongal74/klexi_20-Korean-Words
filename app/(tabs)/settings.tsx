@@ -5,13 +5,14 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
+import { router } from 'expo-router';
 import Colors from '@/constants/colors';
 import { useApp } from '@/lib/AppContext';
 import { TOPIK_LEVELS } from '@/lib/vocabulary';
 
 export default function SettingsScreen() {
   const insets = useSafeAreaInsets();
-  const { settings, updateSettings, resetDaily, progress, isLoading } = useApp();
+  const { settings, updateSettings, resetDaily, progress, wrongAnswers, customWords, isLoading } = useApp();
   const webTopInset = Platform.OS === 'web' ? 67 : 0;
   const topPad = insets.top + webTopInset;
   const webBottomInset = Platform.OS === 'web' ? 34 : 0;
@@ -19,6 +20,14 @@ export default function SettingsScreen() {
   const handleLevelChange = (levelId: string) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     updateSettings({ selectedLevel: levelId });
+  };
+
+  const handleCourseModeChange = (mode: '20words' | '10words') => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    updateSettings({
+      courseMode: mode,
+      wordsPerDay: mode === '10words' ? 10 : 20,
+    });
   };
 
   const handleReset = () => {
@@ -55,6 +64,31 @@ export default function SettingsScreen() {
     >
       <View style={styles.header}>
         <Text style={styles.title}>Settings</Text>
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Course Mode</Text>
+        <Text style={styles.sectionSubtitle}>Choose your daily word count and course duration</Text>
+        <View style={styles.courseModeRow}>
+          <Pressable
+            style={[styles.courseModeCard, settings.courseMode === '20words' && styles.courseModeActive]}
+            onPress={() => handleCourseModeChange('20words')}
+          >
+            <Text style={[styles.courseModeNumber, settings.courseMode === '20words' && { color: Colors.primary }]}>20</Text>
+            <Text style={styles.courseModeLabel}>words/day</Text>
+            <Text style={styles.courseModeDuration}>2 months</Text>
+            {settings.courseMode === '20words' && <Ionicons name="checkmark-circle" size={18} color={Colors.primary} />}
+          </Pressable>
+          <Pressable
+            style={[styles.courseModeCard, settings.courseMode === '10words' && styles.courseModeActive]}
+            onPress={() => handleCourseModeChange('10words')}
+          >
+            <Text style={[styles.courseModeNumber, settings.courseMode === '10words' && { color: Colors.secondary }]}>10</Text>
+            <Text style={styles.courseModeLabel}>words/day</Text>
+            <Text style={styles.courseModeDuration}>4 months</Text>
+            {settings.courseMode === '10words' && <Ionicons name="checkmark-circle" size={18} color={Colors.secondary} />}
+          </Pressable>
+        </View>
       </View>
 
       <View style={styles.section}>
@@ -106,6 +140,42 @@ export default function SettingsScreen() {
       </View>
 
       <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Tools</Text>
+        <Pressable style={styles.toolButton} onPress={() => router.push('/hangeul')}>
+          <View style={[styles.toolIcon, { backgroundColor: Colors.secondary + '15' }]}>
+            <Text style={[styles.toolIconText, { color: Colors.secondary }]}>ㄱ</Text>
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.toolText}>Learn Hangeul</Text>
+            <Text style={styles.toolSubtext}>Korean alphabet basics</Text>
+          </View>
+          <Ionicons name="chevron-forward" size={18} color={Colors.textMuted} />
+        </Pressable>
+
+        <Pressable style={styles.toolButton} onPress={() => router.push('/custom-words')}>
+          <View style={[styles.toolIcon, { backgroundColor: Colors.primary + '15' }]}>
+            <Ionicons name="create-outline" size={20} color={Colors.primary} />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.toolText}>My Custom Words</Text>
+            <Text style={styles.toolSubtext}>{customWords.length} words added</Text>
+          </View>
+          <Ionicons name="chevron-forward" size={18} color={Colors.textMuted} />
+        </Pressable>
+
+        <Pressable style={styles.toolButton} onPress={() => router.push('/review')}>
+          <View style={[styles.toolIcon, { backgroundColor: Colors.error + '15' }]}>
+            <Ionicons name="alert-circle-outline" size={20} color={Colors.error} />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.toolText}>Review Wrong Answers</Text>
+            <Text style={styles.toolSubtext}>{wrongAnswers.length} words to review</Text>
+          </View>
+          <Ionicons name="chevron-forward" size={18} color={Colors.textMuted} />
+        </Pressable>
+      </View>
+
+      <View style={styles.section}>
         <Text style={styles.sectionTitle}>Quick Actions</Text>
         <Pressable style={styles.actionButton} onPress={handleReset}>
           <Ionicons name="refresh-circle-outline" size={22} color={Colors.error} />
@@ -121,10 +191,10 @@ export default function SettingsScreen() {
         <Text style={styles.sectionTitle}>About</Text>
         <View style={styles.aboutCard}>
           <Text style={styles.aboutName}>Daily Korean</Text>
-          <Text style={styles.aboutVersion}>Version 1.0.0</Text>
+          <Text style={styles.aboutVersion}>Version 2.0.0</Text>
           <Text style={styles.aboutDesc}>
-            Master Korean vocabulary with daily 20-word lessons based on TOPIK curriculum.
-            Features K-Drama, K-Pop, and K-Food themed vocabulary.
+            Master Korean vocabulary with daily lessons based on TOPIK curriculum.
+            Features Hangeul learning, K-Drama expressions, TTS, custom words, and wrong answer review.
           </Text>
         </View>
       </View>
@@ -161,6 +231,42 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontFamily: 'NotoSansKR_400Regular',
     color: Colors.textSecondary,
+  },
+  courseModeRow: {
+    flexDirection: 'row',
+    gap: 12,
+    marginTop: 4,
+  },
+  courseModeCard: {
+    flex: 1,
+    backgroundColor: Colors.card,
+    borderRadius: 16,
+    padding: 16,
+    alignItems: 'center',
+    gap: 4,
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  courseModeActive: {
+    borderColor: Colors.primary,
+    borderWidth: 2,
+    backgroundColor: Colors.primary + '08',
+  },
+  courseModeNumber: {
+    fontSize: 32,
+    fontFamily: 'NotoSansKR_700Bold',
+    color: Colors.text,
+  },
+  courseModeLabel: {
+    fontSize: 13,
+    fontFamily: 'NotoSansKR_500Medium',
+    color: Colors.textSecondary,
+  },
+  courseModeDuration: {
+    fontSize: 12,
+    fontFamily: 'NotoSansKR_400Regular',
+    color: Colors.textMuted,
+    marginTop: 2,
   },
   levelGrid: {
     flexDirection: 'row',
@@ -225,6 +331,37 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontFamily: 'NotoSansKR_500Medium',
     color: Colors.text,
+  },
+  toolButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.card,
+    borderRadius: 14,
+    padding: 14,
+    gap: 12,
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  toolIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  toolIconText: {
+    fontSize: 20,
+    fontFamily: 'NotoSansKR_700Bold',
+  },
+  toolText: {
+    fontSize: 15,
+    fontFamily: 'NotoSansKR_500Medium',
+    color: Colors.text,
+  },
+  toolSubtext: {
+    fontSize: 12,
+    fontFamily: 'NotoSansKR_400Regular',
+    color: Colors.textSecondary,
   },
   actionButton: {
     flexDirection: 'row',

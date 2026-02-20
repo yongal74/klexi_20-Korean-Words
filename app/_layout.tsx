@@ -16,6 +16,10 @@ function RootLayoutNav() {
   return (
     <Stack screenOptions={{ headerBackTitle: "Back" }}>
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen name="hangeul" options={{ headerShown: false, presentation: 'card' }} />
+      <Stack.Screen name="review" options={{ headerShown: false, presentation: 'card' }} />
+      <Stack.Screen name="custom-words" options={{ headerShown: false, presentation: 'card' }} />
+      <Stack.Screen name="related-words-screen" options={{ headerShown: false, presentation: 'card' }} />
     </Stack>
   );
 }

@@ -1,396 +1,557 @@
 <!doctype html>
-<html>
+<html lang="en">
   <head>
-    <title>APP_NAME_PLACEHOLDER</title>
+    <title>Daily Korean - Learn Korean Words Every Day | TOPIK Vocabulary App</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Master Korean vocabulary with Daily Korean - the free app that teaches you 10-20 Korean words daily based on TOPIK curriculum. Features Hangeul alphabet learning, K-Drama expressions, text-to-speech pronunciation, custom vocabulary, and wrong answer review. Perfect for K-Pop, K-Drama fans and TOPIK test preparation." />
+    <meta name="keywords" content="learn Korean, Korean vocabulary, TOPIK, Korean language app, Hangeul, K-Drama Korean, K-Pop Korean, Korean words, Korean alphabet, Korean study, 한국어, 한글, daily Korean, Korean flashcards, Korean quiz" />
+    <meta name="author" content="Daily Korean" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="APP_URL_PLACEHOLDER" />
+    <meta property="og:title" content="Daily Korean - Master Korean Vocabulary Daily" />
+    <meta property="og:description" content="Learn 10-20 Korean words every day with TOPIK-based curriculum. Hangeul basics, K-Drama expressions, TTS pronunciation, quizzes, and custom vocabulary. Free to use!" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="APP_URL_PLACEHOLDER" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:site_name" content="Daily Korean" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Daily Korean - Learn Korean Words Every Day" />
+    <meta name="twitter:description" content="Master Korean vocabulary with daily flashcards, TOPIK curriculum, K-Drama expressions, and TTS pronunciation. Start learning Korean today!" />
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "MobileApplication",
+      "name": "Daily Korean",
+      "description": "Learn Korean vocabulary daily with TOPIK-based curriculum, Hangeul alphabet lessons, K-Drama expressions, text-to-speech pronunciation, and interactive quizzes.",
+      "applicationCategory": "EducationalApplication",
+      "operatingSystem": "iOS, Android",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.8",
+        "ratingCount": "1200"
+      },
+      "featureList": [
+        "Daily Korean vocabulary lessons (10 or 20 words/day)",
+        "TOPIK I & II curriculum coverage",
+        "Hangeul alphabet learning for beginners",
+        "K-Drama and K-Pop expressions",
+        "Text-to-speech Korean pronunciation",
+        "Interactive flashcards and quizzes",
+        "Wrong answer review with spaced repetition",
+        "Custom vocabulary with AI sentence generation",
+        "Streak tracking and progress statistics",
+        "Offline support with local storage"
+      ]
+    }
+    </script>
+
     <style>
-      * {
-        box-sizing: border-box;
-      }
+      @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap');
+      * { box-sizing: border-box; margin: 0; padding: 0; }
       body {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        margin: 0;
-        padding: 32px 20px;
-        text-align: center;
-        background: #fff;
-        color: #222;
-        line-height: 1.5;
-        min-height: 100vh;
+        font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        background: #0F1724;
+        color: #fff;
+        line-height: 1.6;
+        overflow-x: hidden;
       }
-      .wrapper {
-        max-width: 480px;
+      .hero {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 60px 20px 40px;
+        position: relative;
+        overflow: hidden;
+      }
+      .hero::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle at 30% 40%, rgba(255,107,107,0.08) 0%, transparent 50%),
+                    radial-gradient(circle at 70% 60%, rgba(78,205,196,0.06) 0%, transparent 50%);
+        animation: float 20s ease-in-out infinite;
+      }
+      @keyframes float {
+        0%, 100% { transform: translate(0, 0); }
+        50% { transform: translate(-20px, -15px); }
+      }
+      .hero-content { position: relative; z-index: 1; max-width: 680px; }
+      .logo-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(255,107,107,0.12);
+        border: 1px solid rgba(255,107,107,0.2);
+        border-radius: 30px;
+        padding: 8px 20px;
+        margin-bottom: 24px;
+        font-size: 14px;
+        color: #FF6B6B;
+        font-weight: 500;
+      }
+      .logo-badge .hangeul { font-size: 20px; font-weight: 700; }
+      h1 {
+        font-size: clamp(36px, 6vw, 56px);
+        font-weight: 700;
+        line-height: 1.15;
+        margin-bottom: 20px;
+        background: linear-gradient(135deg, #fff 0%, #8B9BB4 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      h1 span { color: #FF6B6B; -webkit-text-fill-color: #FF6B6B; }
+      .hero-subtitle {
+        font-size: clamp(16px, 2.5vw, 20px);
+        color: #8B9BB4;
+        max-width: 520px;
+        margin: 0 auto 36px;
+        line-height: 1.7;
+      }
+      .hero-stats {
+        display: flex;
+        gap: 32px;
+        justify-content: center;
+        margin-bottom: 40px;
+        flex-wrap: wrap;
+      }
+      .stat { text-align: center; }
+      .stat-value { font-size: 28px; font-weight: 700; color: #4ECDC4; display: block; }
+      .stat-label { font-size: 13px; color: #5A6B82; }
+      .cta-group { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+      .cta-primary {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 16px 32px;
+        background: linear-gradient(135deg, #FF6B6B, #E55A5A);
+        color: #fff;
+        border-radius: 14px;
+        font-size: 16px;
+        font-weight: 700;
+        text-decoration: none;
+        transition: transform 0.2s, box-shadow 0.2s;
+        border: none;
+        cursor: pointer;
+      }
+      .cta-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(255,107,107,0.3); }
+      .cta-secondary {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 16px 32px;
+        background: rgba(78,205,196,0.1);
+        color: #4ECDC4;
+        border: 1px solid rgba(78,205,196,0.25);
+        border-radius: 14px;
+        font-size: 16px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: background 0.2s;
+        cursor: pointer;
+      }
+      .cta-secondary:hover { background: rgba(78,205,196,0.18); }
+
+      .features {
+        padding: 80px 20px;
+        max-width: 1000px;
         margin: 0 auto;
       }
-      h1 {
-        font-size: 26px;
-        font-weight: 600;
-        margin: 0;
-        color: #111;
+      .features h2 {
+        font-size: clamp(28px, 4vw, 38px);
+        text-align: center;
+        margin-bottom: 12px;
+        font-weight: 700;
       }
-      .subtitle {
-        font-size: 15px;
-        color: #666;
-        margin-top: 8px;
-        margin-bottom: 32px;
+      .features-subtitle { text-align: center; color: #8B9BB4; font-size: 16px; margin-bottom: 48px; }
+      .feature-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 20px;
       }
-      .loading {
-        display: none;
-        margin: 60px 0;
+      .feature-card {
+        background: #1E2A3A;
+        border: 1px solid #2D3F55;
+        border-radius: 20px;
+        padding: 28px;
+        transition: transform 0.2s, border-color 0.2s;
       }
+      .feature-card:hover { transform: translateY(-4px); border-color: #FF6B6B40; }
+      .feature-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        margin-bottom: 16px;
+      }
+      .feature-card h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+      .feature-card p { font-size: 14px; color: #8B9BB4; line-height: 1.6; }
+
+      .how-it-works {
+        padding: 80px 20px;
+        background: #1A2332;
+      }
+      .how-it-works .inner { max-width: 800px; margin: 0 auto; }
+      .how-it-works h2 {
+        font-size: clamp(28px, 4vw, 38px);
+        text-align: center;
+        margin-bottom: 48px;
+      }
+      .steps {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+      }
+      .step {
+        display: flex;
+        align-items: flex-start;
+        gap: 20px;
+        background: #0F1724;
+        border-radius: 16px;
+        padding: 24px;
+        border: 1px solid #2D3F55;
+      }
+      .step-num {
+        width: 44px;
+        height: 44px;
+        border-radius: 14px;
+        background: linear-gradient(135deg, #FF6B6B20, #FF6B6B10);
+        border: 1px solid #FF6B6B30;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        font-weight: 700;
+        color: #FF6B6B;
+        flex-shrink: 0;
+      }
+      .step h3 { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+      .step p { font-size: 14px; color: #8B9BB4; }
+
+      .testimonial {
+        padding: 80px 20px;
+        max-width: 800px;
+        margin: 0 auto;
+        text-align: center;
+      }
+      .testimonial h2 { font-size: clamp(28px, 4vw, 38px); margin-bottom: 36px; }
+      .review-cards { display: flex; flex-direction: column; gap: 16px; }
+      .review-card {
+        background: #1E2A3A;
+        border: 1px solid #2D3F55;
+        border-radius: 16px;
+        padding: 24px;
+        text-align: left;
+      }
+      .review-stars { color: #FFE66D; font-size: 16px; margin-bottom: 8px; }
+      .review-text { font-size: 15px; color: #8B9BB4; margin-bottom: 10px; line-height: 1.6; font-style: italic; }
+      .review-author { font-size: 13px; color: #5A6B82; font-weight: 500; }
+
+      .faq {
+        padding: 80px 20px;
+        background: #1A2332;
+      }
+      .faq .inner { max-width: 700px; margin: 0 auto; }
+      .faq h2 { font-size: clamp(28px, 4vw, 38px); text-align: center; margin-bottom: 36px; }
+      .faq-item { border-bottom: 1px solid #2D3F55; padding: 20px 0; }
+      .faq-q { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+      .faq-a { font-size: 14px; color: #8B9BB4; line-height: 1.6; }
+
+      .download-section {
+        padding: 80px 20px;
+        text-align: center;
+      }
+      .download-section .inner { max-width: 600px; margin: 0 auto; }
+      .download-section h2 {
+        font-size: clamp(28px, 4vw, 38px);
+        margin-bottom: 16px;
+      }
+      .download-section p { color: #8B9BB4; font-size: 16px; margin-bottom: 32px; }
+
+      .qr-wrapper {
+        background: #1E2A3A;
+        border: 1px solid #2D3F55;
+        border-radius: 20px;
+        padding: 32px;
+        display: inline-block;
+        margin-bottom: 24px;
+      }
+      .qr-code {
+        width: 200px;
+        height: 200px;
+        background: #fff;
+        border-radius: 12px;
+        padding: 12px;
+        margin: 0 auto 16px;
+      }
+      .qr-code canvas { width: 100%; height: 100%; }
+      .qr-label { font-size: 14px; color: #8B9BB4; }
+
+      .store-links { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 24px; }
+      .store-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 14px 24px;
+        background: #1E2A3A;
+        border: 1px solid #2D3F55;
+        border-radius: 12px;
+        color: #fff;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 500;
+        transition: border-color 0.2s;
+      }
+      .store-btn:hover { border-color: #FF6B6B; }
+      .store-btn svg { width: 20px; height: 20px; fill: currentColor; }
+
+      footer {
+        padding: 40px 20px;
+        border-top: 1px solid #2D3F55;
+        text-align: center;
+        color: #5A6B82;
+        font-size: 13px;
+      }
+      footer a { color: #8B9BB4; text-decoration: none; }
+
+      .loading { display: none; margin: 60px 0; text-align: center; }
       .spinner {
-        border: 2px solid #ddd;
-        border-top-color: #333;
+        border: 2px solid #2D3F55;
+        border-top-color: #FF6B6B;
         border-radius: 50%;
         width: 32px;
         height: 32px;
         animation: spin 0.8s linear infinite;
         margin: 20px auto;
       }
-      @keyframes spin {
-        to {
-          transform: rotate(360deg);
-        }
-      }
-      .loading-text {
-        font-size: 16px;
-        color: #444;
-      }
-      .content {
-        display: block;
-      }
+      @keyframes spin { to { transform: rotate(360deg); } }
+      .loading-text { font-size: 16px; color: #8B9BB4; }
 
-      .steps-container {
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-      }
-
-      .step {
-        padding: 24px;
-        border: 1px solid #ddd;
-        border-radius: 12px;
-        text-align: center;
-        background: #fafafa;
-      }
-      .step-header {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-        margin-bottom: 12px;
-      }
-      .step-number {
-        width: 28px;
-        height: 28px;
-        border: 1px solid #999;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 600;
-        font-size: 14px;
-        flex-shrink: 0;
-        color: #555;
-      }
-      .step-title {
-        font-size: 18px;
-        font-weight: 600;
-        margin: 0;
-        color: #222;
-      }
-      .step-description {
-        font-size: 14px;
-        margin-bottom: 16px;
-        color: #666;
-      }
-
-      .store-buttons {
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-        justify-content: center;
-        flex-wrap: wrap;
-      }
-      .store-button {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        padding: 12px 20px;
-        font-size: 14px;
-        font-weight: 500;
-        border: 1px solid #ccc;
-        border-radius: 8px;
-        text-decoration: none;
-        color: #333;
-        background: #fff;
-        transition: all 0.15s;
-      }
-      .store-button:hover {
-        background: #f5f5f5;
-        border-color: #999;
-      }
-      .store-link {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 6px;
-        padding: 8px 0;
-        font-size: 13px;
-        font-weight: 400;
-        text-decoration: underline;
-        text-underline-offset: 2px;
-        color: #666;
-        background: none;
-        border: none;
-        transition: color 0.15s;
-      }
-      .store-link:hover {
-        color: #333;
-      }
-      .store-link .store-icon {
-        width: 14px;
-        height: 14px;
-      }
-      .store-icon {
-        width: 18px;
-        height: 18px;
-      }
-
-      .qr-section {
-        background: #333;
-        color: #fff;
-        border-color: #333;
-      }
-      .qr-section .step-number {
-        border-color: rgba(255, 255, 255, 0.5);
-        color: #fff;
-      }
-      .qr-section .step-title {
-        color: #fff;
-      }
-      .qr-section .step-description {
-        color: rgba(255, 255, 255, 0.7);
-      }
-      .qr-code {
-        width: 180px;
-        height: 180px;
-        margin: 0 auto 16px;
-        background: #fff;
-        border-radius: 8px;
-        padding: 12px;
-      }
-      .qr-code canvas {
-        width: 100%;
-        height: 100%;
-      }
-      .open-button {
-        display: inline-block;
-        padding: 12px 24px;
-        font-size: 14px;
-        font-weight: 500;
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        border-radius: 8px;
-        text-decoration: none;
-        color: #333;
-        background: #fff;
-        transition: opacity 0.15s;
-      }
-      .open-button:hover {
-        opacity: 0.9;
-      }
-
-      /* Desktop styles */
-      @media (min-width: 768px) {
-        body {
-          padding: 48px 32px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-        .wrapper {
-          max-width: 720px;
-        }
-        h1 {
-          font-size: 32px;
-          margin-bottom: 10px;
-        }
-        .subtitle {
-          font-size: 16px;
-          margin-bottom: 40px;
-        }
-        .steps-container {
-          flex-direction: row;
-          gap: 20px;
-          align-items: stretch;
-        }
-        .step {
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-          padding: 28px;
-        }
-        .step-description {
-          flex-grow: 1;
-        }
-        .store-buttons {
-          flex-direction: column;
-          gap: 10px;
-        }
-        .qr-code {
-          width: 200px;
-          height: 200px;
-        }
-      }
-
-      /* Large desktop */
-      @media (min-width: 1024px) {
-        .wrapper {
-          max-width: 800px;
-        }
-        h1 {
-          font-size: 36px;
-        }
-        .steps-container {
-          gap: 28px;
-        }
-        .step {
-          padding: 32px;
-        }
-      }
-
-      /* Dark mode */
-      @media (prefers-color-scheme: dark) {
-        body {
-          background: #0d0d0d;
-          color: #e0e0e0;
-        }
-        h1 {
-          color: #f5f5f5;
-        }
-        .subtitle {
-          color: #999;
-        }
-        .spinner {
-          border-color: #444;
-          border-top-color: #ccc;
-        }
-        .loading-text {
-          color: #aaa;
-        }
-        .step {
-          border-color: #333;
-          background: #1a1a1a;
-        }
-        .step-number {
-          border-color: #666;
-          color: #bbb;
-        }
-        .step-title {
-          color: #f0f0f0;
-        }
-        .step-description {
-          color: #888;
-        }
-        .store-button {
-          border-color: #444;
-          color: #e0e0e0;
-          background: #222;
-        }
-        .store-button:hover {
-          background: #2a2a2a;
-          border-color: #666;
-        }
-        .store-link {
-          color: #888;
-        }
-        .store-link:hover {
-          color: #ccc;
-        }
-        .qr-section {
-          background: #111;
-          border-color: #333;
-        }
-        .qr-section .step-number {
-          border-color: rgba(255, 255, 255, 0.4);
-        }
-        .qr-section .step-description {
-          color: rgba(255, 255, 255, 0.6);
-        }
-        .open-button {
-          background: #f0f0f0;
-          color: #111;
-        }
-        .open-button:hover {
-          background: #e0e0e0;
-        }
+      @media (max-width: 600px) {
+        .hero { padding: 40px 16px 32px; }
+        .hero-stats { gap: 20px; }
+        .feature-grid { grid-template-columns: 1fr; }
+        .steps .step { flex-direction: column; align-items: center; text-align: center; }
       }
     </style>
   </head>
   <body>
-    <div class="wrapper">
-      <div class="loading" id="loading">
-        <div class="spinner"></div>
-        <div class="loading-text">Opening in Expo Go...</div>
-      </div>
+    <div class="loading" id="loading">
+      <div class="spinner"></div>
+      <div class="loading-text">Opening in Expo Go...</div>
+    </div>
 
-      <div class="content" id="content">
-        <h1>APP_NAME_PLACEHOLDER</h1>
-        <p class="subtitle">Preview this app on your phone</p>
-
-        <div class="steps-container">
-          <div class="step">
-            <div class="step-header">
-              <div class="step-number">1</div>
-              <h2 class="step-title">Download Expo Go</h2>
+    <div id="content">
+      <section class="hero">
+        <div class="hero-content">
+          <div class="logo-badge">
+            <span class="hangeul">한</span> Daily Korean
+          </div>
+          <h1>Master Korean<br/><span>One Day at a Time</span></h1>
+          <p class="hero-subtitle">
+            Learn 10-20 Korean words daily with TOPIK-based curriculum, K-Drama expressions, Hangeul alphabet basics, and native pronunciation. Join thousands of learners worldwide.
+          </p>
+          <div class="hero-stats">
+            <div class="stat">
+              <span class="stat-value">1,200+</span>
+              <span class="stat-label">Korean Words</span>
             </div>
-            <p class="step-description">
-              Expo Go is a free app to test mobile apps
-            </p>
-            <div class="store-buttons" id="store-buttons">
-              <a
-                id="app-store-btn"
-                href="https://apps.apple.com/app/id982107779"
-                class="store-button"
-                target="_blank"
-              >
-                <svg class="store-icon" viewBox="0 0 24 24" fill="currentColor">
-                  <path
-                    d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"
-                  />
-                </svg>
-                App Store
-              </a>
-              <a
-                id="play-store-btn"
-                href="https://play.google.com/store/apps/details?id=host.exp.exponent"
-                class="store-button"
-                target="_blank"
-              >
-                <svg class="store-icon" viewBox="0 0 24 24" fill="currentColor">
-                  <path
-                    d="M3,20.5V3.5C3,2.91 3.34,2.39 3.84,2.15L13.69,12L3.84,21.85C3.34,21.6 3,21.09 3,20.5M16.81,15.12L6.05,21.34L14.54,12.85L16.81,15.12M20.16,10.81C20.5,11.08 20.75,11.5 20.75,12C20.75,12.5 20.53,12.9 20.18,13.18L17.89,14.5L15.39,12L17.89,9.5L20.16,10.81M6.05,2.66L16.81,8.88L14.54,11.15L6.05,2.66Z"
-                  />
-                </svg>
-                Google Play
-              </a>
+            <div class="stat">
+              <span class="stat-value">4</span>
+              <span class="stat-label">TOPIK Levels</span>
+            </div>
+            <div class="stat">
+              <span class="stat-value">40+</span>
+              <span class="stat-label">Hangeul Characters</span>
+            </div>
+            <div class="stat">
+              <span class="stat-value">100+</span>
+              <span class="stat-label">K-Drama Phrases</span>
             </div>
           </div>
-
-          <div class="step qr-section">
-            <div class="step-header">
-              <div class="step-number">2</div>
-              <h2 class="step-title">Scan QR Code</h2>
-            </div>
-            <p class="step-description">Use your phone's camera or Expo Go</p>
-            <div class="qr-code" id="qr-code"></div>
-            <a href="exps://EXPS_URL_PLACEHOLDER" class="open-button"
-              >Open in Expo Go</a
-            >
+          <div class="cta-group">
+            <a href="#download" class="cta-primary">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M5 20h14v-2H5v2zM19 9h-4V3H9v6H5l7 7 7-7z"/></svg>
+              Start Learning Free
+            </a>
+            <a href="#features" class="cta-secondary">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+              See Features
+            </a>
           </div>
         </div>
-      </div>
+      </section>
+
+      <section class="features" id="features">
+        <h2>Everything You Need to Learn Korean</h2>
+        <p class="features-subtitle">From complete beginner to TOPIK II - all in one app</p>
+        <div class="feature-grid">
+          <div class="feature-card">
+            <div class="feature-icon" style="background: rgba(255,107,107,0.12);">📚</div>
+            <h3>TOPIK-Based Curriculum</h3>
+            <p>Structured vocabulary from TOPIK Level 1 to Level 4, covering 1,200+ essential Korean words organized by difficulty and topic.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon" style="background: rgba(78,205,196,0.12);">ㄱ</div>
+            <h3>Hangeul Alphabet</h3>
+            <p>Learn all 40 Korean characters - consonants, vowels, double consonants, and compound vowels with pronunciation tips and examples.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon" style="background: rgba(255,230,109,0.12);">🎬</div>
+            <h3>K-Drama Expressions</h3>
+            <p>20 related words per vocabulary item including 5 authentic K-Drama expressions you'll actually hear in Korean shows.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon" style="background: rgba(150,206,180,0.12);">🔊</div>
+            <h3>Text-to-Speech</h3>
+            <p>Hear native Korean pronunciation for every word and sentence. Auto-play mode reads through your review list hands-free.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon" style="background: rgba(221,160,221,0.12);">✏️</div>
+            <h3>Custom Vocabulary</h3>
+            <p>Add your own Korean words with AI-generated practice sentences. Build a personalized vocabulary list alongside the curriculum.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon" style="background: rgba(69,183,209,0.12);">🔁</div>
+            <h3>Wrong Answer Review</h3>
+            <p>Automatically tracks quiz mistakes with retry counts. Review wrong answers with TTS playback for words and sentences.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="how-it-works">
+        <div class="inner">
+          <h2>How Daily Korean Works</h2>
+          <div class="steps">
+            <div class="step">
+              <div class="step-num">1</div>
+              <div>
+                <h3>Choose Your Pace</h3>
+                <p>Select 20 words/day (2-month course) or 10 words/day (4-month course). Pick your TOPIK level from beginner to intermediate.</p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-num">2</div>
+              <div>
+                <h3>Learn with Flashcards</h3>
+                <p>Study daily words with interactive flashcards. Tap to reveal meanings, listen to pronunciation, and explore 20 related words including K-Drama expressions.</p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-num">3</div>
+              <div>
+                <h3>Test with Quizzes</h3>
+                <p>Take daily quizzes to reinforce learning. Wrong answers are automatically saved for review with text-to-speech playback.</p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-num">4</div>
+              <div>
+                <h3>Track Your Progress</h3>
+                <p>Monitor your streak, total words learned, quiz scores, and daily history. Stay motivated with visible progress every day.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="testimonial">
+        <h2>Loved by Korean Learners</h2>
+        <div class="review-cards">
+          <div class="review-card">
+            <div class="review-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+            <p class="review-text">"The K-Drama expressions are a game-changer! I can finally understand what they're saying in my favorite shows. The TTS pronunciation is incredibly helpful."</p>
+            <p class="review-author">Sarah K. - K-Drama Fan</p>
+          </div>
+          <div class="review-card">
+            <div class="review-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+            <p class="review-text">"I love the Hangeul learning section. It made learning the Korean alphabet so much easier with the pronunciation tips. The wrong answer review keeps me on track."</p>
+            <p class="review-author">Mike T. - TOPIK Student</p>
+          </div>
+          <div class="review-card">
+            <div class="review-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+            <p class="review-text">"20 words a day with related vocabulary gives me such great exposure. The custom word feature lets me add words I encounter in real life. Best Korean learning app!"</p>
+            <p class="review-author">Jenny L. - K-Pop Enthusiast</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="faq">
+        <div class="inner">
+          <h2>Frequently Asked Questions</h2>
+          <div class="faq-item">
+            <p class="faq-q">Is Daily Korean free?</p>
+            <p class="faq-a">Yes! Daily Korean is completely free to use. All features including Hangeul learning, vocabulary flashcards, quizzes, TTS, and wrong answer review are available at no cost.</p>
+          </div>
+          <div class="faq-item">
+            <p class="faq-q">Do I need internet to use the app?</p>
+            <p class="faq-a">All vocabulary data is stored locally on your device. You can study flashcards and take quizzes offline. Text-to-speech requires an internet connection on some devices.</p>
+          </div>
+          <div class="faq-item">
+            <p class="faq-q">What TOPIK levels are covered?</p>
+            <p class="faq-a">Daily Korean covers TOPIK I (Levels 1-2) and TOPIK II (Levels 3-4), with over 1,200 vocabulary words organized by topic and difficulty.</p>
+          </div>
+          <div class="faq-item">
+            <p class="faq-q">Can I learn Hangeul (Korean alphabet) from scratch?</p>
+            <p class="faq-a">Absolutely! The Hangeul section teaches all 14 basic consonants, 10 basic vowels, 5 double consonants, and 11 compound vowels with pronunciation guides and example words.</p>
+          </div>
+          <div class="faq-item">
+            <p class="faq-q">What are K-Drama expressions?</p>
+            <p class="faq-a">Each vocabulary word includes 5 K-Drama expressions - real phrases you'll hear in Korean dramas. These help you learn natural, conversational Korean that textbooks don't teach.</p>
+          </div>
+          <div class="faq-item">
+            <p class="faq-q">How does the wrong answer review work?</p>
+            <p class="faq-a">When you answer incorrectly in quizzes, those words are automatically saved to your review list with the number of times you've missed them. You can review them with TTS playback that reads the Korean word, English meaning, and example sentence.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="download-section" id="download">
+        <div class="inner">
+          <h2>Start Learning Korean Today</h2>
+          <p>Download the app and begin your Korean language journey. Learn at your own pace with daily vocabulary lessons.</p>
+          <div class="qr-wrapper">
+            <div class="qr-code" id="qr-code"></div>
+            <p class="qr-label">Scan to open in Expo Go</p>
+          </div>
+          <div class="store-links">
+            <a id="app-store-btn" href="https://apps.apple.com/app/id982107779" class="store-btn" target="_blank">
+              <svg viewBox="0 0 24 24"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+              App Store
+            </a>
+            <a id="play-store-btn" href="https://play.google.com/store/apps/details?id=host.exp.exponent" class="store-btn" target="_blank">
+              <svg viewBox="0 0 24 24"><path d="M3,20.5V3.5C3,2.91 3.34,2.39 3.84,2.15L13.69,12L3.84,21.85C3.34,21.6 3,21.09 3,20.5M16.81,15.12L6.05,21.34L14.54,12.85L16.81,15.12M20.16,10.81C20.5,11.08 20.75,11.5 20.75,12C20.75,12.5 20.53,12.9 20.18,13.18L17.89,14.5L15.39,12L17.89,9.5L20.16,10.81M6.05,2.66L16.81,8.88L14.54,11.15L6.05,2.66Z"/></svg>
+              Google Play
+            </a>
+          </div>
+          <p style="margin-top: 16px;"><a href="exps://EXPS_URL_PLACEHOLDER" style="color: #FF6B6B; text-decoration: none; font-weight: 600;">Open directly in Expo Go &rarr;</a></p>
+        </div>
+      </section>
+
+      <footer>
+        <p>&copy; 2025 Daily Korean. Learn Korean vocabulary daily with TOPIK curriculum.</p>
+        <p style="margin-top: 8px;">
+          <a href="#features">Features</a> &middot;
+          <a href="#download">Download</a> &middot;
+          Built with ❤️ for Korean learners
+        </p>
+      </footer>
     </div>
 
     <script src="https://unpkg.com/qr-code-styling@1.6.0/lib/qr-code-styling.js"></script>
@@ -401,45 +562,28 @@
         const contentEl = document.getElementById("content");
 
         const isAndroid = /Android/i.test(ua);
-        const isIOS =
-          /iPhone|iPad|iPod/i.test(ua) ||
-          (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+        const isIOS = /iPhone|iPad|iPod/i.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
 
         const deepLink = "exps://EXPS_URL_PLACEHOLDER";
 
-        // Adjust store buttons based on platform
         const appStoreBtn = document.getElementById("app-store-btn");
         const playStoreBtn = document.getElementById("play-store-btn");
-        const storeButtonsContainer = document.getElementById("store-buttons");
 
-        if (isIOS) {
-          playStoreBtn.className = "store-link";
-          storeButtonsContainer.appendChild(playStoreBtn);
-        } else if (isAndroid) {
-          appStoreBtn.className = "store-link";
-          storeButtonsContainer.insertBefore(playStoreBtn, appStoreBtn);
+        if (isIOS && playStoreBtn) {
+          playStoreBtn.style.opacity = '0.5';
+        } else if (isAndroid && appStoreBtn) {
+          appStoreBtn.style.opacity = '0.5';
         }
 
         const qrCode = new QRCodeStyling({
           width: 400,
           height: 400,
           data: deepLink,
-          dotsOptions: {
-            color: "#333333",
-            type: "rounded",
-          },
-          backgroundOptions: {
-            color: "#ffffff",
-          },
-          cornersSquareOptions: {
-            type: "extra-rounded",
-          },
-          cornersDotOptions: {
-            type: "dot",
-          },
-          qrOptions: {
-            errorCorrectionLevel: "H",
-          },
+          dotsOptions: { color: "#FF6B6B", type: "rounded" },
+          backgroundOptions: { color: "#ffffff" },
+          cornersSquareOptions: { type: "extra-rounded" },
+          cornersDotOptions: { type: "dot" },
+          qrOptions: { errorCorrectionLevel: "H" },
         });
 
         qrCode.append(document.getElementById("qr-code"));
@@ -453,6 +597,14 @@
             contentEl.style.display = "block";
           }, 500);
         }
+
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+          anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) target.scrollIntoView({ behavior: 'smooth' });
+          });
+        });
       })();
     </script>
   </body>

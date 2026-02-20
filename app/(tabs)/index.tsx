@@ -6,6 +6,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming, withSpring, interpolate } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
+import * as Speech from 'expo-speech';
+import { router } from 'expo-router';
 import Colors from '@/constants/colors';
 import { useApp } from '@/lib/AppContext';
 import { TOPIK_LEVELS } from '@/lib/vocabulary';
@@ -30,6 +32,16 @@ function WordFlashcard({ word, isBookmarked, onBookmark, showPronunciation }: {
     flipProgress.value = withSpring(next ? 1 : 0, { damping: 15, stiffness: 100 });
   }, [flipped, flipProgress]);
 
+  const speakWord = useCallback(() => {
+    Speech.speak(word.korean, { language: 'ko', rate: 0.7 });
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  }, [word.korean]);
+
+  const speakExample = useCallback(() => {
+    Speech.speak(word.example, { language: 'ko', rate: 0.6 });
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  }, [word.example]);
+
   const frontStyle = useAnimatedStyle(() => ({
     opacity: interpolate(flipProgress.value, [0, 0.5, 1], [1, 0, 0]),
     transform: [{ rotateY: `${interpolate(flipProgress.value, [0, 1], [0, 180])}deg` }],
@@ -47,13 +59,18 @@ function WordFlashcard({ word, isBookmarked, onBookmark, showPronunciation }: {
           <View style={[styles.categoryBadge, { backgroundColor: Colors.primary + '20' }]}>
             <Text style={[styles.categoryText, { color: Colors.primary }]}>{word.category}</Text>
           </View>
-          <Pressable onPress={(e) => { e.stopPropagation(); onBookmark(); }} hitSlop={12}>
-            <Ionicons
-              name={isBookmarked ? 'bookmark' : 'bookmark-outline'}
-              size={22}
-              color={isBookmarked ? Colors.accent : Colors.textMuted}
-            />
-          </Pressable>
+          <View style={styles.cardActions}>
+            <Pressable onPress={(e) => { e.stopPropagation(); speakWord(); }} hitSlop={12}>
+              <Ionicons name="volume-high" size={20} color={Colors.primary} />
+            </Pressable>
+            <Pressable onPress={(e) => { e.stopPropagation(); onBookmark(); }} hitSlop={12}>
+              <Ionicons
+                name={isBookmarked ? 'bookmark' : 'bookmark-outline'}
+                size={20}
+                color={isBookmarked ? Colors.accent : Colors.textMuted}
+              />
+            </Pressable>
+          </View>
         </View>
         <View style={styles.cardCenter}>
           <Text style={styles.koreanText}>{word.korean}</Text>
@@ -75,22 +92,33 @@ function WordFlashcard({ word, isBookmarked, onBookmark, showPronunciation }: {
           <View style={[styles.categoryBadge, { backgroundColor: Colors.secondary + '20' }]}>
             <Text style={[styles.categoryText, { color: Colors.secondary }]}>Answer</Text>
           </View>
-          <Pressable onPress={(e) => { e.stopPropagation(); onBookmark(); }} hitSlop={12}>
-            <Ionicons
-              name={isBookmarked ? 'bookmark' : 'bookmark-outline'}
-              size={22}
-              color={isBookmarked ? Colors.accent : Colors.textMuted}
-            />
-          </Pressable>
+          <View style={styles.cardActions}>
+            <Pressable
+              onPress={(e) => { e.stopPropagation(); router.push({ pathname: '/related-words-screen', params: { wordId: word.id } }); }}
+              hitSlop={12}
+            >
+              <Ionicons name="git-branch-outline" size={20} color={Colors.secondary} />
+            </Pressable>
+            <Pressable onPress={(e) => { e.stopPropagation(); onBookmark(); }} hitSlop={12}>
+              <Ionicons
+                name={isBookmarked ? 'bookmark' : 'bookmark-outline'}
+                size={20}
+                color={isBookmarked ? Colors.accent : Colors.textMuted}
+              />
+            </Pressable>
+          </View>
         </View>
         <View style={styles.cardCenter}>
           <Text style={styles.koreanTextSmall}>{word.korean}</Text>
           <Text style={styles.englishText}>{word.english}</Text>
         </View>
-        <View style={styles.exampleBox}>
-          <Text style={styles.exampleKorean}>{word.example}</Text>
-          <Text style={styles.exampleEnglish}>{word.exampleTranslation}</Text>
-        </View>
+        <Pressable onPress={(e) => { e.stopPropagation(); speakExample(); }} style={styles.exampleBox}>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.exampleKorean}>{word.example}</Text>
+            <Text style={styles.exampleEnglish}>{word.exampleTranslation}</Text>
+          </View>
+          <Ionicons name="volume-medium" size={16} color={Colors.textMuted} />
+        </Pressable>
       </Animated.View>
     </Pressable>
   );
@@ -157,9 +185,17 @@ export default function LearnScreen() {
           <Text style={styles.dayLabel}>Day {dayNumber}</Text>
           <Text style={styles.levelLabel}>{level?.sublevel} {level?.title}</Text>
         </View>
-        <View style={styles.streakBadge}>
-          <Ionicons name="flame" size={18} color={Colors.streak} />
-          <Text style={styles.streakText}>{progress.streak}</Text>
+        <View style={styles.headerRight}>
+          <Pressable
+            style={styles.hangeulBtn}
+            onPress={() => router.push('/hangeul')}
+          >
+            <Text style={styles.hangeulBtnText}>ㄱ</Text>
+          </Pressable>
+          <View style={styles.streakBadge}>
+            <Ionicons name="flame" size={18} color={Colors.streak} />
+            <Text style={styles.streakText}>{progress.streak}</Text>
+          </View>
         </View>
       </View>
 
@@ -241,6 +277,24 @@ const styles = StyleSheet.create({
     color: Colors.textSecondary,
     marginTop: 2,
   },
+  headerRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  hangeulBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: Colors.secondary + '20',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  hangeulBtnText: {
+    fontSize: 18,
+    fontFamily: 'NotoSansKR_700Bold',
+    color: Colors.secondary,
+  },
   streakBadge: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -311,6 +365,11 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
+  cardActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
   categoryBadge: {
     paddingHorizontal: 10,
     paddingVertical: 4,
@@ -358,10 +417,12 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   exampleBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: Colors.backgroundLight,
     borderRadius: 12,
     padding: 14,
-    gap: 4,
+    gap: 8,
   },
   exampleKorean: {
     fontSize: 15,

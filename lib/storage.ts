@@ -5,12 +5,15 @@ const KEYS = {
   PROGRESS: '@daily_korean_progress',
   DAILY_STATE: '@daily_korean_daily',
   BOOKMARKS: '@daily_korean_bookmarks',
+  CUSTOM_WORDS: '@daily_korean_custom_words',
+  WRONG_ANSWERS: '@daily_korean_wrong_answers',
 };
 
 export interface UserSettings {
   selectedLevel: string;
   wordsPerDay: number;
   showPronunciation: boolean;
+  courseMode: '20words' | '10words';
 }
 
 export interface DailyState {
@@ -33,10 +36,33 @@ export interface ProgressData {
   learnedWordIds: string[];
 }
 
+export interface CustomWord {
+  id: string;
+  korean: string;
+  english: string;
+  pronunciation: string;
+  sentence: string;
+  sentenceTranslation: string;
+  createdAt: string;
+}
+
+export interface WrongAnswer {
+  id: string;
+  korean: string;
+  english: string;
+  pronunciation: string;
+  example: string;
+  exampleTranslation: string;
+  wrongCount: number;
+  lastWrongDate: string;
+  sentence: string;
+}
+
 const DEFAULT_SETTINGS: UserSettings = {
   selectedLevel: 'topik1-1',
   wordsPerDay: 20,
   showPronunciation: true,
+  courseMode: '20words',
 };
 
 const DEFAULT_PROGRESS: ProgressData = {
@@ -118,6 +144,74 @@ export async function toggleBookmark(wordId: string): Promise<string[]> {
   }
   await AsyncStorage.setItem(KEYS.BOOKMARKS, JSON.stringify(bookmarks));
   return bookmarks;
+}
+
+export async function getCustomWords(): Promise<CustomWord[]> {
+  try {
+    const data = await AsyncStorage.getItem(KEYS.CUSTOM_WORDS);
+    return data ? JSON.parse(data) : [];
+  } catch {
+    return [];
+  }
+}
+
+export async function saveCustomWord(word: CustomWord): Promise<CustomWord[]> {
+  const words = await getCustomWords();
+  words.push(word);
+  await AsyncStorage.setItem(KEYS.CUSTOM_WORDS, JSON.stringify(words));
+  return words;
+}
+
+export async function deleteCustomWord(id: string): Promise<CustomWord[]> {
+  let words = await getCustomWords();
+  words = words.filter(w => w.id !== id);
+  await AsyncStorage.setItem(KEYS.CUSTOM_WORDS, JSON.stringify(words));
+  return words;
+}
+
+export async function getWrongAnswers(): Promise<WrongAnswer[]> {
+  try {
+    const data = await AsyncStorage.getItem(KEYS.WRONG_ANSWERS);
+    return data ? JSON.parse(data) : [];
+  } catch {
+    return [];
+  }
+}
+
+export async function addWrongAnswer(word: {
+  korean: string; english: string; pronunciation: string; example: string; exampleTranslation: string;
+}): Promise<WrongAnswer[]> {
+  const wrongs = await getWrongAnswers();
+  const existing = wrongs.find(w => w.korean === word.korean);
+  if (existing) {
+    existing.wrongCount += 1;
+    existing.lastWrongDate = getTodayString();
+  } else {
+    wrongs.push({
+      id: `wrong-${Date.now()}`,
+      korean: word.korean,
+      english: word.english,
+      pronunciation: word.pronunciation,
+      example: word.example,
+      exampleTranslation: word.exampleTranslation,
+      wrongCount: 1,
+      lastWrongDate: getTodayString(),
+      sentence: word.example,
+    });
+  }
+  await AsyncStorage.setItem(KEYS.WRONG_ANSWERS, JSON.stringify(wrongs));
+  return wrongs;
+}
+
+export async function removeWrongAnswer(id: string): Promise<WrongAnswer[]> {
+  let wrongs = await getWrongAnswers();
+  wrongs = wrongs.filter(w => w.id !== id);
+  await AsyncStorage.setItem(KEYS.WRONG_ANSWERS, JSON.stringify(wrongs));
+  return wrongs;
+}
+
+export async function clearWrongAnswers(): Promise<void> {
+  await AsyncStorage.setItem(KEYS.WRONG_ANSWERS, JSON.stringify([]));
 }
 
 export async function recordDayComplete(wordsLearned: number, quizScore: number, quizTotal: number): Promise<ProgressData> {

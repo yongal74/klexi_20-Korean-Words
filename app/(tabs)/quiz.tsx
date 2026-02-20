@@ -6,6 +6,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming, withSequence, withSpring } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
+import * as Speech from 'expo-speech';
+import { router } from 'expo-router';
 import Colors from '@/constants/colors';
 import { useApp } from '@/lib/AppContext';
 import { generateQuizOptions, getAllWords } from '@/lib/vocabulary';
@@ -14,7 +16,7 @@ type QuizState = 'ready' | 'active' | 'result';
 
 export default function QuizScreen() {
   const insets = useSafeAreaInsets();
-  const { todayWords, dailyState, completeQuiz, isLoading } = useApp();
+  const { todayWords, dailyState, completeQuiz, addWrongAnswer, wrongAnswers, isLoading } = useApp();
   const webTopInset = Platform.OS === 'web' ? 67 : 0;
   const topPad = insets.top + webTopInset;
   const webBottomInset = Platform.OS === 'web' ? 34 : 0;
@@ -26,7 +28,7 @@ export default function QuizScreen() {
   const [score, setScore] = useState(dailyState?.quizScore || 0);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
-  const [missedWords, setMissedWords] = useState<string[]>([]);
+  const [missedWords, setMissedWords] = useState<{ korean: string; english: string }[]>([]);
 
   const allWords = useMemo(() => getAllWords(), []);
   const quizWords = useMemo(() => {
@@ -45,6 +47,10 @@ export default function QuizScreen() {
     transform: [{ translateX: shakeValue.value }],
   }));
 
+  const speakWord = useCallback((text: string) => {
+    Speech.speak(text, { language: 'ko', rate: 0.7 });
+  }, []);
+
   const handleAnswer = useCallback((answer: string) => {
     if (selectedAnswer) return;
     setSelectedAnswer(answer);
@@ -62,7 +68,14 @@ export default function QuizScreen() {
         withTiming(-10, { duration: 50 }),
         withTiming(0, { duration: 50 }),
       );
-      setMissedWords(prev => [...prev, currentWord.korean]);
+      setMissedWords(prev => [...prev, { korean: currentWord.korean, english: currentWord.english }]);
+      addWrongAnswer({
+        korean: currentWord.korean,
+        english: currentWord.english,
+        pronunciation: currentWord.pronunciation,
+        example: currentWord.example,
+        exampleTranslation: currentWord.exampleTranslation,
+      });
     }
 
     setTimeout(() => {
@@ -77,7 +90,7 @@ export default function QuizScreen() {
         setQuizState('result');
       }
     }, 1000);
-  }, [selectedAnswer, currentWord, currentQ, quizWords.length, score, completeQuiz, shakeValue]);
+  }, [selectedAnswer, currentWord, currentQ, quizWords.length, score, completeQuiz, shakeValue, addWrongAnswer]);
 
   const startQuiz = useCallback(() => {
     setQuizState('active');
@@ -122,6 +135,15 @@ export default function QuizScreen() {
               <Text style={styles.quizInfoText}>No Time Limit</Text>
             </View>
           </View>
+
+          {wrongAnswers.length > 0 && (
+            <Pressable style={styles.reviewBtn} onPress={() => router.push('/review')}>
+              <Ionicons name="alert-circle" size={18} color={Colors.error} />
+              <Text style={styles.reviewBtnText}>{wrongAnswers.length} words to review</Text>
+              <Ionicons name="chevron-forward" size={16} color={Colors.error} />
+            </Pressable>
+          )}
+
           <Pressable style={styles.startButton} onPress={startQuiz}>
             <Ionicons name="play" size={22} color="#fff" />
             <Text style={styles.startButtonText}>Start Quiz</Text>
@@ -170,12 +192,21 @@ export default function QuizScreen() {
           <View style={styles.missedSection}>
             <Text style={styles.missedTitle}>Words to Review</Text>
             {missedWords.map((w, i) => (
-              <View key={i} style={styles.missedWord}>
+              <Pressable key={i} style={styles.missedWord} onPress={() => speakWord(w.korean)}>
                 <Ionicons name="close-circle" size={16} color={Colors.error} />
-                <Text style={styles.missedWordText}>{w}</Text>
-              </View>
+                <Text style={styles.missedWordText}>{w.korean}</Text>
+                <Text style={styles.missedWordEnglish}>{w.english}</Text>
+                <Ionicons name="volume-medium" size={14} color={Colors.textMuted} />
+              </Pressable>
             ))}
           </View>
+        )}
+
+        {wrongAnswers.length > 0 && (
+          <Pressable style={styles.goReviewBtn} onPress={() => router.push('/review')}>
+            <Ionicons name="book-outline" size={20} color="#fff" />
+            <Text style={styles.goReviewBtnText}>Review All Wrong Answers ({wrongAnswers.length})</Text>
+          </Pressable>
         )}
 
         <Pressable style={styles.retryButton} onPress={startQuiz}>
@@ -199,6 +230,9 @@ export default function QuizScreen() {
         <Text style={styles.questionLabel}>What does this mean?</Text>
         <Text style={styles.questionWord}>{currentWord?.korean}</Text>
         <Text style={styles.questionPronunciation}>[{currentWord?.pronunciation}]</Text>
+        <Pressable onPress={() => speakWord(currentWord?.korean)} style={styles.speakQuizBtn}>
+          <Ionicons name="volume-high" size={20} color={Colors.primary} />
+        </Pressable>
       </Animated.View>
 
       <View style={styles.optionsContainer}>
@@ -289,6 +323,24 @@ const styles = StyleSheet.create({
     fontFamily: 'NotoSansKR_400Regular',
     color: Colors.textSecondary,
   },
+  reviewBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    backgroundColor: Colors.error + '10',
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: Colors.error + '25',
+    width: '100%',
+  },
+  reviewBtnText: {
+    flex: 1,
+    fontSize: 14,
+    fontFamily: 'NotoSansKR_500Medium',
+    color: Colors.error,
+  },
   startButton: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -351,6 +403,15 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: 'NotoSansKR_400Regular',
     color: Colors.textMuted,
+  },
+  speakQuizBtn: {
+    marginTop: 8,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: Colors.primary + '15',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   optionsContainer: {
     paddingHorizontal: 24,
@@ -454,6 +515,26 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: 'NotoSansKR_500Medium',
     color: Colors.text,
+  },
+  missedWordEnglish: {
+    flex: 1,
+    fontSize: 13,
+    fontFamily: 'NotoSansKR_400Regular',
+    color: Colors.textSecondary,
+  },
+  goReviewBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    backgroundColor: Colors.error,
+    paddingVertical: 16,
+    borderRadius: 16,
+  },
+  goReviewBtnText: {
+    fontSize: 15,
+    fontFamily: 'NotoSansKR_700Bold',
+    color: '#fff',
   },
   retryButton: {
     flexDirection: 'row',
