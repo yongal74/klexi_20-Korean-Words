@@ -2,10 +2,17 @@
 
 ## Overview
 
-Daily Korean is a comprehensive Korean language learning mobile application built with Expo (React Native). It provides daily vocabulary flashcards organized by TOPIK proficiency levels (TOPIK I-II, Levels 1-4), interactive quizzes with wrong answer tracking, Hangeul alphabet learning, related words with K-Drama expressions, custom vocabulary, text-to-speech pronunciation, progress tracking, and bookmarking. The app uses a tab-based navigation with four main sections: Learn (flashcards), Quiz, Progress, and Settings, plus stack screens for Hangeul, Review, Custom Words, and Related Words.
+Daily Korean is a comprehensive Korean language learning mobile application built with Expo (React Native). It provides daily vocabulary flashcards organized by TOPIK proficiency levels (TOPIK I-II, Levels 1-4), interactive quizzes with wrong answer tracking, Hangeul alphabet learning, K-Culture themed lessons, Word Network visualization, related words with K-Drama expressions, custom vocabulary, text-to-speech pronunciation, progress tracking, and bookmarking. The app uses a tab-based navigation with three main sections: Home (learning hub), Quiz, and Settings, plus stack screens for Welcome/Auth, Word Learning, Theme Lessons, Word Network, Hangeul, Review, Custom Words, and Related Words.
 
 ## Recent Changes (Feb 2026)
 
+- Added authentication system with email signup/login, social login placeholders (Google, Apple, Kakao), and guest mode
+- Redesigned Home tab as learning hub with 4 theme cards: Word Learning, K-Culture Themes, Word Network, Korean Alphabet
+- Added K-Culture Themed Lessons with 6 categories: K-Drama, K-Pop, K-Food, Travel, Internet Slang, Manners (60+ words)
+- Added Word Network screen for exploring category-based word connections with visual graph
+- Moved flashcard learning to dedicated /word-learn route
+- Added Welcome screen with auth gating (unauthenticated users redirected to /welcome)
+- Added user profile management with sign-out in Settings
 - Added Hangeul alphabet learning screen with all 40 characters, pronunciation tips, examples, and syllable formation
 - Added Related Words system showing 20 related words per vocabulary item (including 5 K-Drama expressions)
 - Added two course modes: 20 words/day (2-month course) or 10 words/day (4-month course)
@@ -13,8 +20,6 @@ Daily Korean is a comprehensive Korean language learning mobile application buil
 - Added Wrong Answer Review system with TTS auto-play for words and sentences
 - Added Text-to-Speech (expo-speech) throughout flashcards, quiz, and review screens
 - Created SEO-optimized landing page with schema markup, FAQ, testimonials, and feature highlights
-- Updated AppContext with custom words, wrong answers, and course mode state management
-- Updated storage layer with CustomWord and WrongAnswer data structures
 
 ## User Preferences
 
@@ -25,7 +30,7 @@ Preferred communication style: Simple, everyday language.
 ### Frontend (Expo / React Native)
 
 - **Framework**: Expo SDK 54 with React Native 0.81, using the new architecture (`newArchEnabled: true`)
-- **Routing**: expo-router with file-based routing. Tab layout at `app/(tabs)/` with four tabs: index (Learn), quiz, progress, settings. Stack screens: hangeul, review, custom-words, related-words-screen
+- **Routing**: expo-router with file-based routing. Tab layout at `app/(tabs)/` with four tabs: index (Home), quiz, progress, settings. Stack screens: welcome, word-learn, theme-lessons, word-network, hangeul, review, custom-words, related-words-screen
 - **State Management**: React Context (`lib/AppContext.tsx`) wraps the entire app and manages user settings, daily learning state, progress data, bookmarks, custom words, and wrong answers. TanStack React Query is also set up for server API calls
 - **Local Storage**: All user data persists via `@react-native-async-storage/async-storage` in `lib/storage.ts`. Keys: settings, progress, daily state, bookmarks, custom words, wrong answers
 - **Vocabulary Data**: Hardcoded in `lib/vocabulary.ts` as a static dictionary organized by TOPIK level
@@ -40,10 +45,14 @@ Preferred communication style: Simple, everyday language.
 
 ### Key Screens
 
-- **Learn** (`app/(tabs)/index.tsx`): Flashcards with TTS, bookmark, and related words navigation
+- **Home** (`app/(tabs)/index.tsx`): Learning hub with 4 theme cards, today's progress, quick access shortcuts, and statistics
 - **Quiz** (`app/(tabs)/quiz.tsx`): Multiple choice quiz with wrong answer tracking and TTS
 - **Progress** (`app/(tabs)/progress.tsx`): Stats, streaks, and daily history
-- **Settings** (`app/(tabs)/settings.tsx`): Course mode (20/10 words), TOPIK level, pronunciation toggle, tools navigation
+- **Settings** (`app/(tabs)/settings.tsx`): Course mode (20/10 words), TOPIK level, pronunciation toggle, tools navigation, account management with sign-out
+- **Welcome** (`app/welcome.tsx`): Auth screen with email signup/login, social login buttons (Google, Apple, Kakao), and guest skip option
+- **Word Learn** (`app/word-learn.tsx`): Flashcards with TTS, bookmark, and related words navigation
+- **Theme Lessons** (`app/theme-lessons.tsx`): K-Culture themed vocabulary (K-Drama, K-Pop, K-Food, Travel, Slang, Manners)
+- **Word Network** (`app/word-network.tsx`): Visual word connection graph with category-based exploration
 - **Hangeul** (`app/hangeul.tsx`): Korean alphabet learning with tabs for consonants, vowels, doubles, compounds, syllables
 - **Review** (`app/review.tsx`): Wrong answer list with auto-play TTS for all words and sentences
 - **Custom Words** (`app/custom-words.tsx`): Add/manage custom vocabulary with sentence generation
