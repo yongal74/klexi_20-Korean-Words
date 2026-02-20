@@ -14,7 +14,7 @@ export interface UserProfile {
   id: string;
   name: string;
   email: string;
-  provider: 'email' | 'google' | 'apple' | 'kakao';
+  provider: 'email' | 'google' | 'apple' | 'facebook';
   avatar?: string;
   createdAt: string;
 }

@@ -49,9 +49,9 @@ export default function WelcomeScreen() {
     router.replace('/(tabs)');
   };
 
-  const handleSocialLogin = async (provider: 'google' | 'apple' | 'kakao') => {
+  const handleSocialLogin = async (provider: 'google' | 'apple' | 'facebook') => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    const providerNames = { google: 'Google', apple: 'Apple', kakao: 'Kakao' };
+    const providerNames = { google: 'Google', apple: 'Apple', facebook: 'Facebook' };
     const profile: UserProfile = {
       id: `${provider}-${Date.now()}`,
       name: `${providerNames[provider]} User`,
@@ -90,7 +90,7 @@ export default function WelcomeScreen() {
         <View style={styles.featureRow}>
           <View style={styles.featureItem}>
             <Ionicons name="book" size={22} color={Colors.primary} />
-            <Text style={styles.featureText}>1,200+ Words</Text>
+            <Text style={styles.featureText}>7,200+ Words</Text>
           </View>
           <View style={styles.featureItem}>
             <Ionicons name="film" size={22} color={Colors.secondary} />
@@ -113,9 +113,9 @@ export default function WelcomeScreen() {
             <Text style={styles.socialBtnText}>Continue with Apple</Text>
           </Pressable>
 
-          <Pressable style={[styles.socialBtn, { backgroundColor: '#FEE500' }]} onPress={() => handleSocialLogin('kakao')}>
-            <Ionicons name="chatbubble" size={18} color="#3C1E1E" />
-            <Text style={[styles.socialBtnText, { color: '#3C1E1E' }]}>Continue with Kakao</Text>
+          <Pressable style={[styles.socialBtn, { backgroundColor: '#1877F2' }]} onPress={() => handleSocialLogin('facebook')}>
+            <Ionicons name="logo-facebook" size={20} color="#fff" />
+            <Text style={styles.socialBtnText}>Continue with Facebook</Text>
           </Pressable>
 
           <View style={styles.dividerRow}>
