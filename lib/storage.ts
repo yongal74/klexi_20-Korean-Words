@@ -7,7 +7,34 @@ const KEYS = {
   BOOKMARKS: '@daily_korean_bookmarks',
   CUSTOM_WORDS: '@daily_korean_custom_words',
   WRONG_ANSWERS: '@daily_korean_wrong_answers',
+  USER_PROFILE: '@daily_korean_user_profile',
 };
+
+export interface UserProfile {
+  id: string;
+  name: string;
+  email: string;
+  provider: 'email' | 'google' | 'apple' | 'kakao';
+  avatar?: string;
+  createdAt: string;
+}
+
+export async function getUserProfile(): Promise<UserProfile | null> {
+  try {
+    const data = await AsyncStorage.getItem(KEYS.USER_PROFILE);
+    return data ? JSON.parse(data) : null;
+  } catch {
+    return null;
+  }
+}
+
+export async function saveUserProfile(profile: UserProfile): Promise<void> {
+  await AsyncStorage.setItem(KEYS.USER_PROFILE, JSON.stringify(profile));
+}
+
+export async function clearUserProfile(): Promise<void> {
+  await AsyncStorage.removeItem(KEYS.USER_PROFILE);
+}
 
 export interface UserSettings {
   selectedLevel: string;

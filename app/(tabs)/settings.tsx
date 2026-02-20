@@ -12,7 +12,7 @@ import { TOPIK_LEVELS } from '@/lib/vocabulary';
 
 export default function SettingsScreen() {
   const insets = useSafeAreaInsets();
-  const { settings, updateSettings, resetDaily, progress, wrongAnswers, customWords, isLoading } = useApp();
+  const { settings, updateSettings, resetDaily, progress, wrongAnswers, customWords, userProfile, signOut, isLoading } = useApp();
   const webTopInset = Platform.OS === 'web' ? 67 : 0;
   const topPad = insets.top + webTopInset;
   const webBottomInset = Platform.OS === 'web' ? 34 : 0;
@@ -173,6 +173,28 @@ export default function SettingsScreen() {
           </View>
           <Ionicons name="chevron-forward" size={18} color={Colors.textMuted} />
         </Pressable>
+
+        <Pressable style={styles.toolButton} onPress={() => router.push('/theme-lessons')}>
+          <View style={[styles.toolIcon, { backgroundColor: '#DDA0DD15' }]}>
+            <Ionicons name="film-outline" size={20} color="#DDA0DD" />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.toolText}>K-Culture Themes</Text>
+            <Text style={styles.toolSubtext}>K-Drama, K-Pop, K-Food lessons</Text>
+          </View>
+          <Ionicons name="chevron-forward" size={18} color={Colors.textMuted} />
+        </Pressable>
+
+        <Pressable style={styles.toolButton} onPress={() => router.push('/word-network')}>
+          <View style={[styles.toolIcon, { backgroundColor: Colors.secondary + '15' }]}>
+            <Ionicons name="git-network-outline" size={20} color={Colors.secondary} />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.toolText}>Word Network</Text>
+            <Text style={styles.toolSubtext}>Explore word connections</Text>
+          </View>
+          <Ionicons name="chevron-forward" size={18} color={Colors.textMuted} />
+        </Pressable>
       </View>
 
       <View style={styles.section}>
@@ -187,14 +209,41 @@ export default function SettingsScreen() {
         </Pressable>
       </View>
 
+      {userProfile && (
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Account</Text>
+          <View style={styles.accountCard}>
+            <View style={styles.accountAvatar}>
+              <Ionicons name="person" size={24} color={Colors.primary} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.accountName}>{userProfile.name}</Text>
+              {userProfile.email ? <Text style={styles.accountEmail}>{userProfile.email}</Text> : null}
+            </View>
+          </View>
+          <Pressable
+            style={styles.signOutBtn}
+            onPress={() => {
+              Alert.alert('Sign Out', 'Are you sure you want to sign out?', [
+                { text: 'Cancel', style: 'cancel' },
+                { text: 'Sign Out', style: 'destructive', onPress: async () => { await signOut(); router.replace('/welcome'); } },
+              ]);
+            }}
+          >
+            <Ionicons name="log-out-outline" size={20} color={Colors.error} />
+            <Text style={[styles.actionText, { color: Colors.error }]}>Sign Out</Text>
+          </Pressable>
+        </View>
+      )}
+
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>About</Text>
         <View style={styles.aboutCard}>
           <Text style={styles.aboutName}>Daily Korean</Text>
-          <Text style={styles.aboutVersion}>Version 2.0.0</Text>
+          <Text style={styles.aboutVersion}>Version 3.0.0</Text>
           <Text style={styles.aboutDesc}>
             Master Korean vocabulary with daily lessons based on TOPIK curriculum.
-            Features Hangeul learning, K-Drama expressions, TTS, custom words, and wrong answer review.
+            Features K-Culture themes, Word Network, Hangeul learning, TTS, and more.
           </Text>
         </View>
       </View>
@@ -408,5 +457,43 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     lineHeight: 20,
     marginTop: 6,
+  },
+  accountCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.card,
+    borderRadius: 14,
+    padding: 16,
+    gap: 12,
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  accountAvatar: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: Colors.primary + '15',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  accountName: {
+    fontSize: 16,
+    fontFamily: 'NotoSansKR_700Bold',
+    color: Colors.text,
+  },
+  accountEmail: {
+    fontSize: 13,
+    fontFamily: 'NotoSansKR_400Regular',
+    color: Colors.textSecondary,
+  },
+  signOutBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.card,
+    borderRadius: 14,
+    padding: 16,
+    gap: 12,
+    borderWidth: 1,
+    borderColor: Colors.border,
   },
 });

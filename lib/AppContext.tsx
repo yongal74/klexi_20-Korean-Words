@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo, ReactNode } from 'react';
 import {
-  UserSettings, ProgressData, DailyState, CustomWord, WrongAnswer,
+  UserSettings, ProgressData, DailyState, CustomWord, WrongAnswer, UserProfile,
   getSettings, saveSettings,
   getProgress, saveProgress,
   getDailyState, saveDailyState,
@@ -8,6 +8,7 @@ import {
   getCustomWords, saveCustomWord as saveCustomWordStorage, deleteCustomWord as deleteCustomWordStorage,
   getWrongAnswers, addWrongAnswer as addWrongAnswerStorage, removeWrongAnswer as removeWrongAnswerStorage, clearWrongAnswers as clearWrongAnswersStorage,
   recordDayComplete, getDayNumber,
+  getUserProfile, saveUserProfile, clearUserProfile,
 } from './storage';
 import { getDailyWords, Word } from './vocabulary';
 
@@ -21,6 +22,8 @@ interface AppContextValue {
   isLoading: boolean;
   customWords: CustomWord[];
   wrongAnswers: WrongAnswer[];
+  userProfile: UserProfile | null;
+  isAuthenticated: boolean;
   updateSettings: (s: Partial<UserSettings>) => Promise<void>;
   markWordLearned: (wordId: string) => Promise<void>;
   completeQuiz: (score: number, total: number) => Promise<void>;
@@ -31,6 +34,8 @@ interface AppContextValue {
   addWrongAnswer: (word: { korean: string; english: string; pronunciation: string; example: string; exampleTranslation: string }) => Promise<void>;
   removeWrongAnswer: (id: string) => Promise<void>;
   clearWrongAnswers: () => Promise<void>;
+  signIn: (profile: UserProfile) => Promise<void>;
+  signOut: () => Promise<void>;
 }
 
 const AppContext = createContext<AppContextValue | null>(null);
@@ -56,17 +61,19 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [bookmarks, setBookmarks] = useState<string[]>([]);
   const [customWords, setCustomWords] = useState<CustomWord[]>([]);
   const [wrongAnswers, setWrongAnswers] = useState<WrongAnswer[]>([]);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     (async () => {
-      const [s, p, d, b, cw, wa] = await Promise.all([
+      const [s, p, d, b, cw, wa, up] = await Promise.all([
         getSettings(),
         getProgress(),
         getDailyState(),
         getBookmarks(),
         getCustomWords(),
         getWrongAnswers(),
+        getUserProfile(),
       ]);
       setSettings(s);
       setProgress(p);
@@ -74,6 +81,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setBookmarks(b);
       setCustomWords(cw);
       setWrongAnswers(wa);
+      setUserProfile(up);
       setIsLoading(false);
     })();
   }, []);
@@ -180,6 +188,18 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setWrongAnswers([]);
   }, []);
 
+  const signInCb = useCallback(async (profile: UserProfile) => {
+    await saveUserProfile(profile);
+    setUserProfile(profile);
+  }, []);
+
+  const signOutCb = useCallback(async () => {
+    await clearUserProfile();
+    setUserProfile(null);
+  }, []);
+
+  const isAuthenticated = !!userProfile;
+
   const value = useMemo(() => ({
     settings,
     progress,
@@ -190,6 +210,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
     isLoading,
     customWords,
     wrongAnswers,
+    userProfile,
+    isAuthenticated,
     updateSettings,
     markWordLearned,
     completeQuiz,
@@ -200,7 +222,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
     addWrongAnswer: addWrongAnswerCb,
     removeWrongAnswer: removeWrongAnswerCb,
     clearWrongAnswers: clearWrongAnswersCb,
-  }), [settings, progress, dailyState, bookmarks, todayWords, dayNumber, isLoading, customWords, wrongAnswers, updateSettings, markWordLearned, completeQuiz, toggleBookmarkCb, resetDaily, addCustomWordCb, removeCustomWordCb, addWrongAnswerCb, removeWrongAnswerCb, clearWrongAnswersCb]);
+    signIn: signInCb,
+    signOut: signOutCb,
+  }), [settings, progress, dailyState, bookmarks, todayWords, dayNumber, isLoading, customWords, wrongAnswers, userProfile, isAuthenticated, updateSettings, markWordLearned, completeQuiz, toggleBookmarkCb, resetDaily, addCustomWordCb, removeCustomWordCb, addWrongAnswerCb, removeWrongAnswerCb, clearWrongAnswersCb, signInCb, signOutCb]);
 
   return (
     <AppContext.Provider value={value}>

@@ -11,8 +11,8 @@ function NativeTabLayout() {
   return (
     <NativeTabs>
       <NativeTabs.Trigger name="index">
-        <Icon sf={{ default: "book", selected: "book.fill" }} />
-        <Label>Learn</Label>
+        <Icon sf={{ default: "house", selected: "house.fill" }} />
+        <Label>Home</Label>
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="quiz">
         <Icon sf={{ default: "checkmark.circle", selected: "checkmark.circle.fill" }} />
@@ -63,9 +63,9 @@ function ClassicTabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "Learn",
+          title: "Home",
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="book" size={size} color={color} />
+            <Ionicons name="home" size={size} color={color} />
           ),
         }}
       />

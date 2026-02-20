@@ -1,176 +1,74 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useEffect } from 'react';
 import {
-  StyleSheet, Text, View, Pressable, Dimensions, Platform, FlatList, ActivityIndicator,
+  StyleSheet, Text, View, ScrollView, Pressable, Platform, ActivityIndicator,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import Animated, { useSharedValue, useAnimatedStyle, withTiming, withSpring, interpolate } from 'react-native-reanimated';
+import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
-import * as Speech from 'expo-speech';
 import { router } from 'expo-router';
 import Colors from '@/constants/colors';
 import { useApp } from '@/lib/AppContext';
 import { TOPIK_LEVELS } from '@/lib/vocabulary';
-import type { Word } from '@/lib/vocabulary';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const CARD_WIDTH = SCREEN_WIDTH - 48;
+const LEARNING_THEMES = [
+  {
+    id: 'word-learn',
+    title: 'Word Learning',
+    titleKr: '단어 학습',
+    description: 'Daily TOPIK vocabulary flashcards',
+    icon: 'book' as const,
+    color: Colors.primary,
+    route: '/word-learn' as const,
+  },
+  {
+    id: 'theme-lessons',
+    title: 'K-Culture Themes',
+    titleKr: '테마 학습',
+    description: 'K-Drama, K-Pop, K-Food & more',
+    icon: 'film' as const,
+    color: '#DDA0DD',
+    route: '/theme-lessons' as const,
+  },
+  {
+    id: 'word-network',
+    title: 'Word Network',
+    titleKr: '워드 네트워크',
+    description: 'Explore word connections by category',
+    icon: 'git-network' as const,
+    color: Colors.secondary,
+    route: '/word-network' as const,
+  },
+  {
+    id: 'hangeul',
+    title: 'Korean Alphabet',
+    titleKr: '한글 학습',
+    description: 'Learn consonants, vowels & syllables',
+    icon: 'language' as const,
+    color: Colors.accent,
+    route: '/hangeul' as const,
+  },
+];
 
-function WordFlashcard({ word, isBookmarked, onBookmark, showPronunciation }: {
-  word: Word;
-  isBookmarked: boolean;
-  onBookmark: () => void;
-  showPronunciation: boolean;
-}) {
-  const [flipped, setFlipped] = useState(false);
-  const flipProgress = useSharedValue(0);
-
-  const handleFlip = useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    const next = !flipped;
-    setFlipped(next);
-    flipProgress.value = withSpring(next ? 1 : 0, { damping: 15, stiffness: 100 });
-  }, [flipped, flipProgress]);
-
-  const speakWord = useCallback(() => {
-    Speech.speak(word.korean, { language: 'ko', rate: 0.7 });
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-  }, [word.korean]);
-
-  const speakExample = useCallback(() => {
-    Speech.speak(word.example, { language: 'ko', rate: 0.6 });
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-  }, [word.example]);
-
-  const frontStyle = useAnimatedStyle(() => ({
-    opacity: interpolate(flipProgress.value, [0, 0.5, 1], [1, 0, 0]),
-    transform: [{ rotateY: `${interpolate(flipProgress.value, [0, 1], [0, 180])}deg` }],
-  }));
-
-  const backStyle = useAnimatedStyle(() => ({
-    opacity: interpolate(flipProgress.value, [0, 0.5, 1], [0, 0, 1]),
-    transform: [{ rotateY: `${interpolate(flipProgress.value, [0, 1], [180, 360])}deg` }],
-  }));
-
-  return (
-    <Pressable onPress={handleFlip} style={styles.cardContainer}>
-      <Animated.View style={[styles.card, frontStyle]}>
-        <View style={styles.cardBadgeRow}>
-          <View style={[styles.categoryBadge, { backgroundColor: Colors.primary + '20' }]}>
-            <Text style={[styles.categoryText, { color: Colors.primary }]}>{word.category}</Text>
-          </View>
-          <View style={styles.cardActions}>
-            <Pressable onPress={(e) => { e.stopPropagation(); speakWord(); }} hitSlop={12}>
-              <Ionicons name="volume-high" size={20} color={Colors.primary} />
-            </Pressable>
-            <Pressable onPress={(e) => { e.stopPropagation(); onBookmark(); }} hitSlop={12}>
-              <Ionicons
-                name={isBookmarked ? 'bookmark' : 'bookmark-outline'}
-                size={20}
-                color={isBookmarked ? Colors.accent : Colors.textMuted}
-              />
-            </Pressable>
-          </View>
-        </View>
-        <View style={styles.cardCenter}>
-          <Text style={styles.koreanText}>{word.korean}</Text>
-          {showPronunciation && (
-            <Text style={styles.pronunciationText}>[{word.pronunciation}]</Text>
-          )}
-          <View style={[styles.posBadge, { backgroundColor: Colors.secondary + '20' }]}>
-            <Text style={[styles.posText, { color: Colors.secondary }]}>{word.partOfSpeech}</Text>
-          </View>
-        </View>
-        <View style={styles.tapHint}>
-          <Ionicons name="sync-outline" size={16} color={Colors.textMuted} />
-          <Text style={styles.tapHintText}>Tap to reveal meaning</Text>
-        </View>
-      </Animated.View>
-
-      <Animated.View style={[styles.card, styles.cardBack, backStyle]}>
-        <View style={styles.cardBadgeRow}>
-          <View style={[styles.categoryBadge, { backgroundColor: Colors.secondary + '20' }]}>
-            <Text style={[styles.categoryText, { color: Colors.secondary }]}>Answer</Text>
-          </View>
-          <View style={styles.cardActions}>
-            <Pressable
-              onPress={(e) => { e.stopPropagation(); router.push({ pathname: '/related-words-screen', params: { wordId: word.id } }); }}
-              hitSlop={12}
-            >
-              <Ionicons name="git-branch-outline" size={20} color={Colors.secondary} />
-            </Pressable>
-            <Pressable onPress={(e) => { e.stopPropagation(); onBookmark(); }} hitSlop={12}>
-              <Ionicons
-                name={isBookmarked ? 'bookmark' : 'bookmark-outline'}
-                size={20}
-                color={isBookmarked ? Colors.accent : Colors.textMuted}
-              />
-            </Pressable>
-          </View>
-        </View>
-        <View style={styles.cardCenter}>
-          <Text style={styles.koreanTextSmall}>{word.korean}</Text>
-          <Text style={styles.englishText}>{word.english}</Text>
-        </View>
-        <Pressable onPress={(e) => { e.stopPropagation(); speakExample(); }} style={styles.exampleBox}>
-          <View style={{ flex: 1 }}>
-            <Text style={styles.exampleKorean}>{word.example}</Text>
-            <Text style={styles.exampleEnglish}>{word.exampleTranslation}</Text>
-          </View>
-          <Ionicons name="volume-medium" size={16} color={Colors.textMuted} />
-        </Pressable>
-      </Animated.View>
-    </Pressable>
-  );
-}
-
-export default function LearnScreen() {
+export default function HomeScreen() {
   const insets = useSafeAreaInsets();
-  const { settings, progress, dailyState, todayWords, dayNumber, bookmarks, markWordLearned, toggleBookmark, isLoading } = useApp();
-  const [currentIndex, setCurrentIndex] = useState(dailyState?.currentWordIndex || 0);
-  const flatListRef = useRef<FlatList>(null);
+  const { settings, progress, dailyState, todayWords, dayNumber, userProfile, isAuthenticated, wrongAnswers, customWords, isLoading } = useApp();
 
   const webTopInset = Platform.OS === 'web' ? 67 : 0;
   const topPad = insets.top + webTopInset;
+  const webBottomInset = Platform.OS === 'web' ? 34 : 0;
+
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      router.replace('/welcome');
+    }
+  }, [isLoading, isAuthenticated]);
 
   const level = TOPIK_LEVELS.find(l => l.id === settings.selectedLevel);
   const learnedCount = dailyState?.learnedWordIds?.length || 0;
   const progressPercent = todayWords.length > 0 ? (learnedCount / todayWords.length) * 100 : 0;
+  const userName = userProfile?.name || 'Learner';
 
-  const handleNext = useCallback(() => {
-    if (currentIndex < todayWords.length - 1) {
-      const nextIndex = currentIndex + 1;
-      setCurrentIndex(nextIndex);
-      markWordLearned(todayWords[currentIndex].id);
-      flatListRef.current?.scrollToIndex({ index: nextIndex, animated: true });
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    } else {
-      markWordLearned(todayWords[currentIndex].id);
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    }
-  }, [currentIndex, todayWords, markWordLearned]);
-
-  const handlePrev = useCallback(() => {
-    if (currentIndex > 0) {
-      const prevIndex = currentIndex - 1;
-      setCurrentIndex(prevIndex);
-      flatListRef.current?.scrollToIndex({ index: prevIndex, animated: true });
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    }
-  }, [currentIndex]);
-
-  const renderItem = useCallback(({ item }: { item: Word }) => (
-    <View style={{ width: CARD_WIDTH, marginHorizontal: 24 }}>
-      <WordFlashcard
-        word={item}
-        isBookmarked={bookmarks.includes(item.id)}
-        onBookmark={() => toggleBookmark(item.id)}
-        showPronunciation={settings.showPronunciation}
-      />
-    </View>
-  ), [bookmarks, toggleBookmark, settings.showPronunciation]);
-
-  if (isLoading) {
+  if (isLoading || !isAuthenticated) {
     return (
       <View style={[styles.container, { paddingTop: topPad }]}>
         <ActivityIndicator size="large" color={Colors.primary} />
@@ -179,19 +77,17 @@ export default function LearnScreen() {
   }
 
   return (
-    <View style={[styles.container, { paddingTop: topPad }]}>
+    <ScrollView
+      style={[styles.container, { paddingTop: topPad }]}
+      contentContainerStyle={{ paddingBottom: 120 + webBottomInset }}
+      showsVerticalScrollIndicator={false}
+    >
       <View style={styles.header}>
-        <View>
-          <Text style={styles.dayLabel}>Day {dayNumber}</Text>
-          <Text style={styles.levelLabel}>{level?.sublevel} {level?.title}</Text>
+        <View style={{ flex: 1 }}>
+          <Text style={styles.greeting}>안녕하세요! 👋</Text>
+          <Text style={styles.userName}>{userName}</Text>
         </View>
-        <View style={styles.headerRight}>
-          <Pressable
-            style={styles.hangeulBtn}
-            onPress={() => router.push('/hangeul')}
-          >
-            <Text style={styles.hangeulBtnText}>ㄱ</Text>
-          </Pressable>
+        <View style={styles.headerBadges}>
           <View style={styles.streakBadge}>
             <Ionicons name="flame" size={18} color={Colors.streak} />
             <Text style={styles.streakText}>{progress.streak}</Text>
@@ -199,57 +95,100 @@ export default function LearnScreen() {
         </View>
       </View>
 
-      <View style={styles.progressBarContainer}>
-        <View style={styles.progressBarBg}>
-          <View style={[styles.progressBarFill, { width: `${Math.min(progressPercent, 100)}%` }]} />
+      <View style={styles.todayCard}>
+        <View style={styles.todayHeader}>
+          <View>
+            <Text style={styles.todayLabel}>Day {dayNumber}</Text>
+            <Text style={styles.todayLevel}>{level?.sublevel} · {level?.title}</Text>
+          </View>
+          <Pressable
+            style={styles.continueBtn}
+            onPress={() => { router.push('/word-learn'); Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); }}
+          >
+            <Text style={styles.continueBtnText}>Continue</Text>
+            <Ionicons name="arrow-forward" size={16} color="#fff" />
+          </Pressable>
         </View>
-        <Text style={styles.progressText}>{learnedCount}/{todayWords.length}</Text>
+        <View style={styles.progressRow}>
+          <View style={styles.progressBarBg}>
+            <View style={[styles.progressBarFill, { width: `${Math.min(progressPercent, 100)}%` }]} />
+          </View>
+          <Text style={styles.progressText}>{learnedCount}/{todayWords.length}</Text>
+        </View>
       </View>
 
-      <View style={styles.cardSection}>
-        <FlatList
-          ref={flatListRef}
-          data={todayWords}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.id}
-          horizontal
-          pagingEnabled
-          showsHorizontalScrollIndicator={false}
-          scrollEnabled={false}
-          snapToInterval={CARD_WIDTH + 48}
-          decelerationRate="fast"
-          getItemLayout={(_, index) => ({
-            length: CARD_WIDTH + 48,
-            offset: (CARD_WIDTH + 48) * index,
-            index,
-          })}
-          initialScrollIndex={currentIndex}
-        />
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Learning Paths</Text>
+        <Text style={styles.sectionSubtitle}>학습 테마를 선택하세요</Text>
       </View>
 
-      <View style={styles.navigation}>
-        <Pressable
-          onPress={handlePrev}
-          style={[styles.navButton, currentIndex === 0 && styles.navButtonDisabled]}
-          disabled={currentIndex === 0}
-        >
-          <Ionicons name="chevron-back" size={28} color={currentIndex === 0 ? Colors.textMuted : Colors.text} />
+      <View style={styles.themesGrid}>
+        {LEARNING_THEMES.map((theme) => (
+          <Pressable
+            key={theme.id}
+            style={styles.themeCard}
+            onPress={() => {
+              router.push(theme.route);
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            }}
+          >
+            <View style={[styles.themeIconBg, { backgroundColor: theme.color + '18' }]}>
+              <Ionicons name={theme.icon} size={26} color={theme.color} />
+            </View>
+            <Text style={styles.themeTitle}>{theme.title}</Text>
+            <Text style={styles.themeTitleKr}>{theme.titleKr}</Text>
+            <Text style={styles.themeDesc}>{theme.description}</Text>
+          </Pressable>
+        ))}
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Quick Access</Text>
+      </View>
+
+      <View style={styles.quickGrid}>
+        <Pressable style={styles.quickCard} onPress={() => router.push('/custom-words')}>
+          <View style={[styles.quickIcon, { backgroundColor: Colors.primary + '15' }]}>
+            <Ionicons name="create-outline" size={20} color={Colors.primary} />
+          </View>
+          <Text style={styles.quickLabel}>My Words</Text>
+          <Text style={styles.quickCount}>{customWords.length}</Text>
         </Pressable>
 
-        <Text style={styles.counter}>{currentIndex + 1} / {todayWords.length}</Text>
+        <Pressable style={styles.quickCard} onPress={() => router.push('/review')}>
+          <View style={[styles.quickIcon, { backgroundColor: Colors.error + '15' }]}>
+            <Ionicons name="alert-circle-outline" size={20} color={Colors.error} />
+          </View>
+          <Text style={styles.quickLabel}>Review</Text>
+          <Text style={styles.quickCount}>{wrongAnswers.length}</Text>
+        </Pressable>
 
-        <Pressable
-          onPress={handleNext}
-          style={[styles.navButton, styles.navButtonPrimary]}
-        >
-          {currentIndex === todayWords.length - 1 ? (
-            <Ionicons name="checkmark" size={28} color="#fff" />
-          ) : (
-            <Ionicons name="chevron-forward" size={28} color="#fff" />
-          )}
+        <Pressable style={styles.quickCard} onPress={() => router.push('/(tabs)/quiz')}>
+          <View style={[styles.quickIcon, { backgroundColor: Colors.secondary + '15' }]}>
+            <Ionicons name="checkmark-circle-outline" size={20} color={Colors.secondary} />
+          </View>
+          <Text style={styles.quickLabel}>Quiz</Text>
+          <Text style={styles.quickCount}>{dailyState?.quizCompleted ? 'Done' : 'Go'}</Text>
         </Pressable>
       </View>
-    </View>
+
+      <View style={styles.statsRow}>
+        <View style={styles.statItem}>
+          <Text style={styles.statValue}>{progress.totalWordsLearned}</Text>
+          <Text style={styles.statLabel}>Words Learned</Text>
+        </View>
+        <View style={styles.statDivider} />
+        <View style={styles.statItem}>
+          <Text style={styles.statValue}>{progress.bestStreak}</Text>
+          <Text style={styles.statLabel}>Best Streak</Text>
+        </View>
+        <View style={styles.statDivider} />
+        <View style={styles.statItem}>
+          <Text style={styles.statValue}>{progress.totalQuizzesTaken}</Text>
+          <Text style={styles.statLabel}>Quizzes</Text>
+        </View>
+      </View>
+    </ScrollView>
   );
 }
 
@@ -263,37 +202,23 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 24,
-    paddingTop: 16,
+    paddingTop: 20,
     paddingBottom: 8,
   },
-  dayLabel: {
-    fontSize: 26,
-    fontFamily: 'NotoSansKR_700Bold',
-    color: Colors.text,
-  },
-  levelLabel: {
+  greeting: {
     fontSize: 14,
     fontFamily: 'NotoSansKR_400Regular',
     color: Colors.textSecondary,
+  },
+  userName: {
+    fontSize: 24,
+    fontFamily: 'NotoSansKR_700Bold',
+    color: Colors.text,
     marginTop: 2,
   },
-  headerRight: {
+  headerBadges: {
     flexDirection: 'row',
-    alignItems: 'center',
     gap: 8,
-  },
-  hangeulBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: Colors.secondary + '20',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  hangeulBtnText: {
-    fontSize: 18,
-    fontFamily: 'NotoSansKR_700Bold',
-    color: Colors.secondary,
   },
   streakBadge: {
     flexDirection: 'row',
@@ -309,11 +234,49 @@ const styles = StyleSheet.create({
     fontFamily: 'NotoSansKR_700Bold',
     color: Colors.streak,
   },
-  progressBarContainer: {
+  todayCard: {
+    marginHorizontal: 24,
+    marginTop: 16,
+    backgroundColor: Colors.card,
+    borderRadius: 18,
+    padding: 18,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    gap: 14,
+  },
+  todayHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  todayLabel: {
+    fontSize: 20,
+    fontFamily: 'NotoSansKR_700Bold',
+    color: Colors.text,
+  },
+  todayLevel: {
+    fontSize: 13,
+    fontFamily: 'NotoSansKR_400Regular',
+    color: Colors.textSecondary,
+    marginTop: 2,
+  },
+  continueBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 24,
-    paddingVertical: 12,
+    gap: 6,
+    backgroundColor: Colors.primary,
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+  },
+  continueBtnText: {
+    fontSize: 14,
+    fontFamily: 'NotoSansKR_500Medium',
+    color: '#fff',
+  },
+  progressRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 12,
   },
   progressBarBg: {
@@ -335,141 +298,121 @@ const styles = StyleSheet.create({
     minWidth: 45,
     textAlign: 'right',
   },
-  cardSection: {
-    flex: 1,
-    justifyContent: 'center',
+  section: {
+    paddingHorizontal: 24,
+    marginTop: 28,
+    marginBottom: 12,
   },
-  cardContainer: {
-    flex: 1,
-    justifyContent: 'center',
+  sectionTitle: {
+    fontSize: 20,
+    fontFamily: 'NotoSansKR_700Bold',
+    color: Colors.text,
   },
-  card: {
-    backgroundColor: Colors.card,
-    borderRadius: 24,
-    padding: 24,
-    minHeight: 340,
-    justifyContent: 'space-between',
-    borderWidth: 1,
-    borderColor: Colors.border,
-    backfaceVisibility: 'hidden',
+  sectionSubtitle: {
+    fontSize: 13,
+    fontFamily: 'NotoSansKR_400Regular',
+    color: Colors.textSecondary,
+    marginTop: 4,
   },
-  cardBack: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-  },
-  cardBadgeRow: {
+  themesGrid: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  cardActions: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexWrap: 'wrap',
+    paddingHorizontal: 24,
     gap: 12,
   },
-  categoryBadge: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 12,
+  themeCard: {
+    width: '47%',
+    backgroundColor: Colors.card,
+    borderRadius: 18,
+    padding: 18,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    gap: 6,
+    flexGrow: 1,
   },
-  categoryText: {
-    fontSize: 12,
-    fontFamily: 'NotoSansKR_500Medium',
-  },
-  cardCenter: {
-    alignItems: 'center',
-    gap: 8,
-    paddingVertical: 20,
-  },
-  koreanText: {
-    fontSize: 42,
-    fontFamily: 'NotoSansKR_700Bold',
-    color: Colors.text,
-    textAlign: 'center',
-  },
-  koreanTextSmall: {
-    fontSize: 28,
-    fontFamily: 'NotoSansKR_700Bold',
-    color: Colors.textSecondary,
-    textAlign: 'center',
-  },
-  pronunciationText: {
-    fontSize: 16,
-    fontFamily: 'NotoSansKR_400Regular',
-    color: Colors.textSecondary,
-  },
-  posBadge: {
-    paddingHorizontal: 10,
-    paddingVertical: 3,
-    borderRadius: 10,
-  },
-  posText: {
-    fontSize: 12,
-    fontFamily: 'NotoSansKR_500Medium',
-  },
-  englishText: {
-    fontSize: 28,
-    fontFamily: 'NotoSansKR_700Bold',
-    color: Colors.primary,
-    textAlign: 'center',
-  },
-  exampleBox: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: Colors.backgroundLight,
-    borderRadius: 12,
-    padding: 14,
-    gap: 8,
-  },
-  exampleKorean: {
-    fontSize: 15,
-    fontFamily: 'NotoSansKR_500Medium',
-    color: Colors.text,
-  },
-  exampleEnglish: {
-    fontSize: 13,
-    fontFamily: 'NotoSansKR_400Regular',
-    color: Colors.textSecondary,
-  },
-  tapHint: {
-    flexDirection: 'row',
+  themeIconBg: {
+    width: 48,
+    height: 48,
+    borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 6,
+    marginBottom: 4,
   },
-  tapHintText: {
-    fontSize: 13,
+  themeTitle: {
+    fontSize: 15,
+    fontFamily: 'NotoSansKR_700Bold',
+    color: Colors.text,
+  },
+  themeTitleKr: {
+    fontSize: 12,
+    fontFamily: 'NotoSansKR_400Regular',
+    color: Colors.textSecondary,
+  },
+  themeDesc: {
+    fontSize: 11,
+    fontFamily: 'NotoSansKR_400Regular',
+    color: Colors.textMuted,
+    marginTop: 2,
+  },
+  quickGrid: {
+    flexDirection: 'row',
+    paddingHorizontal: 24,
+    gap: 10,
+  },
+  quickCard: {
+    flex: 1,
+    backgroundColor: Colors.card,
+    borderRadius: 14,
+    padding: 14,
+    alignItems: 'center',
+    gap: 8,
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  quickIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  quickLabel: {
+    fontSize: 12,
+    fontFamily: 'NotoSansKR_500Medium',
+    color: Colors.textSecondary,
+  },
+  quickCount: {
+    fontSize: 16,
+    fontFamily: 'NotoSansKR_700Bold',
+    color: Colors.text,
+  },
+  statsRow: {
+    flexDirection: 'row',
+    marginHorizontal: 24,
+    marginTop: 24,
+    backgroundColor: Colors.card,
+    borderRadius: 16,
+    padding: 18,
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  statItem: {
+    flex: 1,
+    alignItems: 'center',
+    gap: 4,
+  },
+  statValue: {
+    fontSize: 22,
+    fontFamily: 'NotoSansKR_700Bold',
+    color: Colors.text,
+  },
+  statLabel: {
+    fontSize: 11,
     fontFamily: 'NotoSansKR_400Regular',
     color: Colors.textMuted,
   },
-  navigation: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 24,
-    paddingBottom: Platform.OS === 'web' ? 100 : 100,
-    paddingTop: 16,
-  },
-  navButton: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: Colors.surface,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  navButtonPrimary: {
-    backgroundColor: Colors.primary,
-  },
-  navButtonDisabled: {
-    opacity: 0.4,
-  },
-  counter: {
-    fontSize: 16,
-    fontFamily: 'NotoSansKR_500Medium',
-    color: Colors.textSecondary,
+  statDivider: {
+    width: 1,
+    backgroundColor: Colors.border,
   },
 });
