@@ -116,7 +116,7 @@ export default function ThemeLessonsScreen() {
               <Pressable
                 key={t.id}
                 style={[styles.themeCard, { borderColor: t.color + '40' }]}
-                onPress={() => { setSelectedTheme(t.id); setSelectedLevel(0); setExpandedWord(null); Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); }}
+                onPress={() => { setSelectedTheme(t.id); setSelectedLevel(!isPremium ? 1 : 0); setExpandedWord(null); Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); }}
               >
                 <View style={[styles.themeIconBg, { backgroundColor: t.color + '20' }]}>
                   <Ionicons name={t.icon as any} size={28} color={t.color} />
@@ -140,7 +140,7 @@ export default function ThemeLessonsScreen() {
   return (
     <View style={[styles.container, { paddingTop: topPad }]}>
       <View style={styles.header}>
-        <Pressable onPress={() => { setSelectedTheme(null); setSelectedLevel(0); }} style={styles.backBtn}>
+        <Pressable onPress={() => { setSelectedTheme(null); setSelectedLevel(!isPremium ? 1 : 0); }} style={styles.backBtn}>
           <Ionicons name="arrow-back" size={24} color={Colors.text} />
         </Pressable>
         <View style={{ flex: 1 }}>
