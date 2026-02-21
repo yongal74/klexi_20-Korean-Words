@@ -8,12 +8,12 @@ Daily Korean is a comprehensive Korean language learning mobile application buil
 
 - Added authentication system with email signup/login, social login placeholders (Google, Apple, Kakao), and guest mode
 - Redesigned Home tab as learning hub with 4 theme cards: Word Learning, K-Culture Themes, Word Network, Korean Alphabet
-- Added K-Culture Themed Lessons with 6 categories: K-Drama, K-Pop, K-Food, Travel, Internet Slang, Manners (60+ words)
+- Added K-Culture Themed Lessons with 6 categories: K-Drama, K-Pop, K-Food, Travel, Internet Slang, Manners (3,600 words: 100 per theme per TOPIK level)
 - Added Word Network screen for exploring category-based word connections with visual graph
 - Moved flashcard learning to dedicated /word-learn route
 - Added Welcome screen with auth gating (unauthenticated users redirected to /welcome)
 - Added user profile management with sign-out in Settings
-- Added Hangeul alphabet learning screen with all 40 characters, pronunciation tips, examples, and syllable formation
+- Added Hangeul alphabet learning screen with all 40 characters, pronunciation tips, examples, syllable formation, and Hangeul Principles tab (origin, consonant shapes, vowel philosophy, syllable blocks)
 - Added Related Words system showing 20 related words per vocabulary item (including 5 K-Drama expressions)
 - Added two course modes: 20 words/day (2-month course) or 10 words/day (4-month course)
 - Added Custom Vocabulary with sentence generation for user-created words
@@ -41,7 +41,8 @@ Preferred communication style: Simple, everyday language.
 - **Local Storage**: All user data persists via `@react-native-async-storage/async-storage` in `lib/storage.ts`. Keys: settings, progress, daily state, bookmarks, custom words, wrong answers
 - **Vocabulary Data**: 7,200 words in `lib/vocab/` directory (18 modular files: level1-part1.ts through level6-part3.ts, 400 words each), imported via `lib/vocabulary.ts`
 - **Grammar Patterns**: Grammar detection utility in `lib/grammar-patterns.ts` identifies patterns in Korean sentences and displays as tags
-- **Hangeul Data**: Complete Korean alphabet data in `lib/hangeul.ts` with consonants, vowels, double consonants, compound vowels, and syllable examples
+- **Theme Vocabulary**: 3,600 K-Culture words in `lib/theme-vocab/` directory (6 files: kdrama.ts, kpop.ts, kfood.ts, travel.ts, slang.ts, manners.ts), each with 100 words per TOPIK level, aggregated via `lib/theme-data.ts`
+- **Hangeul Data**: Complete Korean alphabet data in `lib/hangeul.ts` with consonants, vowels, double consonants, compound vowels, syllable examples, and Hangeul Principles (origin, consonant shapes, vowel philosophy, syllable blocks, significance)
 - **Related Words**: Category-based and manual mappings in `lib/related-words.ts` with K-Drama expression integration
 - **Text-to-Speech**: expo-speech for Korean/English pronunciation on flashcards, quiz, review, custom words, and Hangeul screens
 - **Animations**: react-native-reanimated for flashcard flip animations and quiz feedback
