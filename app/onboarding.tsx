@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect, useCallback } from 'react';
+import React, { useRef, useState, useCallback } from 'react';
 import {
   StyleSheet,
   Text,
@@ -19,47 +19,92 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 const ONBOARDING_KEY = '@daily_korean_onboarding_complete';
 
+interface BulletPoint {
+  icon: keyof typeof Ionicons.glyphMap;
+  text: string;
+}
+
 interface OnboardingPage {
   id: string;
+  tagline: string;
   title: string;
   icon: keyof typeof Ionicons.glyphMap;
   iconColor: string;
   description: string;
+  bullets: BulletPoint[];
   showButton?: boolean;
 }
 
 const PAGES: OnboardingPage[] = [
   {
     id: '1',
-    title: 'Welcome to Daily Korean',
-    icon: 'book',
+    tagline: 'Your Daily Korean Habit',
+    title: '20 Words a Day\nThat Actually Stick',
+    icon: 'flash',
     iconColor: Colors.primary,
     description:
-      'Master Korean with daily vocabulary, quizzes, and cultural lessons. 7,200+ words across 6 TOPIK levels.',
+      'Not hundreds of random words. Just 20 curated, high-frequency words daily — the ones native speakers actually use.',
+    bullets: [
+      { icon: 'time-outline', text: 'Only 10-15 minutes a day' },
+      { icon: 'trending-up-outline', text: 'Level-aware progression (TOPIK 1-6)' },
+      { icon: 'chatbubble-outline', text: 'Built for real conversations, not just tests' },
+    ],
   },
   {
     id: '2',
-    title: 'Smart Learning System',
-    icon: 'flash',
+    tagline: 'Beyond Vocabulary Lists',
+    title: 'Word Network:\nSee How Korean Connects',
+    icon: 'git-network',
     iconColor: Colors.secondary,
     description:
-      'Spaced repetition remembers what you know. Focus on words that need practice. Track progress with XP and levels.',
+      'Korean isn\'t about single words — it\'s about patterns. Every word links to synonyms, collocations, and real expressions Koreans use.',
+    bullets: [
+      { icon: 'link-outline', text: 'Synonyms, antonyms & collocations' },
+      { icon: 'layers-outline', text: 'See words inside real phrase patterns' },
+      { icon: 'bulb-outline', text: 'Your brain stores Korean as a living system' },
+    ],
   },
   {
     id: '3',
-    title: 'Powerful Practice Tools',
-    icon: 'construct',
+    tagline: 'Learn in Context',
+    title: 'Sentences & Scripts,\nNot Just Flashcards',
+    icon: 'document-text',
     iconColor: Colors.accent,
     description:
-      'Sentence building, pronunciation recording, daily missions, K-Culture themes, and more — all in one app.',
+      'Every word set is reinforced with natural Korean sentences. Read, listen, shadow, and repeat — feel how the language flows.',
+    bullets: [
+      { icon: 'volume-high-outline', text: 'Audio with slow & normal speed' },
+      { icon: 'mic-outline', text: 'Record and compare your pronunciation' },
+      { icon: 'create-outline', text: 'Fill-in-blank & sentence building practice' },
+    ],
   },
   {
     id: '4',
-    title: 'Start Your Journey',
+    tagline: 'Made for K-Culture Fans',
+    title: 'Learn Through\nK-Drama, K-Pop & More',
+    icon: 'sparkles',
+    iconColor: '#FF6B6B',
+    description:
+      'Content organized by real-life and K-culture themes. Follow structured courses or jump into your current obsession.',
+    bullets: [
+      { icon: 'film-outline', text: 'K-Drama scenes & emotional expressions' },
+      { icon: 'musical-notes-outline', text: 'K-Pop fan culture & lyrics vocabulary' },
+      { icon: 'restaurant-outline', text: 'Ordering coffee, travel, daily small talk' },
+    ],
+  },
+  {
+    id: '5',
+    tagline: 'Ready to Start?',
+    title: 'Your Bridge Into\nReal Korean',
     icon: 'rocket',
     iconColor: Colors.streak,
     description:
-      'Choose your TOPIK level, set your daily goal, and begin learning Korean today!',
+      'From "I like K-culture" to "I can live in this language" — one smart set of 20 words at a time.',
+    bullets: [
+      { icon: 'shield-checkmark-outline', text: 'Smart spaced repetition keeps it in memory' },
+      { icon: 'trophy-outline', text: 'XP, levels & achievement badges' },
+      { icon: 'flag-outline', text: 'Daily missions to keep you motivated' },
+    ],
     showButton: true,
   },
 ];
@@ -72,21 +117,19 @@ export default function OnboardingScreen() {
   const topPad = insets.top + (Platform.OS === 'web' ? 67 : 0);
   const bottomPad = Platform.OS === 'web' ? 34 : insets.bottom;
 
-  useEffect(() => {
-    AsyncStorage.getItem(ONBOARDING_KEY).then((value) => {
-      if (value === 'true') {
-        router.replace('/(tabs)');
-      }
-    });
-  }, []);
-
   const handleGetStarted = async () => {
     await AsyncStorage.setItem(ONBOARDING_KEY, 'true');
     router.replace('/(tabs)');
   };
 
   const handleSkip = () => {
-    flatListRef.current?.scrollToIndex({ index: 3, animated: true });
+    flatListRef.current?.scrollToIndex({ index: PAGES.length - 1, animated: true });
+  };
+
+  const handleNext = () => {
+    if (currentIndex < PAGES.length - 1) {
+      flatListRef.current?.scrollToIndex({ index: currentIndex + 1, animated: true });
+    }
   };
 
   const onViewableItemsChanged = useCallback(
@@ -102,11 +145,26 @@ export default function OnboardingScreen() {
 
   const renderPage = ({ item }: { item: OnboardingPage }) => (
     <View style={[styles.page, { width: SCREEN_WIDTH }]}>
-      <View style={[styles.iconContainer, { backgroundColor: item.iconColor + '18' }]}>
-        <Ionicons name={item.icon} size={80} color={item.iconColor} />
+      <Text style={[styles.tagline, { color: item.iconColor }]}>{item.tagline}</Text>
+
+      <View style={[styles.iconContainer, { backgroundColor: item.iconColor + '15' }]}>
+        <Ionicons name={item.icon} size={56} color={item.iconColor} />
       </View>
+
       <Text style={styles.title}>{item.title}</Text>
       <Text style={styles.description}>{item.description}</Text>
+
+      <View style={styles.bulletsContainer}>
+        {item.bullets.map((bullet, idx) => (
+          <View key={idx} style={styles.bulletRow}>
+            <View style={[styles.bulletIcon, { backgroundColor: item.iconColor + '12' }]}>
+              <Ionicons name={bullet.icon} size={16} color={item.iconColor} />
+            </View>
+            <Text style={styles.bulletText}>{bullet.text}</Text>
+          </View>
+        ))}
+      </View>
+
       {item.showButton && (
         <Pressable style={styles.getStartedBtn} onPress={handleGetStarted}>
           <Text style={styles.getStartedText}>Get Started</Text>
@@ -118,7 +176,7 @@ export default function OnboardingScreen() {
 
   return (
     <View style={[styles.container, { paddingTop: topPad, paddingBottom: bottomPad }]}>
-      {currentIndex < 3 && (
+      {currentIndex < PAGES.length - 1 && (
         <Pressable style={styles.skipBtn} onPress={handleSkip}>
           <Text style={styles.skipText}>Skip</Text>
         </Pressable>
@@ -137,16 +195,24 @@ export default function OnboardingScreen() {
         viewabilityConfig={viewabilityConfig}
       />
 
-      <View style={styles.dotsContainer}>
-        {PAGES.map((_, index) => (
-          <View
-            key={index}
-            style={[
-              styles.dot,
-              currentIndex === index ? styles.dotActive : styles.dotInactive,
-            ]}
-          />
-        ))}
+      <View style={styles.bottomBar}>
+        <View style={styles.dotsContainer}>
+          {PAGES.map((_, index) => (
+            <View
+              key={index}
+              style={[
+                styles.dot,
+                currentIndex === index ? styles.dotActive : styles.dotInactive,
+              ]}
+            />
+          ))}
+        </View>
+
+        {currentIndex < PAGES.length - 1 && (
+          <Pressable style={styles.nextBtn} onPress={handleNext}>
+            <Ionicons name="arrow-forward" size={22} color="#1A1A1A" />
+          </Pressable>
+        )}
       </View>
     </View>
   );
@@ -174,29 +240,62 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 40,
+    paddingHorizontal: 32,
+  },
+  tagline: {
+    fontSize: 13,
+    fontFamily: 'NotoSansKR_700Bold',
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+    marginBottom: 16,
   },
   iconContainer: {
-    width: 140,
-    height: 140,
-    borderRadius: 35,
+    width: 100,
+    height: 100,
+    borderRadius: 28,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 40,
+    marginBottom: 24,
   },
   title: {
-    fontSize: 28,
+    fontSize: 26,
     fontFamily: 'NotoSansKR_700Bold',
     color: Colors.text,
     textAlign: 'center',
-    marginBottom: 16,
+    marginBottom: 12,
+    lineHeight: 34,
   },
   description: {
-    fontSize: 16,
+    fontSize: 14,
     fontFamily: 'NotoSansKR_400Regular',
     color: Colors.textSecondary,
     textAlign: 'center',
-    lineHeight: 24,
+    lineHeight: 22,
+    marginBottom: 24,
+  },
+  bulletsContainer: {
+    width: '100%',
+    gap: 12,
+    paddingHorizontal: 8,
+  },
+  bulletRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  bulletIcon: {
+    width: 32,
+    height: 32,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexShrink: 0,
+  },
+  bulletText: {
+    fontSize: 14,
+    fontFamily: 'NotoSansKR_500Medium',
+    color: Colors.text,
+    flex: 1,
   },
   getStartedBtn: {
     flexDirection: 'row',
@@ -206,24 +305,28 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     paddingHorizontal: 32,
     paddingVertical: 16,
-    marginTop: 40,
+    marginTop: 32,
   },
   getStartedText: {
     fontSize: 18,
     fontFamily: 'NotoSansKR_700Bold',
     color: '#1A1A1A',
   },
-  dotsContainer: {
+  bottomBar: {
     flexDirection: 'row',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    gap: 8,
+    paddingHorizontal: 32,
     paddingBottom: 24,
   },
+  dotsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
   dot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
+    height: 6,
+    borderRadius: 3,
   },
   dotActive: {
     backgroundColor: Colors.primary,
@@ -231,5 +334,14 @@ const styles = StyleSheet.create({
   },
   dotInactive: {
     backgroundColor: Colors.surface,
+    width: 6,
+  },
+  nextBtn: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: Colors.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

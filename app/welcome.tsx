@@ -380,7 +380,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#000',
   },
   facebookBtn: {
-    backgroundColor: '#1877F2',
+    backgroundColor: '#2C2C3A',
   },
   socialBtnText: {
     fontSize: 15,
