@@ -10,6 +10,7 @@ import * as Speech from 'expo-speech';
 import { router } from 'expo-router';
 import Colors from '@/constants/colors';
 import PremiumGate from '@/components/PremiumGate';
+import { ShareDailyCard } from '@/components/ShareCard';
 import { useApp } from '@/lib/AppContext';
 import { TOPIK_LEVELS } from '@/lib/vocabulary';
 import type { Word } from '@/lib/vocabulary';
@@ -338,6 +339,12 @@ export default function WordLearnScreen() {
               </View>
               <Ionicons name="chevron-forward" size={18} color={Colors.textMuted} />
             </Pressable>
+
+            <ShareDailyCard
+              wordsCount={todayWords.length}
+              dayNumber={dayNumber}
+              level={level?.sublevel || 'TOPIK 1'}
+            />
 
             <Pressable
               style={[styles.nextActionCard, { borderColor: Colors.streak + '40' }]}

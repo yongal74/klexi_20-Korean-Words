@@ -7,6 +7,7 @@ import { Ionicons } from '@expo/vector-icons';
 import Colors from '@/constants/colors';
 import { useApp } from '@/lib/AppContext';
 import { TOPIK_LEVELS } from '@/lib/vocabulary';
+import { ShareProgressCard } from '@/components/ShareCard';
 import AdBanner from '@/components/AdBanner';
 
 function StatCard({ icon, label, value, color }: {
@@ -41,7 +42,7 @@ function DayBar({ day, maxScore }: { day: { date: string; wordsLearned: number; 
 
 export default function ProgressScreen() {
   const insets = useSafeAreaInsets();
-  const { progress, settings, isLoading } = useApp();
+  const { progress, settings, isLoading, dayNumber } = useApp();
   const webTopInset = Platform.OS === 'web' ? 67 : 0;
   const topPad = insets.top + webTopInset;
   const webBottomInset = Platform.OS === 'web' ? 34 : 0;
@@ -129,6 +130,15 @@ export default function ProgressScreen() {
             <Text style={styles.emptyText}>No study history yet</Text>
           </View>
         )}
+      </View>
+
+      <View style={[styles.section, { marginTop: 20 }]}>
+        <ShareProgressCard
+          streak={progress.streak}
+          wordsLearned={progress.totalWordsLearned}
+          dayNumber={dayNumber}
+          level={level?.sublevel || 'TOPIK 1'}
+        />
       </View>
 
       <View style={styles.section}>
