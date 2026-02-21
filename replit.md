@@ -44,6 +44,10 @@ Daily Korean is a comprehensive Korean language learning mobile application buil
 - Redesigned word-learning completion screen with "What's Next" guidance (Quiz, Sentences, Pronunciation, Daily Missions)
 - Integrated XP earning into quiz completion (+15 XP/correct, +50 bonus for perfect) and word learning (+10 XP/word, +30 daily completion)
 - All UI text in English; Korean used only for learning content
+- Added AI Korean Conversation Chat (app/ai-chat.tsx) with streaming responses via OpenAI (gpt-5-nano), floating chat button on Home screen, conversation history persisted in AsyncStorage, TOPIK-level-adaptive responses
+- Backend AI chat endpoint (server/ai-chat.ts) with SSE streaming, 300 token limit, Korean tutor persona "Dalli"
+- Improved TTS naturalness: raised rate to 0.9 and pitch to 1.05 across all screens (word-learn, quiz, review)
+- Improved onboarding screen readability: larger fonts, better spacing, card-style bullet items, enhanced contrast
 
 ## User Preferences
 
@@ -54,7 +58,7 @@ Preferred communication style: Simple, everyday language.
 ### Frontend (Expo / React Native)
 
 - **Framework**: Expo SDK 54 with React Native 0.81, using the new architecture (`newArchEnabled: true`)
-- **Routing**: expo-router with file-based routing. Tab layout at `app/(tabs)/` with four tabs: index (Home), quiz, progress, settings. Stack screens: welcome, onboarding, word-learn, theme-lessons, word-network, hangeul, review, custom-words, related-words-screen, sentence-practice, daily-missions, pronunciation-practice, premium, achievements
+- **Routing**: expo-router with file-based routing. Tab layout at `app/(tabs)/` with four tabs: index (Home), quiz, progress, settings. Stack screens: welcome, onboarding, word-learn, theme-lessons, word-network, hangeul, review, custom-words, related-words-screen, sentence-practice, daily-missions, pronunciation-practice, premium, achievements, ai-chat
 - **State Management**: React Context (`lib/AppContext.tsx`) wraps the entire app and manages user settings, daily learning state, progress data, bookmarks, custom words, wrong answers, SRS data, and gamification state. TanStack React Query is also set up for server API calls
 - **Local Storage**: All user data persists via `@react-native-async-storage/async-storage` in `lib/storage.ts`. Keys: settings, progress, daily state, bookmarks, custom words, wrong answers, SRS data, gamification, onboarding completion
 - **Vocabulary Data**: 7,200 words in `lib/vocab/` directory (18 modular files: level1-part1.ts through level6-part3.ts, 400 words each), imported via `lib/vocabulary.ts`
