@@ -1,21 +1,20 @@
-import React, { useRef, useState, useCallback } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   StyleSheet,
   Text,
   View,
-  FlatList,
+  ScrollView,
   Pressable,
   Platform,
-  Dimensions,
-  ViewToken,
+  useWindowDimensions,
+  NativeSyntheticEvent,
+  NativeScrollEvent,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Colors from '@/constants/colors';
-
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 const ONBOARDING_KEY = '@daily_korean_onboarding_complete';
 
@@ -111,8 +110,9 @@ const PAGES: OnboardingPage[] = [
 
 export default function OnboardingScreen() {
   const insets = useSafeAreaInsets();
-  const flatListRef = useRef<FlatList>(null);
+  const scrollRef = useRef<ScrollView>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const { width: screenWidth } = useWindowDimensions();
 
   const topPad = insets.top + (Platform.OS === 'web' ? 67 : 0);
   const bottomPad = Platform.OS === 'web' ? 34 : insets.bottom;
@@ -123,56 +123,22 @@ export default function OnboardingScreen() {
   };
 
   const handleSkip = () => {
-    flatListRef.current?.scrollToIndex({ index: PAGES.length - 1, animated: true });
+    scrollRef.current?.scrollTo({ x: screenWidth * (PAGES.length - 1), animated: true });
   };
 
   const handleNext = () => {
     if (currentIndex < PAGES.length - 1) {
-      flatListRef.current?.scrollToIndex({ index: currentIndex + 1, animated: true });
+      scrollRef.current?.scrollTo({ x: screenWidth * (currentIndex + 1), animated: true });
     }
   };
 
-  const onViewableItemsChanged = useCallback(
-    ({ viewableItems }: { viewableItems: ViewToken[] }) => {
-      if (viewableItems.length > 0 && viewableItems[0].index != null) {
-        setCurrentIndex(viewableItems[0].index);
-      }
-    },
-    []
-  );
-
-  const viewabilityConfig = useRef({ viewAreaCoveragePercentThreshold: 50 }).current;
-
-  const renderPage = ({ item }: { item: OnboardingPage }) => (
-    <View style={[styles.page, { width: SCREEN_WIDTH }]}>
-      <Text style={[styles.tagline, { color: item.iconColor }]}>{item.tagline}</Text>
-
-      <View style={[styles.iconContainer, { backgroundColor: item.iconColor + '15' }]}>
-        <Ionicons name={item.icon} size={56} color={item.iconColor} />
-      </View>
-
-      <Text style={styles.title}>{item.title}</Text>
-      <Text style={styles.description}>{item.description}</Text>
-
-      <View style={styles.bulletsContainer}>
-        {item.bullets.map((bullet, idx) => (
-          <View key={idx} style={styles.bulletRow}>
-            <View style={[styles.bulletIcon, { backgroundColor: item.iconColor + '12' }]}>
-              <Ionicons name={bullet.icon} size={16} color={item.iconColor} />
-            </View>
-            <Text style={styles.bulletText}>{bullet.text}</Text>
-          </View>
-        ))}
-      </View>
-
-      {item.showButton && (
-        <Pressable style={styles.getStartedBtn} onPress={handleGetStarted}>
-          <Text style={styles.getStartedText}>Get Started</Text>
-          <Ionicons name="arrow-forward" size={20} color="#1A1A1A" />
-        </Pressable>
-      )}
-    </View>
-  );
+  const handleScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const offsetX = e.nativeEvent.contentOffset.x;
+    const index = Math.round(offsetX / screenWidth);
+    if (index !== currentIndex && index >= 0 && index < PAGES.length) {
+      setCurrentIndex(index);
+    }
+  };
 
   return (
     <View style={[styles.container, { paddingTop: topPad, paddingBottom: bottomPad }]}>
@@ -182,18 +148,47 @@ export default function OnboardingScreen() {
         </Pressable>
       )}
 
-      <FlatList
-        ref={flatListRef}
-        data={PAGES}
-        renderItem={renderPage}
-        keyExtractor={(item) => item.id}
+      <ScrollView
+        ref={scrollRef}
         horizontal
         pagingEnabled
         showsHorizontalScrollIndicator={false}
         bounces={false}
-        onViewableItemsChanged={onViewableItemsChanged}
-        viewabilityConfig={viewabilityConfig}
-      />
+        onScroll={handleScroll}
+        scrollEventThrottle={16}
+        style={styles.scrollView}
+      >
+        {PAGES.map((item) => (
+          <View key={item.id} style={[styles.page, { width: screenWidth }]}>
+            <Text style={[styles.tagline, { color: item.iconColor }]}>{item.tagline}</Text>
+
+            <View style={[styles.iconContainer, { backgroundColor: item.iconColor + '15' }]}>
+              <Ionicons name={item.icon} size={56} color={item.iconColor} />
+            </View>
+
+            <Text style={styles.title}>{item.title}</Text>
+            <Text style={styles.description}>{item.description}</Text>
+
+            <View style={styles.bulletsContainer}>
+              {item.bullets.map((bullet, idx) => (
+                <View key={idx} style={styles.bulletRow}>
+                  <View style={[styles.bulletIcon, { backgroundColor: item.iconColor + '12' }]}>
+                    <Ionicons name={bullet.icon} size={16} color={item.iconColor} />
+                  </View>
+                  <Text style={styles.bulletText}>{bullet.text}</Text>
+                </View>
+              ))}
+            </View>
+
+            {item.showButton && (
+              <Pressable style={styles.getStartedBtn} onPress={handleGetStarted}>
+                <Text style={styles.getStartedText}>Get Started</Text>
+                <Ionicons name="arrow-forward" size={20} color="#1A1A1A" />
+              </Pressable>
+            )}
+          </View>
+        ))}
+      </ScrollView>
 
       <View style={styles.bottomBar}>
         <View style={styles.dotsContainer}>
@@ -235,6 +230,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: 'NotoSansKR_500Medium',
     color: Colors.textSecondary,
+  },
+  scrollView: {
+    flex: 1,
   },
   page: {
     flex: 1,
