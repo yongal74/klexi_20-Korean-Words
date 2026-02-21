@@ -50,10 +50,14 @@ export function setupPolarRoutes(app: Express) {
     try {
       const polar = getPolarClient();
       const result = await polar.products.list({ limit: 100 });
-      return res.json({ products: result.result?.items || [] });
+      const items: any[] = [];
+      for await (const page of result) {
+        items.push(...(page.result?.items || []));
+      }
+      return res.json({ products: items });
     } catch (error: any) {
-      console.error("Polar products error:", error?.message || error);
-      return res.status(500).json({ error: "Failed to fetch products" });
+      console.error("Polar products error:", JSON.stringify({ message: error?.message, statusCode: error?.statusCode, body: error?.body }));
+      return res.status(500).json({ error: "Failed to fetch products", detail: error?.message });
     }
   });
 

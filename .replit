@@ -17,6 +17,10 @@ externalPort = 5000
 localPort = 8081
 externalPort = 80
 
+[[ports]]
+localPort = 8082
+externalPort = 3001
+
 [env]
 PORT = "5000"
 
@@ -68,3 +72,11 @@ task = "shell.exec"
 args = "npm run expo:dev"
 waitForPort = 8081
 ensurePreviewReachable = "/status"
+
+[userenv]
+
+[userenv.shared]
+POLAR_ENV = "production"
+EXPO_PUBLIC_POLAR_MONTHLY_ID = "97e1d0d7-f3f5-489a-b75a-c24add5f96a8"
+EXPO_PUBLIC_POLAR_YEARLY_ID = "df746d7f-9eeb-40a9-a4d4-aec6a160c62e"
+EXPO_PUBLIC_POLAR_LIFETIME_ID = "34028926-3dc2-42d2-b307-0c3c29727cf9"
