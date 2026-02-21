@@ -1,8 +1,8 @@
-# Daily Korean
+# Kloop Korean
 
 ## Overview
 
-Daily Korean is a comprehensive Korean language learning mobile application built with Expo (React Native). It provides daily vocabulary flashcards organized by 6 TOPIK proficiency levels (7,200 total words: 1,200 words per level, 20 words/day × 60 days per level = 360 days total). Features include interactive quizzes with wrong answer tracking, Hangeul alphabet learning, K-Culture themed lessons, Word Network visualization, related words with K-Drama expressions, custom vocabulary, text-to-speech with slow/repeat playback and syllable breakdown, grammar pattern detection on example sentences, sentence practice (fill-in-blank & word ordering), daily missions system, progress tracking, and bookmarking. The app uses a tab-based navigation with four tabs: Home (learning hub), Quiz, Progress, and Settings, plus stack screens for Welcome/Auth, Word Learning, Theme Lessons, Word Network, Hangeul, Review, Custom Words, Related Words, Sentence Practice, and Daily Missions.
+Kloop Korean (tagline: "Daily Korean in 20 Words") is a comprehensive Korean language learning mobile application built with Expo (React Native). Kloop Korean helps you build real Korean with just 20 smart words a day. It provides daily vocabulary flashcards organized by 6 TOPIK proficiency levels (7,200 total words: 1,200 words per level, 20 words/day × 60 days per level = 360 days total). Features include interactive quizzes with wrong answer tracking, Hangeul alphabet learning, K-Culture themed lessons, Word Network visualization, related words with K-Drama expressions, custom vocabulary, text-to-speech with slow/repeat playback and syllable breakdown, grammar pattern detection on example sentences, sentence practice (fill-in-blank & word ordering), daily missions system, progress tracking, and bookmarking. The app uses a tab-based navigation with four tabs: Home (learning hub), Quiz, Progress, and Settings, plus stack screens for Welcome/Auth, Word Learning, Theme Lessons, Word Network, Hangeul, Review, Custom Words, Related Words, Sentence Practice, and Daily Missions.
 
 ## Recent Changes (Feb 2026)
 
