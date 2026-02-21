@@ -8,7 +8,7 @@ import { router } from 'expo-router';
 import * as Speech from 'expo-speech';
 import * as Haptics from 'expo-haptics';
 import Colors from '@/constants/colors';
-import { HANGEUL_SECTIONS, SYLLABLE_EXAMPLES, HangeulChar } from '@/lib/hangeul';
+import { HANGEUL_SECTIONS, SYLLABLE_EXAMPLES, HANGEUL_PRINCIPLES, HangeulChar } from '@/lib/hangeul';
 
 function CharCard({ char, isExpanded, onToggle }: { char: HangeulChar; isExpanded: boolean; onToggle: () => void }) {
   const speak = useCallback(() => {
@@ -55,6 +55,8 @@ export default function HangeulScreen() {
   const [selectedSection, setSelectedSection] = useState(0);
   const [expandedChar, setExpandedChar] = useState<string | null>(null);
   const [showSyllables, setShowSyllables] = useState(false);
+  const [showPrinciples, setShowPrinciples] = useState(false);
+  const [expandedPrinciple, setExpandedPrinciple] = useState<number | null>(null);
 
   const section = HANGEUL_SECTIONS[selectedSection];
 
@@ -76,20 +78,28 @@ export default function HangeulScreen() {
       </View>
 
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.tabs} contentContainerStyle={styles.tabsContent}>
+        <Pressable
+          style={[styles.tab, showPrinciples && !showSyllables && styles.tabActivePrinciple]}
+          onPress={() => { setShowPrinciples(true); setShowSyllables(false); }}
+        >
+          <Text style={[styles.tabText, showPrinciples && !showSyllables && styles.tabTextActive]}>
+            원리 Principles
+          </Text>
+        </Pressable>
         {HANGEUL_SECTIONS.map((s, i) => (
           <Pressable
             key={i}
-            style={[styles.tab, selectedSection === i && styles.tabActive]}
-            onPress={() => { setSelectedSection(i); setExpandedChar(null); }}
+            style={[styles.tab, !showPrinciples && !showSyllables && selectedSection === i && styles.tabActive]}
+            onPress={() => { setSelectedSection(i); setExpandedChar(null); setShowPrinciples(false); setShowSyllables(false); }}
           >
-            <Text style={[styles.tabText, selectedSection === i && styles.tabTextActive]}>
+            <Text style={[styles.tabText, !showPrinciples && !showSyllables && selectedSection === i && styles.tabTextActive]}>
               {s.titleKorean}
             </Text>
           </Pressable>
         ))}
         <Pressable
           style={[styles.tab, showSyllables && styles.tabActive]}
-          onPress={() => setShowSyllables(!showSyllables)}
+          onPress={() => { setShowSyllables(true); setShowPrinciples(false); }}
         >
           <Text style={[styles.tabText, showSyllables && styles.tabTextActive]}>
             음절 Syllables
@@ -97,7 +107,44 @@ export default function HangeulScreen() {
         </Pressable>
       </ScrollView>
 
-      {showSyllables ? (
+      {showPrinciples && !showSyllables ? (
+        <ScrollView style={styles.content} contentContainerStyle={{ paddingBottom: 100 }} showsVerticalScrollIndicator={false}>
+          <Text style={styles.principlesIntro}>How Hangeul Works — The Science Behind Korean Letters</Text>
+          <Text style={styles.sectionDesc}>한글은 세계에서 가장 과학적인 문자입니다</Text>
+          {HANGEUL_PRINCIPLES.map((principle, i) => (
+            <Pressable
+              key={i}
+              style={[styles.principleCard, expandedPrinciple === i && styles.principleCardActive]}
+              onPress={() => setExpandedPrinciple(expandedPrinciple === i ? null : i)}
+            >
+              <View style={styles.principleHeader}>
+                <View style={[styles.principleIconBg, expandedPrinciple === i && { backgroundColor: Colors.secondary + '25' }]}>
+                  <Ionicons name={principle.icon as any} size={22} color={expandedPrinciple === i ? Colors.secondary : Colors.textSecondary} />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.principleTitle}>{principle.title}</Text>
+                  <Text style={styles.principleTitleKr}>{principle.titleKr}</Text>
+                </View>
+                <Ionicons name={expandedPrinciple === i ? 'chevron-up' : 'chevron-down'} size={18} color={Colors.textMuted} />
+              </View>
+              {expandedPrinciple === i && (
+                <View style={styles.principleBody}>
+                  <Text style={styles.principleContent}>{principle.content}</Text>
+                  <View style={styles.principleDetails}>
+                    {principle.details.map((d, j) => (
+                      <View key={j} style={styles.principleDetail}>
+                        <Text style={styles.principleDetailLabel}>{d.label}</Text>
+                        <Text style={styles.principleDetailDesc}>{d.description}</Text>
+                        {d.visual && <Text style={styles.principleDetailVisual}>{d.visual}</Text>}
+                      </View>
+                    ))}
+                  </View>
+                </View>
+              )}
+            </Pressable>
+          ))}
+        </ScrollView>
+      ) : showSyllables ? (
         <ScrollView style={styles.content} contentContainerStyle={{ paddingBottom: 100 }} showsVerticalScrollIndicator={false}>
           <Text style={styles.sectionDesc}>Korean syllables combine consonant + vowel (+ optional final consonant)</Text>
           <View style={styles.syllableFormula}>
@@ -192,4 +239,19 @@ const styles = StyleSheet.create({
   syllablePlus: { fontSize: 12, color: Colors.textMuted },
   syllableRoman: { fontSize: 13, fontFamily: 'NotoSansKR_500Medium', color: Colors.text },
   syllableMeaning: { fontSize: 11, fontFamily: 'NotoSansKR_400Regular', color: Colors.textMuted },
+  tabActivePrinciple: { backgroundColor: Colors.secondary },
+  principlesIntro: { fontSize: 18, fontFamily: 'NotoSansKR_700Bold', color: Colors.text, marginTop: 8, marginBottom: 4, lineHeight: 26 },
+  principleCard: { backgroundColor: Colors.card, borderRadius: 16, padding: 16, marginBottom: 10, borderWidth: 1, borderColor: Colors.border },
+  principleCardActive: { borderColor: Colors.secondary + '50' },
+  principleHeader: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  principleIconBg: { width: 42, height: 42, borderRadius: 14, backgroundColor: Colors.surface, alignItems: 'center', justifyContent: 'center' },
+  principleTitle: { fontSize: 15, fontFamily: 'NotoSansKR_700Bold', color: Colors.text },
+  principleTitleKr: { fontSize: 12, fontFamily: 'NotoSansKR_400Regular', color: Colors.textSecondary, marginTop: 1 },
+  principleBody: { marginTop: 14, paddingTop: 14, borderTopWidth: 1, borderTopColor: Colors.border, gap: 12 },
+  principleContent: { fontSize: 14, fontFamily: 'NotoSansKR_400Regular', color: Colors.textSecondary, lineHeight: 22 },
+  principleDetails: { gap: 8 },
+  principleDetail: { backgroundColor: Colors.surface, borderRadius: 12, padding: 12, gap: 4 },
+  principleDetailLabel: { fontSize: 14, fontFamily: 'NotoSansKR_700Bold', color: Colors.primary },
+  principleDetailDesc: { fontSize: 13, fontFamily: 'NotoSansKR_400Regular', color: Colors.text, lineHeight: 20 },
+  principleDetailVisual: { fontSize: 12, fontFamily: 'NotoSansKR_500Medium', color: Colors.accent, marginTop: 2 },
 });

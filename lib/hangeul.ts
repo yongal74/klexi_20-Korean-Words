@@ -86,6 +86,86 @@ export const HANGEUL_SECTIONS: HangeulSection[] = [
   },
 ];
 
+export interface HangeulPrinciple {
+  title: string;
+  titleKr: string;
+  icon: string;
+  content: string;
+  details: { label: string; description: string; visual?: string }[];
+}
+
+export const HANGEUL_PRINCIPLES: HangeulPrinciple[] = [
+  {
+    title: 'Origin & History',
+    titleKr: '한글의 탄생',
+    icon: 'book-outline',
+    content: 'Hangeul was created in 1443 by King Sejong the Great (세종대왕) and his scholars. Before Hangeul, Koreans used Chinese characters (한자), which were extremely difficult for common people to learn. King Sejong wanted everyone — farmers, merchants, women — to be able to read and write. He published "Hunminjeongeum" (훈민정음, "The Correct Sounds for the Instruction of the People") in 1446.',
+    details: [
+      { label: 'Created', description: '1443 by King Sejong the Great (세종대왕)' },
+      { label: 'Published', description: '1446 as Hunminjeongeum (훈민정음)' },
+      { label: 'Purpose', description: 'So all people could easily learn to read and write' },
+      { label: 'Hangeul Day', description: 'October 9th — a national holiday in Korea (한글날)' },
+    ],
+  },
+  {
+    title: 'Consonants = Mouth Shapes',
+    titleKr: '자음의 원리',
+    icon: 'body-outline',
+    content: 'Korean consonants are scientifically designed based on the shape of the mouth, tongue, and throat when making each sound. There are 5 basic shapes, and other consonants are formed by adding strokes to show stronger sounds.',
+    details: [
+      { label: 'ㄱ (g/k)', description: 'Shape of the tongue touching the back of the mouth (velar)', visual: 'Tongue root → ㄱ' },
+      { label: 'ㄴ (n)', description: 'Shape of the tongue touching the front roof of the mouth (alveolar)', visual: 'Tongue tip → ㄴ' },
+      { label: 'ㅁ (m)', description: 'Shape of closed lips (bilabial)', visual: 'Closed mouth → ㅁ' },
+      { label: 'ㅅ (s)', description: 'Shape of a tooth (dental/fricative)', visual: 'Tooth shape → ㅅ' },
+      { label: 'ㅇ (ng)', description: 'Shape of the open throat (glottal)', visual: 'Open throat → ㅇ' },
+      { label: 'Adding strokes', description: 'ㄱ→ㅋ (add stroke = more air), ㄴ→ㄷ→ㅌ, ㅁ→ㅂ→ㅍ, ㅅ→ㅈ→ㅊ, ㅇ→ㅎ' },
+    ],
+  },
+  {
+    title: 'Vowels = Heaven, Earth, Human',
+    titleKr: '모음의 원리',
+    icon: 'planet-outline',
+    content: 'Korean vowels are based on three philosophical elements from East Asian cosmology: Heaven (하늘, a dot ·), Earth (땅, a horizontal line ㅡ), and Human (사람, a vertical line ㅣ). All vowels are combinations of these three elements.',
+    details: [
+      { label: '· (Heaven)', description: 'Originally a round dot representing the sky. In modern Hangeul, it became short strokes.' },
+      { label: 'ㅡ (Earth)', description: 'A flat horizontal line representing the ground.' },
+      { label: 'ㅣ (Human)', description: 'A standing vertical line representing a person.' },
+      { label: 'ㅏ (a)', description: 'ㅣ + · = Human with Heaven to the right (bright/yang vowel)' },
+      { label: 'ㅓ (eo)', description: 'ㅣ + · = Human with Heaven to the left (dark/yin vowel)' },
+      { label: 'ㅗ (o)', description: 'ㅡ + · = Earth with Heaven above (bright/yang vowel)' },
+      { label: 'ㅜ (u)', description: 'ㅡ + · = Earth with Heaven below (dark/yin vowel)' },
+      { label: 'Yin & Yang', description: 'Bright vowels (양성): ㅏ, ㅗ, ㅑ, ㅛ — Dark vowels (음성): ㅓ, ㅜ, ㅕ, ㅠ — Neutral: ㅡ, ㅣ' },
+    ],
+  },
+  {
+    title: 'Syllable Block System',
+    titleKr: '음절 구조',
+    icon: 'grid-outline',
+    content: 'Korean letters are not written in a line like English. Instead, they are grouped into syllable blocks. Each block represents one syllable and contains 2-4 letters arranged in a square-like shape.',
+    details: [
+      { label: 'CV Pattern', description: 'Consonant + Vowel: 가 (ㄱ+ㅏ), 나 (ㄴ+ㅏ), 무 (ㅁ+ㅜ)' },
+      { label: 'CVC Pattern', description: 'Consonant + Vowel + Final consonant: 한 (ㅎ+ㅏ+ㄴ), 글 (ㄱ+ㅡ+ㄹ)' },
+      { label: 'Left-Right', description: 'When vowel has a vertical stroke (ㅏ,ㅓ,ㅣ): consonant goes LEFT, vowel goes RIGHT → 가, 너' },
+      { label: 'Top-Bottom', description: 'When vowel has a horizontal stroke (ㅗ,ㅜ,ㅡ): consonant goes on TOP, vowel goes BELOW → 무, 고' },
+      { label: 'Final consonant (받침)', description: 'The final consonant sits at the BOTTOM of the block: 밥 = ㅂ(top) + ㅏ(right) + ㅂ(bottom)' },
+    ],
+  },
+  {
+    title: 'Why Hangeul is Special',
+    titleKr: '한글의 우수성',
+    icon: 'star-outline',
+    content: 'Hangeul is considered one of the most scientific and logical writing systems ever created. UNESCO praised it, and linguists around the world admire its elegant design.',
+    details: [
+      { label: 'Learnable in hours', description: 'The basic letters can be memorized in just a few hours — it was designed for simplicity.' },
+      { label: 'Perfect for Korean sounds', description: 'Every Korean sound has exactly one letter — no ambiguity like English spelling.' },
+      { label: 'Scientific design', description: 'Letters are based on actual speech organ positions — not arbitrary symbols.' },
+      { label: 'UNESCO Memory of the World', description: 'Hunminjeongeum was registered as a UNESCO Memory of the World Heritage in 1997.' },
+      { label: 'Featural alphabet', description: 'Hangeul is a "featural" alphabet — related sounds have related shapes (ㄱ→ㅋ→ㄲ).' },
+      { label: 'Digital age friendly', description: 'The systematic structure makes Korean very efficient for typing on keyboards and phones.' },
+    ],
+  },
+];
+
 export interface SyllableExample {
   syllable: string;
   consonant: string;
