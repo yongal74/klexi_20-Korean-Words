@@ -7,6 +7,7 @@ import { Ionicons } from '@expo/vector-icons';
 import Colors from '@/constants/colors';
 import { useApp } from '@/lib/AppContext';
 import { TOPIK_LEVELS } from '@/lib/vocabulary';
+import AdBanner from '@/components/AdBanner';
 
 function StatCard({ icon, label, value, color }: {
   icon: keyof typeof Ionicons.glyphMap;
@@ -155,6 +156,8 @@ export default function ProgressScreen() {
           );
         })}
       </View>
+
+      <AdBanner size="large" />
     </ScrollView>
   );
 }

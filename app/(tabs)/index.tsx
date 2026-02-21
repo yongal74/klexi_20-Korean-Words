@@ -9,6 +9,7 @@ import { router } from 'expo-router';
 import Colors from '@/constants/colors';
 import { useApp } from '@/lib/AppContext';
 import { TOPIK_LEVELS } from '@/lib/vocabulary';
+import AdBanner from '@/components/AdBanner';
 
 const LEARNING_THEMES = [
   {
@@ -142,6 +143,8 @@ export default function HomeScreen() {
           </Pressable>
         ))}
       </View>
+
+      <AdBanner size="banner" />
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Quick Access</Text>

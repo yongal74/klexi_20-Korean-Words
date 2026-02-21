@@ -9,6 +9,7 @@ import { router } from 'expo-router';
 import Colors from '@/constants/colors';
 import { useApp } from '@/lib/AppContext';
 import { TOPIK_LEVELS } from '@/lib/vocabulary';
+import AdBanner from '@/components/AdBanner';
 
 export default function SettingsScreen() {
   const insets = useSafeAreaInsets();
@@ -280,6 +281,8 @@ export default function SettingsScreen() {
           </Text>
         </View>
       </View>
+
+      <AdBanner size="banner" />
     </ScrollView>
   );
 }

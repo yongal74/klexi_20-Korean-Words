@@ -11,6 +11,7 @@ import { router } from 'expo-router';
 import Colors from '@/constants/colors';
 import { useApp } from '@/lib/AppContext';
 import { generateQuizOptions, getAllWords } from '@/lib/vocabulary';
+import AdBanner from '@/components/AdBanner';
 
 type QuizState = 'ready' | 'active' | 'result';
 
@@ -213,6 +214,8 @@ export default function QuizScreen() {
           <Ionicons name="refresh" size={20} color={Colors.primary} />
           <Text style={styles.retryButtonText}>Try Again</Text>
         </Pressable>
+
+        <AdBanner size="large" style={{ marginTop: 16 }} />
       </ScrollView>
     );
   }
