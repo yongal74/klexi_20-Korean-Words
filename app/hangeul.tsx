@@ -109,8 +109,9 @@ export default function HangeulScreen() {
 
       {showPrinciples && !showSyllables ? (
         <ScrollView style={styles.content} contentContainerStyle={{ paddingBottom: 100 }} showsVerticalScrollIndicator={false}>
-          <Text style={styles.principlesIntro}>How Hangeul Works — The Science Behind Korean Letters</Text>
-          <Text style={styles.sectionDesc}>한글은 세계에서 가장 과학적인 문자입니다</Text>
+          <Text style={styles.principlesIntro}>How Hangeul Works</Text>
+          <Text style={styles.principlesSubIntro}>The Science Behind Korean Letters</Text>
+          <Text style={styles.principlesKr}>한글은 세계에서 가장 과학적인 문자입니다</Text>
           {HANGEUL_PRINCIPLES.map((principle, i) => (
             <Pressable
               key={i}
@@ -240,18 +241,20 @@ const styles = StyleSheet.create({
   syllableRoman: { fontSize: 13, fontFamily: 'NotoSansKR_500Medium', color: Colors.text },
   syllableMeaning: { fontSize: 11, fontFamily: 'NotoSansKR_400Regular', color: Colors.textMuted },
   tabActivePrinciple: { backgroundColor: Colors.secondary },
-  principlesIntro: { fontSize: 18, fontFamily: 'NotoSansKR_700Bold', color: Colors.text, marginTop: 8, marginBottom: 4, lineHeight: 26 },
-  principleCard: { backgroundColor: Colors.card, borderRadius: 16, padding: 16, marginBottom: 10, borderWidth: 1, borderColor: Colors.border },
+  principlesIntro: { fontSize: 24, fontFamily: 'NotoSansKR_700Bold', color: Colors.text, marginTop: 12, marginBottom: 4, lineHeight: 32 },
+  principlesSubIntro: { fontSize: 16, fontFamily: 'NotoSansKR_500Medium', color: Colors.secondary, marginBottom: 4 },
+  principlesKr: { fontSize: 15, fontFamily: 'NotoSansKR_500Medium', color: Colors.textSecondary, marginBottom: 16, lineHeight: 22 },
+  principleCard: { backgroundColor: Colors.card, borderRadius: 16, padding: 18, marginBottom: 12, borderWidth: 1, borderColor: Colors.border },
   principleCardActive: { borderColor: Colors.secondary + '50' },
   principleHeader: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  principleIconBg: { width: 42, height: 42, borderRadius: 14, backgroundColor: Colors.surface, alignItems: 'center', justifyContent: 'center' },
-  principleTitle: { fontSize: 15, fontFamily: 'NotoSansKR_700Bold', color: Colors.text },
-  principleTitleKr: { fontSize: 12, fontFamily: 'NotoSansKR_400Regular', color: Colors.textSecondary, marginTop: 1 },
-  principleBody: { marginTop: 14, paddingTop: 14, borderTopWidth: 1, borderTopColor: Colors.border, gap: 12 },
-  principleContent: { fontSize: 14, fontFamily: 'NotoSansKR_400Regular', color: Colors.textSecondary, lineHeight: 22 },
-  principleDetails: { gap: 8 },
-  principleDetail: { backgroundColor: Colors.surface, borderRadius: 12, padding: 12, gap: 4 },
-  principleDetailLabel: { fontSize: 14, fontFamily: 'NotoSansKR_700Bold', color: Colors.primary },
-  principleDetailDesc: { fontSize: 13, fontFamily: 'NotoSansKR_400Regular', color: Colors.text, lineHeight: 20 },
-  principleDetailVisual: { fontSize: 12, fontFamily: 'NotoSansKR_500Medium', color: Colors.accent, marginTop: 2 },
+  principleIconBg: { width: 46, height: 46, borderRadius: 14, backgroundColor: Colors.surface, alignItems: 'center', justifyContent: 'center' },
+  principleTitle: { fontSize: 17, fontFamily: 'NotoSansKR_700Bold', color: Colors.text },
+  principleTitleKr: { fontSize: 13, fontFamily: 'NotoSansKR_500Medium', color: Colors.textSecondary, marginTop: 2 },
+  principleBody: { marginTop: 16, paddingTop: 16, borderTopWidth: 1, borderTopColor: Colors.border, gap: 14 },
+  principleContent: { fontSize: 16, fontFamily: 'NotoSansKR_500Medium', color: Colors.text, lineHeight: 26 },
+  principleDetails: { gap: 10 },
+  principleDetail: { backgroundColor: Colors.surface, borderRadius: 12, padding: 14, gap: 6 },
+  principleDetailLabel: { fontSize: 16, fontFamily: 'NotoSansKR_700Bold', color: Colors.primary },
+  principleDetailDesc: { fontSize: 15, fontFamily: 'NotoSansKR_400Regular', color: Colors.text, lineHeight: 24 },
+  principleDetailVisual: { fontSize: 18, fontFamily: 'NotoSansKR_700Bold', color: Colors.accent, marginTop: 4 },
 });

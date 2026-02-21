@@ -16,12 +16,13 @@ export default function WelcomeScreen() {
   const webTopInset = Platform.OS === 'web' ? 67 : 0;
   const topPad = insets.top + webTopInset;
 
-  const [mode, setMode] = useState<'landing' | 'signup' | 'login'>('landing');
+  const [mode, setMode] = useState<'landing' | 'signup' | 'login' | 'nickname'>('landing');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const [pendingProvider, setPendingProvider] = useState<'google' | 'apple' | 'facebook' | 'guest' | null>(null);
 
   const handleEmailAuth = async () => {
     if (!name.trim() && mode === 'signup') {
@@ -49,32 +50,90 @@ export default function WelcomeScreen() {
     router.replace('/(tabs)');
   };
 
-  const handleSocialLogin = async (provider: 'google' | 'apple' | 'facebook') => {
+  const handleSocialLogin = (provider: 'google' | 'apple' | 'facebook') => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setPendingProvider(provider);
+    setName('');
+    setError('');
+    setMode('nickname');
+  };
+
+  const handleSkip = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setPendingProvider('guest');
+    setName('');
+    setError('');
+    setMode('nickname');
+  };
+
+  const handleNicknameSubmit = async () => {
+    if (!name.trim()) {
+      setError('Please enter your name or nickname');
+      return;
+    }
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    const providerNames = { google: 'Google', apple: 'Apple', facebook: 'Facebook' };
     const profile: UserProfile = {
-      id: `${provider}-${Date.now()}`,
-      name: `${providerNames[provider]} User`,
-      email: `user@${provider}.com`,
-      provider,
+      id: pendingProvider === 'guest' ? `guest-${Date.now()}` : `${pendingProvider}-${Date.now()}`,
+      name: name.trim(),
+      email: pendingProvider === 'guest' ? '' : `user@${pendingProvider}.com`,
+      provider: pendingProvider === 'guest' ? 'email' : pendingProvider!,
       createdAt: new Date().toISOString(),
     };
     await signIn(profile);
     router.replace('/(tabs)');
   };
 
-  const handleSkip = async () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    const profile: UserProfile = {
-      id: `guest-${Date.now()}`,
-      name: 'Learner',
-      email: '',
-      provider: 'email',
-      createdAt: new Date().toISOString(),
-    };
-    await signIn(profile);
-    router.replace('/(tabs)');
-  };
+  if (mode === 'nickname') {
+    return (
+      <KeyboardAvoidingView
+        style={[styles.container, { paddingTop: topPad }]}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={90}
+      >
+        <ScrollView contentContainerStyle={styles.nicknameScroll} keyboardShouldPersistTaps="handled">
+          <Pressable style={styles.backRow} onPress={() => { setMode('landing'); setPendingProvider(null); }}>
+            <Ionicons name="arrow-back" size={24} color={Colors.text} />
+          </Pressable>
+
+          <View style={styles.nicknameHeader}>
+            <View style={styles.nicknameIconBg}>
+              <Ionicons name="person" size={32} color={Colors.primary} />
+            </View>
+            <Text style={styles.nicknameTitle}>What should we call you?</Text>
+            <Text style={styles.nicknameSubtitle}>Enter your name or nickname to personalize your learning experience</Text>
+          </View>
+
+          {error ? (
+            <View style={styles.errorBox}>
+              <Ionicons name="alert-circle" size={16} color={Colors.error} />
+              <Text style={styles.errorText}>{error}</Text>
+            </View>
+          ) : null}
+
+          <View style={styles.inputGroup}>
+            <Text style={styles.inputLabel}>Name / Nickname</Text>
+            <View style={styles.inputWrapper}>
+              <Ionicons name="happy-outline" size={18} color={Colors.textMuted} />
+              <TextInput
+                style={styles.input}
+                placeholder="e.g. 민수, Alex, 학생..."
+                placeholderTextColor={Colors.textMuted}
+                value={name}
+                onChangeText={(t) => { setName(t); setError(''); }}
+                autoCapitalize="words"
+                autoFocus
+              />
+            </View>
+          </View>
+
+          <Pressable style={styles.submitBtn} onPress={handleNicknameSubmit}>
+            <Text style={styles.submitBtnText}>Start Learning</Text>
+            <Ionicons name="arrow-forward" size={18} color="#1A1A1A" />
+          </Pressable>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    );
+  }
 
   if (mode === 'landing') {
     return (
@@ -103,17 +162,19 @@ export default function WelcomeScreen() {
         </View>
 
         <View style={styles.authButtons}>
-          <Pressable style={styles.socialBtn} onPress={() => handleSocialLogin('google')}>
-            <Ionicons name="logo-google" size={20} color="#fff" />
-            <Text style={styles.socialBtnText}>Continue with Google</Text>
+          <Pressable style={[styles.socialBtn, styles.googleBtn]} onPress={() => handleSocialLogin('google')}>
+            <View style={styles.googleIconWrap}>
+              <Ionicons name="logo-google" size={18} color="#4285F4" />
+            </View>
+            <Text style={[styles.socialBtnText, { color: '#333' }]}>Continue with Google</Text>
           </Pressable>
 
-          <Pressable style={[styles.socialBtn, { backgroundColor: '#000' }]} onPress={() => handleSocialLogin('apple')}>
-            <Ionicons name="logo-apple" size={20} color="#fff" />
+          <Pressable style={[styles.socialBtn, styles.appleBtn]} onPress={() => handleSocialLogin('apple')}>
+            <Ionicons name="logo-apple" size={22} color="#fff" />
             <Text style={styles.socialBtnText}>Continue with Apple</Text>
           </Pressable>
 
-          <Pressable style={[styles.socialBtn, { backgroundColor: '#1877F2' }]} onPress={() => handleSocialLogin('facebook')}>
+          <Pressable style={[styles.socialBtn, styles.facebookBtn]} onPress={() => handleSocialLogin('facebook')}>
             <Ionicons name="logo-facebook" size={20} color="#fff" />
             <Text style={styles.socialBtnText}>Continue with Facebook</Text>
           </Pressable>
@@ -300,9 +361,26 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 10,
-    backgroundColor: '#4285F4',
     borderRadius: 14,
     paddingVertical: 14,
+  },
+  googleBtn: {
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#ddd',
+  },
+  googleIconWrap: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  appleBtn: {
+    backgroundColor: '#000',
+  },
+  facebookBtn: {
+    backgroundColor: '#1877F2',
   },
   socialBtnText: {
     fontSize: 15,
@@ -423,16 +501,51 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
   },
   submitBtn: {
+    flexDirection: 'row',
     backgroundColor: Colors.primary,
     borderRadius: 14,
     paddingVertical: 16,
     alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
     marginTop: 8,
   },
   submitBtnText: {
     fontSize: 16,
     fontFamily: 'NotoSansKR_700Bold',
-    color: '#fff',
+    color: '#1A1A1A',
+  },
+  nicknameScroll: {
+    paddingHorizontal: 24,
+    paddingBottom: 60,
+  },
+  nicknameHeader: {
+    alignItems: 'center',
+    paddingTop: 40,
+    paddingBottom: 32,
+  },
+  nicknameIconBg: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: Colors.primary + '15',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 20,
+  },
+  nicknameTitle: {
+    fontSize: 24,
+    fontFamily: 'NotoSansKR_700Bold',
+    color: Colors.text,
+    textAlign: 'center',
+  },
+  nicknameSubtitle: {
+    fontSize: 14,
+    fontFamily: 'NotoSansKR_400Regular',
+    color: Colors.textSecondary,
+    textAlign: 'center',
+    marginTop: 8,
+    lineHeight: 20,
   },
   switchRow: {
     flexDirection: 'row',

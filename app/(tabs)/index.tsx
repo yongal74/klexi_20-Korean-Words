@@ -64,7 +64,8 @@ export default function HomeScreen() {
   }, [isLoading, isAuthenticated]);
 
   const level = TOPIK_LEVELS.find(l => l.id === settings.selectedLevel);
-  const learnedCount = dailyState?.learnedWordIds?.length || 0;
+  const rawLearnedCount = dailyState?.learnedWordIds?.length || 0;
+  const learnedCount = Math.min(rawLearnedCount, todayWords.length);
   const progressPercent = todayWords.length > 0 ? (learnedCount / todayWords.length) * 100 : 0;
   const userName = userProfile?.name || 'Learner';
 

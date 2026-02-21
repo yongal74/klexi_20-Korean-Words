@@ -7,11 +7,12 @@ import { Ionicons } from '@expo/vector-icons';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming, withSequence } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import * as Speech from 'expo-speech';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import Colors from '@/constants/colors';
 import { useApp } from '@/lib/AppContext';
 import { getAllWords } from '@/lib/vocabulary';
 import type { Word } from '@/lib/vocabulary';
+import { getThemeWords } from '@/lib/theme-data';
 
 type Mode = 'fill' | 'order';
 type SessionState = 'active' | 'result';
@@ -33,6 +34,7 @@ function shuffleArray<T>(arr: T[]): T[] {
 export default function SentencePracticeScreen() {
   const insets = useSafeAreaInsets();
   const { todayWords, isLoading } = useApp();
+  const { themeId, level } = useLocalSearchParams<{ themeId?: string; level?: string }>();
   const webTopInset = Platform.OS === 'web' ? 67 : 0;
   const webBottomInset = Platform.OS === 'web' ? 34 : 0;
   const topPad = insets.top + webTopInset;
@@ -49,15 +51,33 @@ export default function SentencePracticeScreen() {
 
   const allWords = useMemo(() => getAllWords(), []);
 
+  const practiceWords: Word[] = useMemo(() => {
+    if (themeId) {
+      const lvl = level ? Number(level) : undefined;
+      const themeWords = getThemeWords(themeId, lvl);
+      return themeWords.map((tw, i) => ({
+        id: `theme-${themeId}-${lvl || 'all'}-${i}`,
+        korean: tw.korean,
+        english: tw.english,
+        pronunciation: tw.pronunciation,
+        partOfSpeech: '',
+        example: tw.example,
+        exampleTranslation: tw.exampleTranslation,
+        category: themeId,
+      }));
+    }
+    return todayWords;
+  }, [themeId, level, todayWords]);
+
   const questions = useMemo(() => {
-    const eligible = todayWords.filter(w => w.example && w.example.length > 0);
+    const eligible = practiceWords.filter(w => w.example && w.example.length > 0);
     const shuffled = shuffleArray(eligible);
     const selected = shuffled.slice(0, Math.min(10, shuffled.length));
     return selected.map((word): Question => ({
       word,
       type: mode,
     }));
-  }, [todayWords, mode]);
+  }, [practiceWords, mode]);
 
   const currentQuestion = questions[currentQ];
 

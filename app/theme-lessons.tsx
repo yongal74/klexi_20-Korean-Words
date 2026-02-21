@@ -195,6 +195,16 @@ export default function ThemeLessonsScreen() {
               <View style={[styles.sectionHeaderDot, { backgroundColor: LEVEL_COLORS[section.level] }]} />
               <Text style={styles.sectionHeaderText}>{section.title}</Text>
               <Text style={[styles.sectionHeaderLevel, { color: LEVEL_COLORS[section.level] }]}>{LEVEL_FULL_LABELS[section.level]}</Text>
+              <Pressable
+                style={styles.sectionPracticeBtn}
+                onPress={() => {
+                  router.push(`/sentence-practice?themeId=${selectedTheme}&level=${section.level}`);
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                }}
+              >
+                <Ionicons name="text-outline" size={12} color={Colors.primary} />
+                <Text style={styles.sectionPracticeBtnText}>Practice</Text>
+              </Pressable>
               <Text style={styles.sectionHeaderCount}>{section.data.length}</Text>
             </View>
           )}
@@ -229,6 +239,19 @@ export default function ThemeLessonsScreen() {
           contentContainerStyle={styles.wordList}
           showsVerticalScrollIndicator={false}
         />
+      )}
+
+      {selectedLevel > 0 && (
+        <Pressable
+          style={styles.floatingPracticeBtn}
+          onPress={() => {
+            router.push(`/sentence-practice?themeId=${selectedTheme}&level=${selectedLevel}`);
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+          }}
+        >
+          <Ionicons name="text-outline" size={20} color="#1A1A1A" />
+          <Text style={styles.floatingPracticeBtnText}>Sentence Practice</Text>
+        </Pressable>
       )}
     </View>
   );
@@ -461,6 +484,42 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: 'NotoSansKR_500Medium',
     color: Colors.text,
+  },
+  sectionPracticeBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: Colors.primary + '15',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 8,
+  },
+  sectionPracticeBtnText: {
+    fontSize: 11,
+    fontFamily: 'NotoSansKR_700Bold',
+    color: Colors.primary,
+  },
+  floatingPracticeBtn: {
+    position: 'absolute',
+    bottom: Platform.OS === 'web' ? 50 : 30,
+    alignSelf: 'center',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    backgroundColor: Colors.primary,
+    paddingHorizontal: 24,
+    paddingVertical: 14,
+    borderRadius: 30,
+    elevation: 6,
+    shadowColor: Colors.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+  },
+  floatingPracticeBtnText: {
+    fontSize: 15,
+    fontFamily: 'NotoSansKR_700Bold',
+    color: '#1A1A1A',
   },
   exampleEn: {
     fontSize: 12,
