@@ -46,6 +46,8 @@ Daily Korean is a comprehensive Korean language learning mobile application buil
 - All UI text in English; Korean used only for learning content
 - Added AI Korean Conversation Chat (app/ai-chat.tsx) with streaming responses via OpenAI (gpt-5-nano), floating chat button on Home screen, conversation history persisted in AsyncStorage, TOPIK-level-adaptive responses
 - Backend AI chat endpoint (server/ai-chat.ts) with SSE streaming, 300 token limit, Korean tutor persona "Dalli"
+- AI Chat premium gating: 5 free messages for non-premium users, message count tracked in AsyncStorage, locked state with upgrade prompt after limit reached
+- AI Chat OpenAI TTS voice: Dalli's responses auto-play via OpenAI gpt-audio model (nova voice), speaker icon for replay on each assistant message, server endpoint at /api/ai-tts
 - Improved TTS naturalness: raised rate to 0.9 and pitch to 1.05 across all screens (word-learn, quiz, review)
 - Improved onboarding screen readability: larger fonts, better spacing, card-style bullet items, enhanced contrast
 
