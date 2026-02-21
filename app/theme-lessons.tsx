@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import {
   StyleSheet, Text, View, ScrollView, Pressable, Platform, FlatList,
 } from 'react-native';
@@ -8,7 +8,11 @@ import { router, useLocalSearchParams } from 'expo-router';
 import * as Speech from 'expo-speech';
 import * as Haptics from 'expo-haptics';
 import Colors from '@/constants/colors';
-import { THEME_LESSONS, ThemeWord } from '@/lib/theme-data';
+import { THEME_META, getThemeWords, ThemeWord, ThemeLessonMeta } from '@/lib/theme-data';
+import { useApp } from '@/lib/AppContext';
+
+const LEVEL_LABELS = ['All', 'TOPIK 1', 'TOPIK 2', 'TOPIK 3', 'TOPIK 4', 'TOPIK 5', 'TOPIK 6'];
+const LEVEL_COLORS = ['#888', '#8BC34A', '#66BB9A', '#5BA8C8', '#C98A5E', '#B89B6A', '#9B8EC4'];
 
 function WordCard({ word, index, isExpanded, onToggle }: {
   word: ThemeWord;
@@ -56,11 +60,18 @@ export default function ThemeLessonsScreen() {
   const webTopInset = Platform.OS === 'web' ? 67 : 0;
   const topPad = insets.top + webTopInset;
   const { themeId } = useLocalSearchParams<{ themeId?: string }>();
+  const { settings } = useApp();
 
   const [selectedTheme, setSelectedTheme] = useState<string | null>(themeId || null);
   const [expandedWord, setExpandedWord] = useState<number | null>(null);
+  const [selectedLevel, setSelectedLevel] = useState<number>(0);
 
-  const theme = THEME_LESSONS.find(t => t.id === selectedTheme);
+  const theme = THEME_META.find(t => t.id === selectedTheme);
+
+  const words = useMemo(() => {
+    if (!selectedTheme) return [];
+    return getThemeWords(selectedTheme, selectedLevel === 0 ? undefined : selectedLevel);
+  }, [selectedTheme, selectedLevel]);
 
   if (!selectedTheme || !theme) {
     return (
@@ -75,23 +86,26 @@ export default function ThemeLessonsScreen() {
           </View>
         </View>
         <ScrollView contentContainerStyle={styles.themesGrid} showsVerticalScrollIndicator={false}>
-          {THEME_LESSONS.map((t) => (
-            <Pressable
-              key={t.id}
-              style={[styles.themeCard, { borderColor: t.color + '40' }]}
-              onPress={() => { setSelectedTheme(t.id); Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); }}
-            >
-              <View style={[styles.themeIconBg, { backgroundColor: t.color + '20' }]}>
-                <Ionicons name={t.icon as any} size={28} color={t.color} />
-              </View>
-              <Text style={styles.themeTitle}>{t.title}</Text>
-              <Text style={styles.themeTitleKr}>{t.titleKr}</Text>
-              <Text style={styles.themeDesc}>{t.description}</Text>
-              <View style={styles.themeWordCount}>
-                <Text style={[styles.themeWordCountText, { color: t.color }]}>{t.words.length} words</Text>
-              </View>
-            </Pressable>
-          ))}
+          {THEME_META.map((t) => {
+            const totalWords = getThemeWords(t.id).length;
+            return (
+              <Pressable
+                key={t.id}
+                style={[styles.themeCard, { borderColor: t.color + '40' }]}
+                onPress={() => { setSelectedTheme(t.id); setSelectedLevel(0); setExpandedWord(null); Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); }}
+              >
+                <View style={[styles.themeIconBg, { backgroundColor: t.color + '20' }]}>
+                  <Ionicons name={t.icon as any} size={28} color={t.color} />
+                </View>
+                <Text style={styles.themeTitle}>{t.title}</Text>
+                <Text style={styles.themeTitleKr}>{t.titleKr}</Text>
+                <Text style={styles.themeDesc}>{t.description}</Text>
+                <View style={styles.themeWordCount}>
+                  <Text style={[styles.themeWordCountText, { color: t.color }]}>{totalWords} words · 6 levels</Text>
+                </View>
+              </Pressable>
+            );
+          })}
         </ScrollView>
       </View>
     );
@@ -100,21 +114,35 @@ export default function ThemeLessonsScreen() {
   return (
     <View style={[styles.container, { paddingTop: topPad }]}>
       <View style={styles.header}>
-        <Pressable onPress={() => setSelectedTheme(null)} style={styles.backBtn}>
+        <Pressable onPress={() => { setSelectedTheme(null); setSelectedLevel(0); }} style={styles.backBtn}>
           <Ionicons name="arrow-back" size={24} color={Colors.text} />
         </Pressable>
         <View style={{ flex: 1 }}>
           <Text style={styles.title}>{theme.title}</Text>
-          <Text style={styles.subtitle}>{theme.titleKr}</Text>
+          <Text style={styles.subtitle}>{theme.titleKr} · {words.length} words</Text>
         </View>
         <View style={[styles.themeHeaderIcon, { backgroundColor: theme.color + '20' }]}>
           <Ionicons name={theme.icon as any} size={22} color={theme.color} />
         </View>
       </View>
 
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.levelTabs} contentContainerStyle={styles.levelTabsContent}>
+        {LEVEL_LABELS.map((label, i) => (
+          <Pressable
+            key={i}
+            style={[styles.levelTab, selectedLevel === i && { backgroundColor: LEVEL_COLORS[i] }]}
+            onPress={() => { setSelectedLevel(i); setExpandedWord(null); }}
+          >
+            <Text style={[styles.levelTabText, selectedLevel === i && styles.levelTabTextActive]}>
+              {label}
+            </Text>
+          </Pressable>
+        ))}
+      </ScrollView>
+
       <FlatList
-        data={theme.words}
-        keyExtractor={(_, i) => `${theme.id}-${i}`}
+        data={words}
+        keyExtractor={(_, i) => `${theme.id}-${selectedLevel}-${i}`}
         renderItem={({ item, index }) => (
           <WordCard
             word={item}
@@ -211,6 +239,28 @@ const styles = StyleSheet.create({
   themeWordCountText: {
     fontSize: 12,
     fontFamily: 'NotoSansKR_500Medium',
+  },
+  levelTabs: {
+    maxHeight: 42,
+    marginBottom: 4,
+  },
+  levelTabsContent: {
+    paddingHorizontal: 16,
+    gap: 8,
+  },
+  levelTab: {
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 20,
+    backgroundColor: Colors.surface,
+  },
+  levelTabText: {
+    fontSize: 12,
+    fontFamily: 'NotoSansKR_700Bold',
+    color: Colors.textSecondary,
+  },
+  levelTabTextActive: {
+    color: '#fff',
   },
   wordList: {
     padding: 20,
