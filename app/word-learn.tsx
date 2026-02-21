@@ -12,6 +12,7 @@ import Colors from '@/constants/colors';
 import { useApp } from '@/lib/AppContext';
 import { TOPIK_LEVELS } from '@/lib/vocabulary';
 import type { Word } from '@/lib/vocabulary';
+import { detectGrammarPatterns } from '@/lib/grammar-patterns';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CARD_WIDTH = SCREEN_WIDTH - 48;
@@ -159,6 +160,15 @@ function WordFlashcard({ word, isBookmarked, onBookmark, showPronunciation }: {
           <View style={{ flex: 1 }}>
             <Text style={styles.exampleKorean}>{word.example}</Text>
             <Text style={styles.exampleEnglish}>{word.exampleTranslation}</Text>
+            {detectGrammarPatterns(word.example).length > 0 && (
+              <View style={styles.grammarRow}>
+                {detectGrammarPatterns(word.example).map((g, i) => (
+                  <View key={i} style={styles.grammarTag}>
+                    <Text style={styles.grammarTagText}>{g.pattern}</Text>
+                  </View>
+                ))}
+              </View>
+            )}
           </View>
           <Ionicons name="volume-medium" size={16} color={Colors.textMuted} />
         </Pressable>
@@ -461,6 +471,23 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontFamily: 'NotoSansKR_400Regular',
     color: Colors.textSecondary,
+  },
+  grammarRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 4,
+    marginTop: 6,
+  },
+  grammarTag: {
+    backgroundColor: Colors.accent + '20',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 6,
+  },
+  grammarTagText: {
+    fontSize: 10,
+    fontFamily: 'NotoSansKR_500Medium',
+    color: Colors.accent,
   },
   breakdownRow: {
     flexDirection: 'row',
