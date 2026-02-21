@@ -33,6 +33,14 @@ Daily Korean is a comprehensive Korean language learning mobile application buil
 - Added Polar (MoR) payment integration for premium subscriptions (server/polar.ts)
 - Added Premium subscription screen with 3 plans (monthly/yearly/lifetime) and Polar checkout integration
 - Polar integration status: SDK installed, API routes created. Needs POLAR_ACCESS_TOKEN and POLAR_WEBHOOK_SECRET secrets to activate
+- Added Spaced Repetition System (SRS) using SM-2 algorithm (lib/srs.ts) with review scheduling, word tracking, and statistics
+- Added Gamification system (lib/gamification.ts): XP rewards for 8 action types, level progression (N×100 XP per level), 15 achievement badges across 6 categories
+- Added 4-page Onboarding tutorial (app/onboarding.tsx) for first-time users with AsyncStorage tracking
+- Enhanced Home screen: XP/level progress bar, SRS review banner (shows due words), 6 Quick Access items (added Pronunciation Practice and Premium)
+- Added Achievements screen (app/achievements.tsx) showing level card, badge grid, and XP rewards info
+- Redesigned word-learning completion screen with "What's Next" guidance (Quiz, Sentences, Pronunciation, Daily Missions)
+- Integrated XP earning into quiz completion (+15 XP/correct, +50 bonus for perfect) and word learning (+10 XP/word, +30 daily completion)
+- All UI text in English; Korean used only for learning content
 
 ## User Preferences
 
@@ -43,9 +51,9 @@ Preferred communication style: Simple, everyday language.
 ### Frontend (Expo / React Native)
 
 - **Framework**: Expo SDK 54 with React Native 0.81, using the new architecture (`newArchEnabled: true`)
-- **Routing**: expo-router with file-based routing. Tab layout at `app/(tabs)/` with four tabs: index (Home), quiz, progress, settings. Stack screens: welcome, word-learn, theme-lessons, word-network, hangeul, review, custom-words, related-words-screen, sentence-practice, daily-missions
-- **State Management**: React Context (`lib/AppContext.tsx`) wraps the entire app and manages user settings, daily learning state, progress data, bookmarks, custom words, and wrong answers. TanStack React Query is also set up for server API calls
-- **Local Storage**: All user data persists via `@react-native-async-storage/async-storage` in `lib/storage.ts`. Keys: settings, progress, daily state, bookmarks, custom words, wrong answers
+- **Routing**: expo-router with file-based routing. Tab layout at `app/(tabs)/` with four tabs: index (Home), quiz, progress, settings. Stack screens: welcome, onboarding, word-learn, theme-lessons, word-network, hangeul, review, custom-words, related-words-screen, sentence-practice, daily-missions, pronunciation-practice, premium, achievements
+- **State Management**: React Context (`lib/AppContext.tsx`) wraps the entire app and manages user settings, daily learning state, progress data, bookmarks, custom words, wrong answers, SRS data, and gamification state. TanStack React Query is also set up for server API calls
+- **Local Storage**: All user data persists via `@react-native-async-storage/async-storage` in `lib/storage.ts`. Keys: settings, progress, daily state, bookmarks, custom words, wrong answers, SRS data, gamification, onboarding completion
 - **Vocabulary Data**: 7,200 words in `lib/vocab/` directory (18 modular files: level1-part1.ts through level6-part3.ts, 400 words each), imported via `lib/vocabulary.ts`
 - **Grammar Patterns**: Grammar detection utility in `lib/grammar-patterns.ts` identifies patterns in Korean sentences and displays as tags
 - **Theme Vocabulary**: 3,600 K-Culture words in `lib/theme-vocab/` directory (6 files: kdrama.ts, kpop.ts, kfood.ts, travel.ts, slang.ts, manners.ts), each with 100 words per TOPIK level, aggregated via `lib/theme-data.ts`
