@@ -16,6 +16,7 @@ interface MissionState {
   date: string;
   sentencesPracticed: number;
   wrongAnswersReviewed: boolean;
+  pronunciationPracticed: number;
 }
 
 interface Mission {
@@ -45,6 +46,7 @@ export default function DailyMissionsScreen() {
     date: getTodayString(),
     sentencesPracticed: 0,
     wrongAnswersReviewed: false,
+    pronunciationPracticed: 0,
   });
   const [stateLoaded, setStateLoaded] = useState(false);
 
@@ -61,6 +63,7 @@ export default function DailyMissionsScreen() {
               date: getTodayString(),
               sentencesPracticed: 0,
               wrongAnswersReviewed: false,
+              pronunciationPracticed: 0,
             };
             await AsyncStorage.setItem(MISSIONS_KEY, JSON.stringify(fresh));
             setMissionState(fresh);
@@ -137,6 +140,20 @@ export default function DailyMissionsScreen() {
             router.push('/review');
             saveMissionState({ ...missionState, wrongAnswersReviewed: true });
           }
+        },
+      },
+      {
+        id: 'pronunciation-practice',
+        icon: 'mic-outline',
+        title: 'Practice pronunciation',
+        description: 'Record your voice and compare with native pronunciation.',
+        current: missionState.pronunciationPracticed > 0 ? 1 : 0,
+        target: 1,
+        xp: 35,
+        completed: missionState.pronunciationPracticed > 0,
+        action: () => {
+          saveMissionState({ ...missionState, pronunciationPracticed: missionState.pronunciationPracticed + 1 });
+          router.push('/pronunciation-practice');
         },
       },
       {

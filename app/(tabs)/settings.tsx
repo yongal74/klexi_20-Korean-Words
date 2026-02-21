@@ -207,6 +207,17 @@ export default function SettingsScreen() {
           <Ionicons name="chevron-forward" size={18} color={Colors.textMuted} />
         </Pressable>
 
+        <Pressable style={styles.toolButton} onPress={() => router.push('/pronunciation-practice')}>
+          <View style={[styles.toolIcon, { backgroundColor: '#FF6B6B' + '15' }]}>
+            <Ionicons name="mic-outline" size={20} color="#FF6B6B" />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.toolText}>Pronunciation Practice</Text>
+            <Text style={styles.toolSubtext}>Record & compare your voice</Text>
+          </View>
+          <Ionicons name="chevron-forward" size={18} color={Colors.textMuted} />
+        </Pressable>
+
         <Pressable style={styles.toolButton} onPress={() => router.push('/daily-missions')}>
           <View style={[styles.toolIcon, { backgroundColor: Colors.streak + '15' }]}>
             <Ionicons name="flag-outline" size={20} color={Colors.streak} />
