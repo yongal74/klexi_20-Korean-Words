@@ -26,6 +26,13 @@ Daily Korean is a comprehensive Korean language learning mobile application buil
 - Added Sentence Practice screen with fill-in-blank and word ordering modes
 - Added Daily Missions system with 5 daily tasks and auto-reset persistence
 - Added navigation to Sentence Practice and Daily Missions from Settings tools section
+- Added linguistically-grounded Word Network engine with 10 relation types (morphological, semantic field, synonym, antonym, hypernym, collocation, register, derivation, compound)
+- Added Pronunciation Practice screen with 3-phase workflow (listen, record, compare) using expo-av
+- Added Ad Banner component with placeholder spaces on Home, Quiz results, Progress, and Settings screens
+- Added server scalability features: compression, rate limiting, security headers, health check endpoints, graceful shutdown
+- Added Polar (MoR) payment integration for premium subscriptions (server/polar.ts)
+- Added Premium subscription screen with 3 plans (monthly/yearly/lifetime) and Polar checkout integration
+- Polar integration status: SDK installed, API routes created. Needs POLAR_ACCESS_TOKEN and POLAR_WEBHOOK_SECRET secrets to activate
 
 ## User Preferences
 
@@ -56,7 +63,7 @@ Preferred communication style: Simple, everyday language.
 - **Home** (`app/(tabs)/index.tsx`): Learning hub with 4 theme cards, today's progress, quick access shortcuts, and statistics
 - **Quiz** (`app/(tabs)/quiz.tsx`): Multiple choice quiz with wrong answer tracking and TTS
 - **Progress** (`app/(tabs)/progress.tsx`): Stats, streaks, and daily history
-- **Settings** (`app/(tabs)/settings.tsx`): Course mode (20/10 words), TOPIK level, pronunciation toggle, tools navigation, account management with sign-out
+- **Settings** (`app/(tabs)/settings.tsx`): Course mode (20/10 words), TOPIK level, pronunciation toggle, tools navigation, premium upgrade banner, account management with sign-out
 - **Welcome** (`app/welcome.tsx`): Auth screen with email signup/login, social login buttons (Google, Apple, Kakao), and guest skip option
 - **Word Learn** (`app/word-learn.tsx`): Flashcards with TTS, bookmark, and related words navigation
 - **Theme Lessons** (`app/theme-lessons.tsx`): K-Culture themed vocabulary (K-Drama, K-Pop, K-Food, Travel, Slang, Manners)
@@ -66,14 +73,19 @@ Preferred communication style: Simple, everyday language.
 - **Custom Words** (`app/custom-words.tsx`): Add/manage custom vocabulary with sentence generation
 - **Related Words** (`app/related-words-screen.tsx`): 20 related words per vocabulary item with K-Drama section
 - **Sentence Practice** (`app/sentence-practice.tsx`): Fill-in-blank and word ordering modes with scoring and TTS
-- **Daily Missions** (`app/daily-missions.tsx`): 5 daily tasks with auto-reset and AsyncStorage persistence
+- **Daily Missions** (`app/daily-missions.tsx`): 6 daily tasks with auto-reset and AsyncStorage persistence
+- **Pronunciation Practice** (`app/pronunciation-practice.tsx`): 3-phase voice recording and comparison with native pronunciation
+- **Premium** (`app/premium.tsx`): Subscription plans (monthly/yearly/lifetime) with Polar checkout integration
 
 ### Backend (Express)
 
-- **Server**: Express 5 server in `server/index.ts` with CORS configured for Replit domains
+- **Server**: Express 5 server in `server/index.ts` with CORS, compression, rate limiting (100 req/min per IP), security headers, health check endpoints (/api/health, /api/ready), and graceful shutdown
 - **Landing Page**: SEO-optimized HTML at `server/templates/landing-page.html` with schema.org markup, FAQ, and feature sections
-- **Routes**: Defined in `server/routes.ts` — minimal API routes
+- **Routes**: Defined in `server/routes.ts` — includes Polar payment routes
+- **Polar Integration**: `server/polar.ts` — Checkout session creation, product listing, subscription management, webhook handling via @polar-sh/sdk. Polar acts as MoR (Merchant of Record) using Stripe internally
 - **Static Serving**: In production, serves the Expo web build from `dist/`. In development, proxies to Metro
+- **Required Secrets for Payments**: POLAR_ACCESS_TOKEN, POLAR_WEBHOOK_SECRET (not yet configured)
+- **Required Env Vars for Payments**: POLAR_ENV (sandbox/production), EXPO_PUBLIC_POLAR_MONTHLY_ID, EXPO_PUBLIC_POLAR_YEARLY_ID, EXPO_PUBLIC_POLAR_LIFETIME_ID (product IDs from Polar dashboard)
 
 ### Database Schema (Drizzle + PostgreSQL)
 
@@ -98,3 +110,6 @@ Preferred communication style: Simple, everyday language.
 - **@react-native-async-storage/async-storage**: Local data persistence
 - **@tanstack/react-query**: Server state management
 - **@expo-google-fonts/noto-sans-kr**: Korean font support
+- **expo-av**: Audio recording for pronunciation practice
+- **@polar-sh/sdk**: Polar payment integration (MoR service)
+- **compression**: HTTP response compression for server

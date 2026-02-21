@@ -232,6 +232,19 @@ export default function SettingsScreen() {
       </View>
 
       <View style={styles.section}>
+        <Pressable style={styles.premiumBanner} onPress={() => router.push('/premium')}>
+          <View style={styles.premiumIcon}>
+            <Ionicons name="diamond" size={22} color={Colors.streak} />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.premiumTitle}>Upgrade to Premium</Text>
+            <Text style={styles.premiumSubtitle}>Remove ads & unlock all features</Text>
+          </View>
+          <Ionicons name="chevron-forward" size={18} color={Colors.streak} />
+        </Pressable>
+      </View>
+
+      <View style={styles.section}>
         <Text style={styles.sectionTitle}>Quick Actions</Text>
         <Pressable style={styles.actionButton} onPress={handleReset}>
           <Ionicons name="refresh-circle-outline" size={22} color={Colors.error} />
@@ -531,5 +544,33 @@ const styles = StyleSheet.create({
     gap: 12,
     borderWidth: 1,
     borderColor: Colors.border,
+  },
+  premiumBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.streak + '15',
+    borderRadius: 14,
+    padding: 16,
+    gap: 12,
+    borderWidth: 1,
+    borderColor: Colors.streak + '30',
+  },
+  premiumIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    backgroundColor: Colors.streak + '25',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  premiumTitle: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: Colors.streak,
+  },
+  premiumSubtitle: {
+    fontSize: 12,
+    color: Colors.textSecondary,
+    marginTop: 2,
   },
 });
