@@ -39,12 +39,12 @@ export interface TopikLevel {
 }
 
 export const TOPIK_LEVELS: TopikLevel[] = [
-  { id: 'topik1-1', level: 'TOPIK I', sublevel: 'Level 1', title: 'Complete Beginner', description: 'Hangeul basics, greetings, numbers, daily essentials', color: '#B8D43C', days: 'Days 1-60' },
-  { id: 'topik1-2', level: 'TOPIK I', sublevel: 'Level 2', title: 'Elementary', description: 'Daily conversations, shopping, K-pop vocabulary', color: '#7DD4A8', days: 'Days 61-120' },
-  { id: 'topik2-3', level: 'TOPIK II', sublevel: 'Level 3', title: 'Pre-Intermediate', description: 'Social topics, K-drama expressions, travel', color: '#4DBED4', days: 'Days 121-180' },
-  { id: 'topik2-4', level: 'TOPIK II', sublevel: 'Level 4', title: 'Intermediate', description: 'News, culture, formal Korean, business', color: '#D4864E', days: 'Days 181-240' },
-  { id: 'topik2-5', level: 'TOPIK II', sublevel: 'Level 5', title: 'Upper Intermediate', description: 'Literature, media, abstract thinking, advanced grammar', color: '#D4A64E', days: 'Days 241-300' },
-  { id: 'topik2-6', level: 'TOPIK II', sublevel: 'Level 6', title: 'Advanced', description: 'Academic writing, professional Korean, formal expressions', color: '#D44E6E', days: 'Days 301-360' },
+  { id: 'topik1-1', level: 'TOPIK I', sublevel: 'Level 1', title: 'Complete Beginner', description: 'Hangeul basics, greetings, numbers, daily essentials', color: '#8BC34A', days: 'Days 1-60' },
+  { id: 'topik1-2', level: 'TOPIK I', sublevel: 'Level 2', title: 'Elementary', description: 'Daily conversations, shopping, K-pop vocabulary', color: '#66BB9A', days: 'Days 61-120' },
+  { id: 'topik2-3', level: 'TOPIK II', sublevel: 'Level 3', title: 'Pre-Intermediate', description: 'Social topics, K-drama expressions, travel', color: '#5BA8C8', days: 'Days 121-180' },
+  { id: 'topik2-4', level: 'TOPIK II', sublevel: 'Level 4', title: 'Intermediate', description: 'News, culture, formal Korean, business', color: '#C98A5E', days: 'Days 181-240' },
+  { id: 'topik2-5', level: 'TOPIK II', sublevel: 'Level 5', title: 'Upper Intermediate', description: 'Literature, media, abstract thinking, advanced grammar', color: '#B89B6A', days: 'Days 241-300' },
+  { id: 'topik2-6', level: 'TOPIK II', sublevel: 'Level 6', title: 'Advanced', description: 'Academic writing, professional Korean, formal expressions', color: '#9B8EC4', days: 'Days 301-360' },
 ];
 
 const VOCABULARY_DATA: Record<string, Word[]> = {

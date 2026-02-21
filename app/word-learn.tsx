@@ -48,25 +48,25 @@ function WordFlashcard({ word, isBookmarked, onBookmark, showPronunciation }: {
     flipProgress.value = withSpring(next ? 1 : 0, { damping: 15, stiffness: 100 });
   }, [flipped, flipProgress]);
 
-  const speakWord = useCallback((rate: number = 0.7) => {
-    Speech.speak(word.korean, { language: 'ko', rate });
+  const speakWord = useCallback((rate: number = 0.85) => {
+    Speech.speak(word.korean, { language: 'ko-KR', rate, pitch: 1.0 });
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   }, [word.korean]);
 
   const speakSlow = useCallback(() => {
-    Speech.speak(word.korean, { language: 'ko', rate: 0.35 });
+    Speech.speak(word.korean, { language: 'ko-KR', rate: 0.5, pitch: 1.0 });
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   }, [word.korean]);
 
   const speakRepeat = useCallback(() => {
-    Speech.speak(word.korean, { language: 'ko', rate: 0.7, onDone: () => {
-      setTimeout(() => Speech.speak(word.korean, { language: 'ko', rate: 0.7 }), 400);
+    Speech.speak(word.korean, { language: 'ko-KR', rate: 0.85, pitch: 1.0, onDone: () => {
+      setTimeout(() => Speech.speak(word.korean, { language: 'ko-KR', rate: 0.85, pitch: 1.0 }), 500);
     }});
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   }, [word.korean]);
 
   const speakExample = useCallback(() => {
-    Speech.speak(word.example, { language: 'ko', rate: 0.6 });
+    Speech.speak(word.example, { language: 'ko-KR', rate: 0.8, pitch: 1.0 });
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   }, [word.example]);
 
@@ -190,6 +190,8 @@ export default function WordLearnScreen() {
   const learnedCount = dailyState?.learnedWordIds?.length || 0;
   const progressPercent = todayWords.length > 0 ? (learnedCount / todayWords.length) * 100 : 0;
 
+  const [showComplete, setShowComplete] = useState(false);
+
   const handleNext = useCallback(() => {
     if (currentIndex < todayWords.length - 1) {
       const nextIndex = currentIndex + 1;
@@ -200,6 +202,7 @@ export default function WordLearnScreen() {
     } else {
       markWordLearned(todayWords[currentIndex].id);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      setShowComplete(true);
     }
   }, [currentIndex, todayWords, markWordLearned]);
 
@@ -227,6 +230,51 @@ export default function WordLearnScreen() {
     return (
       <View style={[styles.container, { paddingTop: topPad }]}>
         <ActivityIndicator size="large" color={Colors.primary} />
+      </View>
+    );
+  }
+
+  if (showComplete) {
+    return (
+      <View style={[styles.container, { paddingTop: topPad }]}>
+        <View style={styles.header}>
+          <Pressable onPress={() => router.back()} style={styles.backBtn}>
+            <Ionicons name="arrow-back" size={24} color={Colors.text} />
+          </Pressable>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.dayLabel}>Day {dayNumber}</Text>
+            <Text style={styles.levelLabel}>{level?.sublevel} {level?.title}</Text>
+          </View>
+        </View>
+        <View style={styles.completeContainer}>
+          <View style={styles.completeIconBg}>
+            <Ionicons name="checkmark-circle" size={64} color={Colors.primary} />
+          </View>
+          <Text style={styles.completeTitle}>Great Job!</Text>
+          <Text style={styles.completeSubtitle}>You finished today's {todayWords.length} words</Text>
+          <Pressable
+            style={styles.sentencePracticeBtn}
+            onPress={() => router.push('/sentence-practice')}
+            testID="practice-sentences-btn"
+          >
+            <Ionicons name="text-outline" size={22} color="#fff" />
+            <Text style={styles.sentencePracticeBtnText}>Practice Sentences</Text>
+          </Pressable>
+          <Pressable
+            style={styles.reviewAgainBtn}
+            onPress={() => { setShowComplete(false); setCurrentIndex(0); flatListRef.current?.scrollToIndex({ index: 0, animated: false }); }}
+          >
+            <Ionicons name="refresh" size={18} color={Colors.textSecondary} />
+            <Text style={styles.reviewAgainBtnText}>Review Words Again</Text>
+          </Pressable>
+          <Pressable
+            style={styles.goHomeBtn}
+            onPress={() => router.back()}
+          >
+            <Ionicons name="home-outline" size={18} color={Colors.textMuted} />
+            <Text style={styles.goHomeBtnText}>Back to Home</Text>
+          </Pressable>
+        </View>
       </View>
     );
   }
@@ -564,5 +612,78 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: 'NotoSansKR_500Medium',
     color: Colors.textSecondary,
+  },
+  completeContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 32,
+    gap: 16,
+  },
+  completeIconBg: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: Colors.primary + '15',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 8,
+  },
+  completeTitle: {
+    fontSize: 28,
+    fontFamily: 'NotoSansKR_700Bold',
+    color: Colors.text,
+  },
+  completeSubtitle: {
+    fontSize: 15,
+    fontFamily: 'NotoSansKR_400Regular',
+    color: Colors.textSecondary,
+    marginBottom: 8,
+  },
+  sentencePracticeBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 10,
+    backgroundColor: Colors.primary,
+    borderRadius: 16,
+    paddingVertical: 16,
+    paddingHorizontal: 28,
+    width: '100%',
+  },
+  sentencePracticeBtnText: {
+    fontSize: 17,
+    fontFamily: 'NotoSansKR_700Bold',
+    color: '#fff',
+  },
+  reviewAgainBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    backgroundColor: Colors.card,
+    borderRadius: 14,
+    paddingVertical: 14,
+    paddingHorizontal: 24,
+    width: '100%',
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  reviewAgainBtnText: {
+    fontSize: 15,
+    fontFamily: 'NotoSansKR_500Medium',
+    color: Colors.textSecondary,
+  },
+  goHomeBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    paddingVertical: 12,
+  },
+  goHomeBtnText: {
+    fontSize: 14,
+    fontFamily: 'NotoSansKR_400Regular',
+    color: Colors.textMuted,
   },
 });

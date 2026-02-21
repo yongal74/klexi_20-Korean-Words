@@ -12,7 +12,7 @@ import { HANGEUL_SECTIONS, SYLLABLE_EXAMPLES, HangeulChar } from '@/lib/hangeul'
 
 function CharCard({ char, isExpanded, onToggle }: { char: HangeulChar; isExpanded: boolean; onToggle: () => void }) {
   const speak = useCallback(() => {
-    Speech.speak(char.example, { language: 'ko', rate: 0.7 });
+    Speech.speak(char.example, { language: 'ko-KR', rate: 0.85, pitch: 1.0 });
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   }, [char.example]);
 
@@ -59,7 +59,7 @@ export default function HangeulScreen() {
   const section = HANGEUL_SECTIONS[selectedSection];
 
   const speakSyllable = useCallback((text: string) => {
-    Speech.speak(text, { language: 'ko', rate: 0.6 });
+    Speech.speak(text, { language: 'ko-KR', rate: 0.8, pitch: 1.0 });
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   }, []);
 

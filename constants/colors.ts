@@ -22,12 +22,12 @@ const Colors = {
   streak: '#E8B43C',
 
   topik: {
-    level1: '#B8D43C',
-    level2: '#7DD4A8',
-    level3: '#4DBED4',
-    level4: '#D4864E',
-    level5: '#D4A64E',
-    level6: '#D44E6E',
+    level1: '#8BC34A',
+    level2: '#66BB9A',
+    level3: '#5BA8C8',
+    level4: '#C98A5E',
+    level5: '#B89B6A',
+    level6: '#9B8EC4',
   },
 
   light: {

@@ -101,7 +101,7 @@ export default function SentencePracticeScreen() {
   }));
 
   const speakSentence = useCallback((text: string) => {
-    Speech.speak(text, { language: 'ko', rate: 0.6 });
+    Speech.speak(text, { language: 'ko-KR', rate: 0.8, pitch: 1.0 });
   }, []);
 
   const handleFillAnswer = useCallback((answer: string) => {

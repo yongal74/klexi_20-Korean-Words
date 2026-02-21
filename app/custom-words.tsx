@@ -70,7 +70,7 @@ export default function CustomWordsScreen() {
   }, [korean, english, pronunciation, generatedSentences, selectedSentence, addCustomWord]);
 
   const speakWord = useCallback((text: string) => {
-    Speech.speak(text, { language: 'ko', rate: 0.7 });
+    Speech.speak(text, { language: 'ko-KR', rate: 0.85, pitch: 1.0 });
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   }, []);
 
