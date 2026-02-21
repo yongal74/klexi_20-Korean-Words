@@ -247,7 +247,7 @@ export default function SentencePracticeScreen() {
           </Pressable>
           <View style={{ flex: 1 }}>
             <Text style={styles.headerTitle}>Sentence Practice</Text>
-            <Text style={styles.headerSubtitle}>문장 연습</Text>
+            <Text style={styles.headerSubtitle}>Build your sentences</Text>
           </View>
         </View>
         <View style={styles.emptyContainer}>
@@ -322,7 +322,7 @@ export default function SentencePracticeScreen() {
         </Pressable>
         <View style={{ flex: 1 }}>
           <Text style={styles.headerTitle}>Sentence Practice</Text>
-          <Text style={styles.headerSubtitle}>문장 연습</Text>
+          <Text style={styles.headerSubtitle}>Build your sentences</Text>
         </View>
         <View style={styles.scoreBadge}>
           <Ionicons name="star" size={16} color={Colors.primary} />

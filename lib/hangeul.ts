@@ -18,7 +18,7 @@ export interface HangeulSection {
 export const HANGEUL_SECTIONS: HangeulSection[] = [
   {
     title: 'Basic Consonants',
-    titleKorean: '기본 자음',
+    titleKorean: 'Consonants',
     description: 'The 14 basic consonant letters of Korean',
     chars: [
       { char: 'ㄱ', romanization: 'g/k', sound: 'Like "g" in "go" or "k" in "kite"', type: 'consonant', example: '가방', exampleMeaning: 'bag', tip: 'Softer "g" at the start, harder "k" at the end of syllables' },
@@ -39,7 +39,7 @@ export const HANGEUL_SECTIONS: HangeulSection[] = [
   },
   {
     title: 'Basic Vowels',
-    titleKorean: '기본 모음',
+    titleKorean: 'Vowels',
     description: 'The 10 basic vowel letters of Korean',
     chars: [
       { char: 'ㅏ', romanization: 'a', sound: 'Like "a" in "father"', type: 'vowel', example: '아빠', exampleMeaning: 'dad', tip: 'Vertical line with stroke to the RIGHT' },
@@ -56,7 +56,7 @@ export const HANGEUL_SECTIONS: HangeulSection[] = [
   },
   {
     title: 'Double Consonants',
-    titleKorean: '쌍자음',
+    titleKorean: 'Double Consonants',
     description: 'Tense (double) consonants - pronounced with more force',
     chars: [
       { char: 'ㄲ', romanization: 'kk', sound: 'Tense "k" - no air released', type: 'double_consonant', example: '꽃', exampleMeaning: 'flower', tip: 'Like "k" but tighter in throat, no breath' },
@@ -68,7 +68,7 @@ export const HANGEUL_SECTIONS: HangeulSection[] = [
   },
   {
     title: 'Compound Vowels',
-    titleKorean: '복합 모음',
+    titleKorean: 'Compound Vowels',
     description: 'Vowels formed by combining two basic vowels',
     chars: [
       { char: 'ㅐ', romanization: 'ae', sound: 'Like "a" in "bad"', type: 'double_vowel', example: '개', exampleMeaning: 'dog', tip: 'ㅏ + ㅣ combined = "ae" sound' },

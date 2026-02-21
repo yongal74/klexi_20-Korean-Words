@@ -189,7 +189,7 @@ export default function DailyMissionsScreen() {
         </Pressable>
         <View style={{ flex: 1 }}>
           <Text style={styles.headerTitle}>Daily Missions</Text>
-          <Text style={styles.headerSubtitle}>오늘의 미션</Text>
+          <Text style={styles.headerSubtitle}>Today's missions</Text>
         </View>
         <View style={styles.xpBadge}>
           <Ionicons name="flash" size={16} color={Colors.secondary} />

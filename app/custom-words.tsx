@@ -105,7 +105,7 @@ export default function CustomWordsScreen() {
             <Text style={styles.formTitle}>Add New Word</Text>
             <TextInput
               style={styles.input}
-              placeholder="Korean word (한국어)"
+              placeholder="Korean word"
               placeholderTextColor={Colors.textMuted}
               value={korean}
               onChangeText={setKorean}

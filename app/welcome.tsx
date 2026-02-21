@@ -116,7 +116,7 @@ export default function WelcomeScreen() {
               <Ionicons name="happy-outline" size={18} color={Colors.textMuted} />
               <TextInput
                 style={styles.input}
-                placeholder="e.g. 민수, Alex, 학생..."
+                placeholder="e.g. Alex, Min, Chris..."
                 placeholderTextColor={Colors.textMuted}
                 value={name}
                 onChangeText={(t) => { setName(t); setError(''); }}

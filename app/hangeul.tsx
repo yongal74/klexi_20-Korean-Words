@@ -72,7 +72,7 @@ export default function HangeulScreen() {
           <Ionicons name="chevron-back" size={24} color={Colors.text} />
         </Pressable>
         <View style={{ flex: 1 }}>
-          <Text style={styles.title}>한글 Hangeul</Text>
+          <Text style={styles.title}>Hangeul</Text>
           <Text style={styles.subtitle}>Korean Alphabet</Text>
         </View>
       </View>
@@ -83,7 +83,7 @@ export default function HangeulScreen() {
           onPress={() => { setShowPrinciples(true); setShowSyllables(false); }}
         >
           <Text style={[styles.tabText, showPrinciples && !showSyllables && styles.tabTextActive]}>
-            원리 Principles
+            Principles
           </Text>
         </Pressable>
         {HANGEUL_SECTIONS.map((s, i) => (
@@ -102,7 +102,7 @@ export default function HangeulScreen() {
           onPress={() => { setShowSyllables(true); setShowPrinciples(false); }}
         >
           <Text style={[styles.tabText, showSyllables && styles.tabTextActive]}>
-            음절 Syllables
+            Syllables
           </Text>
         </Pressable>
       </ScrollView>
@@ -111,7 +111,7 @@ export default function HangeulScreen() {
         <ScrollView style={styles.content} contentContainerStyle={{ paddingBottom: 100 }} showsVerticalScrollIndicator={false}>
           <Text style={styles.principlesIntro}>How Hangeul Works</Text>
           <Text style={styles.principlesSubIntro}>The Science Behind Korean Letters</Text>
-          <Text style={styles.principlesKr}>한글은 세계에서 가장 과학적인 문자입니다</Text>
+          <Text style={styles.principlesKr}>One of the most scientific writing systems in the world</Text>
           {HANGEUL_PRINCIPLES.map((principle, i) => (
             <Pressable
               key={i}

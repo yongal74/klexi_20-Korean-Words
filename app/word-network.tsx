@@ -192,17 +192,17 @@ export default function WordNetworkScreen() {
         </Pressable>
         <View style={{ flex: 1 }}>
           <Text style={styles.title}>Word Network</Text>
-          <Text style={styles.subtitle}>언어학 기반 단어 연결망</Text>
+          <Text style={styles.subtitle}>Linguistics-Based Word Map</Text>
         </View>
       </View>
 
       {!selectedCategory ? (
         <ScrollView contentContainerStyle={styles.catGrid} showsVerticalScrollIndicator={false}>
-          <Text style={styles.sectionLabel}>카테고리를 선택하세요</Text>
+          <Text style={styles.sectionLabel}>Select a Category</Text>
           <View style={styles.theoryBox}>
             <Ionicons name="school-outline" size={16} color={Colors.secondary} />
             <Text style={styles.theoryText}>
-              의미장 이론, 형태소 분석, 반의어/유의어 관계, 연어 패턴, 높임말 체계를 기반으로 단어를 연결합니다
+              Words are connected using semantic fields, morphological analysis, antonym/synonym relations, collocation patterns, and honorific systems
             </Text>
           </View>
           {categories.map((cat) => {
@@ -340,7 +340,7 @@ export default function WordNetworkScreen() {
 
           <View style={styles.connectedSection}>
             <Text style={styles.connectedTitle}>Linguistic Connections</Text>
-            <Text style={styles.connectedSubtitle}>언어학 이론 기반 연결 단어</Text>
+            <Text style={styles.connectedSubtitle}>Words connected by linguistic theory</Text>
             {connections.map((conn) => (
               <Pressable
                 key={conn.word.id}

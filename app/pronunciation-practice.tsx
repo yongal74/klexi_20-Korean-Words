@@ -213,7 +213,7 @@ export default function PronunciationPracticeScreen() {
         </Pressable>
         <View style={{ flex: 1 }}>
           <Text style={styles.headerTitle}>Pronunciation Practice</Text>
-          <Text style={styles.headerSubtitle}>발음 연습</Text>
+          <Text style={styles.headerSubtitle}>Practice your pronunciation</Text>
         </View>
         <View style={styles.progressBadge}>
           <Text style={styles.progressText}>{currentIndex + 1}/{practiceWords.length}</Text>
@@ -228,7 +228,7 @@ export default function PronunciationPracticeScreen() {
           <View style={styles.completeCard}>
             <Ionicons name="trophy" size={60} color={Colors.primary} />
             <Text style={styles.completeTitle}>Practice Complete!</Text>
-            <Text style={styles.completeSubtitle}>연습 완료</Text>
+            <Text style={styles.completeSubtitle}>Well done!</Text>
             <View style={styles.statsRow}>
               <View style={styles.statItem}>
                 <Text style={styles.statValue}>{practiceState.wordsCompleted}</Text>

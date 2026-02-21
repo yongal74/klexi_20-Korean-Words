@@ -12,7 +12,7 @@ import { THEME_META, getThemeWords, ThemeWordWithLevel, ThemeLessonMeta } from '
 import { useApp } from '@/lib/AppContext';
 
 const LEVEL_LABELS = ['All', 'Lv.1', 'Lv.2', 'Lv.3', 'Lv.4', 'Lv.5', 'Lv.6'];
-const LEVEL_FULL_LABELS = ['All Levels', 'TOPIK 1 · 입문', 'TOPIK 2 · 초급', 'TOPIK 3 · 중급', 'TOPIK 4 · 중상급', 'TOPIK 5 · 고급', 'TOPIK 6 · 최상급'];
+const LEVEL_FULL_LABELS = ['All Levels', 'TOPIK 1 · Beginner', 'TOPIK 2 · Elementary', 'TOPIK 3 · Intermediate', 'TOPIK 4 · Upper-Intermediate', 'TOPIK 5 · Advanced', 'TOPIK 6 · Expert'];
 const LEVEL_COLORS = ['#888', '#8BC34A', '#66BB9A', '#5BA8C8', '#C98A5E', '#B89B6A', '#9B8EC4'];
 
 function WordCard({ word, index, isExpanded, onToggle, showLevel }: {
@@ -105,7 +105,7 @@ export default function ThemeLessonsScreen() {
           </Pressable>
           <View>
             <Text style={styles.title}>K-Culture Lessons</Text>
-            <Text style={styles.subtitle}>테마별 학습</Text>
+            <Text style={styles.subtitle}>Learn by Theme</Text>
           </View>
         </View>
         <ScrollView contentContainerStyle={styles.themesGrid} showsVerticalScrollIndicator={false}>

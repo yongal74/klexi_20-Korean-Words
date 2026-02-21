@@ -86,7 +86,7 @@ export default function HomeScreen() {
     >
       <View style={styles.header}>
         <View style={{ flex: 1 }}>
-          <Text style={styles.greeting}>안녕하세요! 👋</Text>
+          <Text style={styles.greeting}>Hello! 👋</Text>
           <Text style={styles.userName}>{userName}</Text>
         </View>
         <View style={styles.headerBadges}>
@@ -121,7 +121,7 @@ export default function HomeScreen() {
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Learning Paths</Text>
-        <Text style={styles.sectionSubtitle}>학습 테마를 선택하세요</Text>
+        <Text style={styles.sectionSubtitle}>Choose your learning path</Text>
       </View>
 
       <View style={styles.themesGrid}>
