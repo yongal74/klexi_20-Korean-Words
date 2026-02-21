@@ -11,6 +11,7 @@ import Colors from '@/constants/colors';
 import { useApp } from '@/lib/AppContext';
 import { TOPIK_LEVELS } from '@/lib/vocabulary';
 import AdBanner from '@/components/AdBanner';
+import FloatingChatButton from '@/components/FloatingChatButton';
 
 const LEARNING_THEMES = [
   {
@@ -93,6 +94,7 @@ export default function HomeScreen() {
   }
 
   return (
+    <>
     <ScrollView
       style={[styles.container, { paddingTop: topPad }]}
       contentContainerStyle={{ paddingBottom: 120 + webBottomInset }}
@@ -273,6 +275,8 @@ export default function HomeScreen() {
         <Ionicons name="chevron-forward" size={18} color={Colors.textMuted} />
       </Pressable>
     </ScrollView>
+    <FloatingChatButton />
+    </>
   );
 }
 
