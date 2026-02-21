@@ -97,16 +97,16 @@ export default function HomeScreen() {
 
       <View style={styles.todayCard}>
         <View style={styles.todayHeader}>
-          <View>
+          <View style={{ flex: 1 }}>
             <Text style={styles.todayLabel}>Day {dayNumber}</Text>
-            <Text style={styles.todayLevel}>{level?.sublevel} · {level?.title}</Text>
+            <Text style={styles.todayLevel} numberOfLines={1}>{level?.sublevel} · {level?.title}</Text>
           </View>
           <Pressable
             style={styles.continueBtn}
             onPress={() => { router.push('/word-learn'); Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); }}
           >
             <Text style={styles.continueBtnText}>Continue</Text>
-            <Ionicons name="arrow-forward" size={16} color="#fff" />
+            <Ionicons name="arrow-forward" size={16} color="#1A1A1A" />
           </Pressable>
         </View>
         <View style={styles.progressRow}>
@@ -256,6 +256,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    gap: 12,
   },
   todayLabel: {
     fontSize: 20,
@@ -276,11 +277,12 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 10,
+    flexShrink: 0,
   },
   continueBtnText: {
     fontSize: 14,
-    fontFamily: 'NotoSansKR_500Medium',
-    color: '#fff',
+    fontFamily: 'NotoSansKR_700Bold',
+    color: '#1A1A1A',
   },
   progressRow: {
     flexDirection: 'row',
