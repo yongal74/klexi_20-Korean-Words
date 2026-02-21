@@ -195,6 +195,28 @@ export default function SettingsScreen() {
           </View>
           <Ionicons name="chevron-forward" size={18} color={Colors.textMuted} />
         </Pressable>
+
+        <Pressable style={styles.toolButton} onPress={() => router.push('/sentence-practice')}>
+          <View style={[styles.toolIcon, { backgroundColor: Colors.accent + '15' }]}>
+            <Ionicons name="text-outline" size={20} color={Colors.accent} />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.toolText}>Sentence Practice</Text>
+            <Text style={styles.toolSubtext}>Fill-in-blank & word ordering</Text>
+          </View>
+          <Ionicons name="chevron-forward" size={18} color={Colors.textMuted} />
+        </Pressable>
+
+        <Pressable style={styles.toolButton} onPress={() => router.push('/daily-missions')}>
+          <View style={[styles.toolIcon, { backgroundColor: Colors.streak + '15' }]}>
+            <Ionicons name="flag-outline" size={20} color={Colors.streak} />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.toolText}>Daily Missions</Text>
+            <Text style={styles.toolSubtext}>Complete tasks to build habits</Text>
+          </View>
+          <Ionicons name="chevron-forward" size={18} color={Colors.textMuted} />
+        </Pressable>
       </View>
 
       <View style={styles.section}>
