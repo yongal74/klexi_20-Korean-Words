@@ -12,12 +12,13 @@ import Colors from '@/constants/colors';
 import { useApp } from '@/lib/AppContext';
 import { generateQuizOptions, getAllWords } from '@/lib/vocabulary';
 import AdBanner from '@/components/AdBanner';
+import PremiumGate from '@/components/PremiumGate';
 
 type QuizState = 'ready' | 'active' | 'result';
 
 export default function QuizScreen() {
   const insets = useSafeAreaInsets();
-  const { todayWords, dailyState, completeQuiz, addWrongAnswer, wrongAnswers, isLoading, earnXP } = useApp();
+  const { todayWords, dailyState, completeQuiz, addWrongAnswer, wrongAnswers, isLoading, earnXP, isPremium, dayNumber } = useApp();
   const webTopInset = Platform.OS === 'web' ? 67 : 0;
   const topPad = insets.top + webTopInset;
   const webBottomInset = Platform.OS === 'web' ? 34 : 0;
@@ -220,6 +221,15 @@ export default function QuizScreen() {
           <Ionicons name="refresh" size={20} color={Colors.primary} />
           <Text style={styles.retryButtonText}>Try Again</Text>
         </Pressable>
+
+        {!isPremium && dayNumber >= 10 && (
+          <View style={{ marginTop: 16 }}>
+            <PremiumGate
+              title="Unlock More Quizzes"
+              description="You've explored the free content! Upgrade to Premium to quiz on all 7,200 words across 6 TOPIK levels."
+            />
+          </View>
+        )}
 
         <AdBanner size="large" style={{ marginTop: 16 }} />
       </ScrollView>

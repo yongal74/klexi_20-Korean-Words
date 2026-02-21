@@ -282,6 +282,15 @@ export default function WordLearnScreen() {
           </View>
           <Text style={styles.completeTitle}>Great Job!</Text>
           <Text style={styles.completeSubtitle}>You finished today's {todayWords.length} words</Text>
+
+          {!isPremium && dayNumber >= 10 && (
+            <View style={{ marginTop: 16, marginBottom: 8 }}>
+              <PremiumGate
+                title="You've Reached the Free Limit!"
+                description="You've completed 10 days of free learning (200 words). Upgrade to Premium to continue with all 1,200 Level 1 words and unlock 5 more TOPIK levels."
+              />
+            </View>
+          )}
           
           <View style={styles.whatsNextSection}>
             <Text style={styles.whatsNextTitle}>What's Next?</Text>

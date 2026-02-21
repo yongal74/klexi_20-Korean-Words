@@ -72,7 +72,7 @@ export default function ThemeLessonsScreen() {
 
   const [selectedTheme, setSelectedTheme] = useState<string | null>(themeId || null);
   const [expandedWord, setExpandedWord] = useState<number | null>(null);
-  const [selectedLevel, setSelectedLevel] = useState<number>(0);
+  const [selectedLevel, setSelectedLevel] = useState<number>(!isPremium ? 1 : 0);
 
   const theme = THEME_META.find(t => t.id === selectedTheme);
 
@@ -166,7 +166,7 @@ export default function ThemeLessonsScreen() {
                   !isActive && { borderColor: LEVEL_COLORS[i] + '60' },
                 ]}
                 onPress={() => {
-                  if (!isPremium && i > 1) {
+                  if (!isPremium && (i === 0 || i > 1)) {
                     router.push('/premium');
                     return;
                   }
@@ -187,7 +187,7 @@ export default function ThemeLessonsScreen() {
                 ]}>
                   {count}
                 </Text>
-                {!isPremium && i > 1 && (
+                {!isPremium && (i === 0 || i > 1) && (
                   <Ionicons name="lock-closed" size={10} color={Colors.textMuted} style={{ marginLeft: 2 }} />
                 )}
               </Pressable>
