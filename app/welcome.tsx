@@ -142,8 +142,8 @@ export default function WelcomeScreen() {
           <View style={styles.logoContainer}>
             <Text style={styles.logoKorean}>한</Text>
           </View>
-          <Text style={styles.appTitle}>Daily Korean</Text>
-          <Text style={styles.appSubtitle}>Master Korean with TOPIK-based lessons,{'\n'}K-Culture themes & word networks</Text>
+          <Text style={styles.appTitle}>Kloop Korean</Text>
+          <Text style={styles.appSubtitle}>Daily Korean in 20 Words</Text>
         </View>
 
         <View style={styles.featureRow}>

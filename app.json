@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Daily Korean",
-    "slug": "daily-korean",
+    "name": "Kloop Korean",
+    "slug": "kloop-korean",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",

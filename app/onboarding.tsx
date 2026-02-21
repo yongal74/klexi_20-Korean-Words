@@ -37,7 +37,7 @@ interface OnboardingPage {
 const PAGES: OnboardingPage[] = [
   {
     id: '1',
-    tagline: 'Your Daily Korean Habit',
+    tagline: 'Daily Korean in 20 Words',
     title: '20 Words a Day\nThat Actually Stick',
     icon: 'flash',
     iconColor: Colors.primary,
