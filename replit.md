@@ -28,6 +28,9 @@ Daily Korean is a comprehensive Korean language learning mobile application buil
 - Added navigation to Sentence Practice and Daily Missions from Settings tools section
 - Added linguistically-grounded Word Network engine with 10 relation types (morphological, semantic field, synonym, antonym, hypernym, collocation, register, derivation, compound)
 - Added Pronunciation Practice screen with 3-phase workflow (listen, record, compare) using expo-av
+- Implemented free/premium gating system: isPremium state in AppContext with AsyncStorage persistence, PremiumGate component with full/compact modes
+- Free user limits: Word Learning (Level 1, 10 days/200 words), K-Culture Themes (Level 1 only), Word Network (first 5 categories), Settings level selection locked above Level 1
+- Free access: Full Hangeul learning, Daily Missions, Quiz/Sentence Practice within Level 1 range
 - Added Ad Banner component with placeholder spaces on Home, Quiz results, Progress, and Settings screens
 - Added server scalability features: compression, rate limiting, security headers, health check endpoints, graceful shutdown
 - Added Polar (MoR) payment integration for premium subscriptions (server/polar.ts)
