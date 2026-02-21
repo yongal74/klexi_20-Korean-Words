@@ -8,6 +8,7 @@ const KEYS = {
   CUSTOM_WORDS: '@daily_korean_custom_words',
   WRONG_ANSWERS: '@daily_korean_wrong_answers',
   USER_PROFILE: '@daily_korean_user_profile',
+  PREMIUM_STATUS: '@daily_korean_premium',
 };
 
 export interface UserProfile {
@@ -277,6 +278,19 @@ export async function recordDayComplete(wordsLearned: number, quizScore: number,
 
   await saveProgress(progress);
   return progress;
+}
+
+export async function getPremiumStatus(): Promise<boolean> {
+  try {
+    const data = await AsyncStorage.getItem(KEYS.PREMIUM_STATUS);
+    return data === 'true';
+  } catch {
+    return false;
+  }
+}
+
+export async function savePremiumStatus(isPremium: boolean): Promise<void> {
+  await AsyncStorage.setItem(KEYS.PREMIUM_STATUS, isPremium ? 'true' : 'false');
 }
 
 export function getDayNumber(progress: ProgressData): number {

@@ -9,6 +9,7 @@ import {
   getWrongAnswers, addWrongAnswer as addWrongAnswerStorage, removeWrongAnswer as removeWrongAnswerStorage, clearWrongAnswers as clearWrongAnswersStorage,
   recordDayComplete, getDayNumber,
   getUserProfile, saveUserProfile, clearUserProfile,
+  getPremiumStatus, savePremiumStatus,
 } from './storage';
 import { getDailyWords, Word } from './vocabulary';
 import { getSRSData, SRSData, reviewWord, getWordsForReview, getReviewCount, initWordSRS, SRSWordData } from './srs';
@@ -47,6 +48,8 @@ interface AppContextValue {
   earnXP: (amount: number, source: string) => Promise<{ levelUp: boolean; newLevel: number }>;
   refreshGamification: () => Promise<void>;
   getWordsForSRSReview: () => Promise<SRSWordData[]>;
+  isPremium: boolean;
+  setPremiumStatus: (status: boolean) => Promise<void>;
 }
 
 const AppContext = createContext<AppContextValue | null>(null);
@@ -76,11 +79,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [srsData, setSrsData] = useState<SRSData>({ words: {} });
   const [gamification, setGamification] = useState<GamificationData>({ totalXP: 0, level: 1, achievements: {}, xpHistory: [] });
   const [reviewCount, setReviewCount] = useState(0);
+  const [isPremium, setIsPremium] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     (async () => {
-      const [s, p, d, b, cw, wa, up, srs, gam] = await Promise.all([
+      const [s, p, d, b, cw, wa, up, srs, gam, prem] = await Promise.all([
         getSettings(),
         getProgress(),
         getDailyState(),
@@ -90,6 +94,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         getUserProfile(),
         getSRSData(),
         getGamificationData(),
+        getPremiumStatus(),
       ]);
       setSettings(s);
       setProgress(p);
@@ -100,6 +105,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setUserProfile(up);
       setSrsData(srs);
       setGamification(gam);
+      setIsPremium(prem);
       const count = await getReviewCount();
       setReviewCount(count);
       setIsLoading(false);
@@ -258,6 +264,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
     return await getWordsForReview();
   }, []);
 
+  const setPremiumStatusCb = useCallback(async (status: boolean) => {
+    await savePremiumStatus(status);
+    setIsPremium(status);
+  }, []);
+
   const value = useMemo(() => ({
     settings,
     progress,
@@ -291,7 +302,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
     earnXP: earnXPCb,
     refreshGamification: refreshGamificationCb,
     getWordsForSRSReview: getWordsForSRSReviewCb,
-  }), [settings, progress, dailyState, bookmarks, todayWords, dayNumber, isLoading, customWords, wrongAnswers, userProfile, isAuthenticated, updateSettings, markWordLearned, completeQuiz, toggleBookmarkCb, resetDaily, addCustomWordCb, removeCustomWordCb, addWrongAnswerCb, removeWrongAnswerCb, clearWrongAnswersCb, signInCb, signOutCb, srsData, gamification, reviewCount, userLevel, reviewSRSWordCb, initSRSWordCb, earnXPCb, refreshGamificationCb, getWordsForSRSReviewCb]);
+    isPremium,
+    setPremiumStatus: setPremiumStatusCb,
+  }), [settings, progress, dailyState, bookmarks, todayWords, dayNumber, isLoading, customWords, wrongAnswers, userProfile, isAuthenticated, updateSettings, markWordLearned, completeQuiz, toggleBookmarkCb, resetDaily, addCustomWordCb, removeCustomWordCb, addWrongAnswerCb, removeWrongAnswerCb, clearWrongAnswersCb, signInCb, signOutCb, srsData, gamification, reviewCount, userLevel, reviewSRSWordCb, initSRSWordCb, earnXPCb, refreshGamificationCb, getWordsForSRSReviewCb, isPremium, setPremiumStatusCb]);
 
   return (
     <AppContext.Provider value={value}>
