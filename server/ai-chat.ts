@@ -12,7 +12,7 @@ Rules:
 - Respond in a mix of Korean and English based on the user's level
 - For beginners: use simple Korean with English translations in parentheses
 - For intermediate+: use more Korean, less English
-- Keep responses concise (2-4 sentences max)
+- Keep responses concise (2-3 sentences max). Do NOT write long responses.
 - Correct grammar mistakes gently
 - Use natural, everyday Korean expressions
 - Add romanization for Korean words when helpful
@@ -56,10 +56,9 @@ export function setupAIChatRoutes(app: Express): void {
       res.setHeader("Connection", "keep-alive");
 
       const stream = await openai.chat.completions.create({
-        model: "gpt-5-nano",
-        messages: [systemMessage, ...messages.slice(-20)],
+        model: "gpt-5-mini",
+        messages: [systemMessage, ...messages.slice(-10)],
         stream: true,
-        max_completion_tokens: 300,
       });
 
       for await (const chunk of stream) {
