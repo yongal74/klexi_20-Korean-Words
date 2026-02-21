@@ -260,6 +260,18 @@ export default function HomeScreen() {
           <Text style={styles.statLabel}>Quizzes</Text>
         </View>
       </View>
+
+      <Pressable
+        style={styles.achievementsBtn}
+        onPress={() => { router.push('/achievements'); Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); }}
+      >
+        <Ionicons name="trophy" size={22} color={Colors.streak} />
+        <View style={{ flex: 1 }}>
+          <Text style={styles.achievementsBtnTitle}>Achievements & Badges</Text>
+          <Text style={styles.achievementsBtnSub}>Track your milestones and rewards</Text>
+        </View>
+        <Ionicons name="chevron-forward" size={18} color={Colors.textMuted} />
+      </Pressable>
     </ScrollView>
   );
 }
@@ -495,6 +507,29 @@ const styles = StyleSheet.create({
   statDivider: {
     width: 1,
     backgroundColor: Colors.border,
+  },
+  achievementsBtn: {
+    marginHorizontal: 24,
+    marginTop: 16,
+    backgroundColor: Colors.card,
+    borderRadius: 14,
+    padding: 16,
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    gap: 12,
+    borderWidth: 1,
+    borderColor: Colors.streak + '30',
+  },
+  achievementsBtnTitle: {
+    fontSize: 14,
+    fontFamily: 'NotoSansKR_700Bold',
+    color: Colors.text,
+  },
+  achievementsBtnSub: {
+    fontSize: 11,
+    fontFamily: 'NotoSansKR_400Regular',
+    color: Colors.textSecondary,
+    marginTop: 2,
   },
   xpCard: {
     marginHorizontal: 24,

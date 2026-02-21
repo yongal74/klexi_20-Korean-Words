@@ -17,7 +17,7 @@ type QuizState = 'ready' | 'active' | 'result';
 
 export default function QuizScreen() {
   const insets = useSafeAreaInsets();
-  const { todayWords, dailyState, completeQuiz, addWrongAnswer, wrongAnswers, isLoading } = useApp();
+  const { todayWords, dailyState, completeQuiz, addWrongAnswer, wrongAnswers, isLoading, earnXP } = useApp();
   const webTopInset = Platform.OS === 'web' ? 67 : 0;
   const topPad = insets.top + webTopInset;
   const webBottomInset = Platform.OS === 'web' ? 34 : 0;
@@ -87,11 +87,17 @@ export default function QuizScreen() {
       } else {
         const finalScore = correct ? score + 1 : score;
         completeQuiz(finalScore, quizWords.length);
+        if (finalScore > 0) {
+          earnXP(finalScore * 15, 'quiz_correct');
+        }
+        if (finalScore === quizWords.length) {
+          earnXP(50, 'quiz_perfect');
+        }
         setScore(finalScore);
         setQuizState('result');
       }
     }, 1000);
-  }, [selectedAnswer, currentWord, currentQ, quizWords.length, score, completeQuiz, shakeValue, addWrongAnswer]);
+  }, [selectedAnswer, currentWord, currentQ, quizWords.length, score, completeQuiz, shakeValue, addWrongAnswer, earnXP]);
 
   const startQuiz = useCallback(() => {
     setQuizState('active');

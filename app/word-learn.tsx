@@ -179,7 +179,7 @@ function WordFlashcard({ word, isBookmarked, onBookmark, showPronunciation }: {
 
 export default function WordLearnScreen() {
   const insets = useSafeAreaInsets();
-  const { settings, progress, dailyState, todayWords, dayNumber, bookmarks, markWordLearned, toggleBookmark, isLoading } = useApp();
+  const { settings, progress, dailyState, todayWords, dayNumber, bookmarks, markWordLearned, toggleBookmark, isLoading, earnXP } = useApp();
   const [currentIndex, setCurrentIndex] = useState(dailyState?.currentWordIndex || 0);
   const flatListRef = useRef<FlatList>(null);
 
@@ -192,19 +192,22 @@ export default function WordLearnScreen() {
 
   const [showComplete, setShowComplete] = useState(false);
 
-  const handleNext = useCallback(() => {
+  const handleNext = useCallback(async () => {
     if (currentIndex < todayWords.length - 1) {
       const nextIndex = currentIndex + 1;
       setCurrentIndex(nextIndex);
       markWordLearned(todayWords[currentIndex].id);
+      await earnXP(10, 'word_learned');
       flatListRef.current?.scrollToIndex({ index: nextIndex, animated: true });
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     } else {
       markWordLearned(todayWords[currentIndex].id);
+      await earnXP(10, 'word_learned');
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      await earnXP(30, 'daily_complete');
       setShowComplete(true);
     }
-  }, [currentIndex, todayWords, markWordLearned]);
+  }, [currentIndex, todayWords, markWordLearned, earnXP]);
 
   const handlePrev = useCallback(() => {
     if (currentIndex > 0) {

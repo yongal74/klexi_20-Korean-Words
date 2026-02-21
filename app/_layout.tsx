@@ -28,6 +28,7 @@ function RootLayoutNav() {
       <Stack.Screen name="daily-missions" options={{ headerShown: false, presentation: 'card' }} />
       <Stack.Screen name="pronunciation-practice" options={{ headerShown: false, presentation: 'card' }} />
       <Stack.Screen name="onboarding" options={{ headerShown: false, presentation: 'card' }} />
+      <Stack.Screen name="achievements" options={{ headerShown: false, presentation: 'card' }} />
       <Stack.Screen name="premium" options={{ headerShown: false, presentation: 'modal' }} />
     </Stack>
   );
