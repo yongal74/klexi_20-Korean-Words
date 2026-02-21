@@ -16,7 +16,7 @@ const PLANS = [
   {
     id: 'monthly',
     name: 'Monthly',
-    nameKr: '월간',
+    nameKr: 'Plan',
     price: '$7.99',
     period: '/month',
     savings: '',
@@ -26,7 +26,7 @@ const PLANS = [
   {
     id: 'yearly',
     name: 'Annual',
-    nameKr: '연간',
+    nameKr: 'Plan',
     price: '$49.99',
     period: '/year',
     savings: 'Save 48%',
@@ -36,7 +36,7 @@ const PLANS = [
   {
     id: 'lifetime',
     name: 'Lifetime',
-    nameKr: '평생',
+    nameKr: 'Access',
     price: '$99.99',
     period: 'one-time',
     savings: 'Best Value',
@@ -46,12 +46,12 @@ const PLANS = [
 ];
 
 const PREMIUM_FEATURES = [
-  { icon: 'ban-outline' as const, title: 'Ad-Free Experience', titleKr: '광고 없는 환경', desc: 'Remove all advertisements' },
-  { icon: 'infinite-outline' as const, title: 'Unlimited Words', titleKr: '무제한 단어', desc: 'Access all 7,200+ vocabulary words' },
-  { icon: 'mic-outline' as const, title: 'Advanced Pronunciation', titleKr: '고급 발음', desc: 'AI-powered pronunciation scoring' },
-  { icon: 'analytics-outline' as const, title: 'Detailed Analytics', titleKr: '상세 통계', desc: 'In-depth learning statistics' },
-  { icon: 'download-outline' as const, title: 'Offline Mode', titleKr: '오프라인 모드', desc: 'Learn without internet connection' },
-  { icon: 'color-palette-outline' as const, title: 'Custom Themes', titleKr: '맞춤 테마', desc: 'Personalize your learning experience' },
+  { icon: 'ban-outline' as const, title: 'Ad-Free Experience', titleKr: 'No Ads', desc: 'Remove all advertisements' },
+  { icon: 'infinite-outline' as const, title: 'Unlimited Words', titleKr: 'Full Access', desc: 'Access all 7,200+ vocabulary words' },
+  { icon: 'mic-outline' as const, title: 'Advanced Pronunciation', titleKr: 'Pro Audio', desc: 'AI-powered pronunciation scoring' },
+  { icon: 'analytics-outline' as const, title: 'Detailed Analytics', titleKr: 'Insights', desc: 'In-depth learning statistics' },
+  { icon: 'download-outline' as const, title: 'Offline Mode', titleKr: 'Offline', desc: 'Learn without internet connection' },
+  { icon: 'color-palette-outline' as const, title: 'Custom Themes', titleKr: 'Themes', desc: 'Personalize your learning experience' },
 ];
 
 export default function PremiumScreen() {

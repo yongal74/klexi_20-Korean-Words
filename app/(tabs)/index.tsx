@@ -15,7 +15,7 @@ const LEARNING_THEMES = [
   {
     id: 'word-learn',
     title: 'Word Learning',
-    titleKr: '단어 학습',
+    titleKr: 'Vocabulary',
     description: 'Daily TOPIK vocabulary flashcards',
     icon: 'book' as const,
     color: Colors.primary,
@@ -24,7 +24,7 @@ const LEARNING_THEMES = [
   {
     id: 'theme-lessons',
     title: 'K-Culture Themes',
-    titleKr: '테마 학습',
+    titleKr: 'Culture Lessons',
     description: 'K-Drama, K-Pop, K-Food & more',
     icon: 'film' as const,
     color: '#DDA0DD',
@@ -33,7 +33,7 @@ const LEARNING_THEMES = [
   {
     id: 'word-network',
     title: 'Word Network',
-    titleKr: '워드 네트워크',
+    titleKr: 'Connections',
     description: 'Explore word connections by category',
     icon: 'git-network' as const,
     color: Colors.secondary,
@@ -42,7 +42,7 @@ const LEARNING_THEMES = [
   {
     id: 'hangeul',
     title: 'Korean Alphabet',
-    titleKr: '한글 학습',
+    titleKr: 'Hangeul Basics',
     description: 'Learn consonants, vowels & syllables',
     icon: 'language' as const,
     color: Colors.accent,
