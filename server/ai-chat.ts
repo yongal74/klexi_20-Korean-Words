@@ -60,7 +60,6 @@ export function setupAIChatRoutes(app: Express): void {
         messages: [systemMessage, ...messages.slice(-20)],
         stream: true,
         max_completion_tokens: 300,
-        temperature: 0.8,
       });
 
       for await (const chunk of stream) {
