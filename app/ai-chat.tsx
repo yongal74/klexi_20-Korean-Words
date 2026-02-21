@@ -10,6 +10,7 @@ import {
   Platform,
   ActivityIndicator,
 } from 'react-native';
+import { fetch as expoFetch } from 'expo/fetch';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
@@ -90,7 +91,7 @@ export default function AIChatScreen() {
         content: m.content,
       }));
 
-      const response = await fetch(`${API_BASE}/api/ai-chat`, {
+      const response = await expoFetch(`${API_BASE}/api/ai-chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
