@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   StyleSheet, Text, View, ScrollView, Pressable, Platform, ActivityIndicator,
 } from 'react-native';
@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Colors from '@/constants/colors';
 import { useApp } from '@/lib/AppContext';
 import { TOPIK_LEVELS } from '@/lib/vocabulary';
@@ -53,6 +54,7 @@ const LEARNING_THEMES = [
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const { settings, progress, dailyState, todayWords, dayNumber, userProfile, isAuthenticated, wrongAnswers, customWords, isLoading } = useApp();
+  const [showOnboarding, setShowOnboarding] = useState<boolean | null>(null);
 
   const webTopInset = Platform.OS === 'web' ? 67 : 0;
   const topPad = insets.top + webTopInset;
@@ -61,6 +63,18 @@ export default function HomeScreen() {
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
       router.replace('/welcome');
+    }
+  }, [isLoading, isAuthenticated]);
+
+  useEffect(() => {
+    if (!isLoading && isAuthenticated) {
+      AsyncStorage.getItem('@daily_korean_onboarding_complete').then((value) => {
+        if (value !== 'true') {
+          router.replace('/onboarding');
+        } else {
+          setShowOnboarding(false);
+        }
+      });
     }
   }, [isLoading, isAuthenticated]);
 
