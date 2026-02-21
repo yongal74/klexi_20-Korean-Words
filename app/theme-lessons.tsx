@@ -10,6 +10,7 @@ import * as Haptics from 'expo-haptics';
 import Colors from '@/constants/colors';
 import { THEME_META, getThemeWords, ThemeWordWithLevel, ThemeLessonMeta } from '@/lib/theme-data';
 import { useApp } from '@/lib/AppContext';
+import PremiumGate, { PremiumBadge } from '@/components/PremiumGate';
 
 const LEVEL_LABELS = ['All', 'Lv.1', 'Lv.2', 'Lv.3', 'Lv.4', 'Lv.5', 'Lv.6'];
 const LEVEL_FULL_LABELS = ['All Levels', 'TOPIK 1 · Beginner', 'TOPIK 2 · Elementary', 'TOPIK 3 · Intermediate', 'TOPIK 4 · Upper-Intermediate', 'TOPIK 5 · Advanced', 'TOPIK 6 · Expert'];
@@ -67,7 +68,7 @@ export default function ThemeLessonsScreen() {
   const webTopInset = Platform.OS === 'web' ? 67 : 0;
   const topPad = insets.top + webTopInset;
   const { themeId } = useLocalSearchParams<{ themeId?: string }>();
-  const { settings } = useApp();
+  const { settings, isPremium } = useApp();
 
   const [selectedTheme, setSelectedTheme] = useState<string | null>(themeId || null);
   const [expandedWord, setExpandedWord] = useState<number | null>(null);
@@ -164,7 +165,13 @@ export default function ThemeLessonsScreen() {
                   isActive && { backgroundColor: LEVEL_COLORS[i], borderColor: LEVEL_COLORS[i] },
                   !isActive && { borderColor: LEVEL_COLORS[i] + '60' },
                 ]}
-                onPress={() => { setSelectedLevel(i); setExpandedWord(null); Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); }}
+                onPress={() => {
+                  if (!isPremium && i > 1) {
+                    router.push('/premium');
+                    return;
+                  }
+                  setSelectedLevel(i); setExpandedWord(null); Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                }}
               >
                 <Text style={[
                   styles.levelButtonLabel,
@@ -180,6 +187,9 @@ export default function ThemeLessonsScreen() {
                 ]}>
                   {count}
                 </Text>
+                {!isPremium && i > 1 && (
+                  <Ionicons name="lock-closed" size={10} color={Colors.textMuted} style={{ marginLeft: 2 }} />
+                )}
               </Pressable>
             );
           })}
@@ -188,7 +198,7 @@ export default function ThemeLessonsScreen() {
 
       {showAllSections ? (
         <SectionList
-          sections={sections}
+          sections={!isPremium ? sections.filter(s => s.level <= 1) : sections}
           keyExtractor={(item, i) => `${theme.id}-all-${item.level}-${i}`}
           renderSectionHeader={({ section }) => (
             <View style={[styles.sectionHeader, { borderLeftColor: LEVEL_COLORS[section.level] }]}>
@@ -222,6 +232,11 @@ export default function ThemeLessonsScreen() {
           contentContainerStyle={styles.wordList}
           showsVerticalScrollIndicator={false}
           stickySectionHeadersEnabled={false}
+        />
+      ) : !isPremium && selectedLevel > 1 ? (
+        <PremiumGate
+          title="Premium Content"
+          description={`Level ${selectedLevel} content is available for Premium users. Upgrade to unlock all 6 levels of K-Culture vocabulary.`}
         />
       ) : (
         <FlatList

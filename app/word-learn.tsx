@@ -9,6 +9,7 @@ import * as Haptics from 'expo-haptics';
 import * as Speech from 'expo-speech';
 import { router } from 'expo-router';
 import Colors from '@/constants/colors';
+import PremiumGate from '@/components/PremiumGate';
 import { useApp } from '@/lib/AppContext';
 import { TOPIK_LEVELS } from '@/lib/vocabulary';
 import type { Word } from '@/lib/vocabulary';
@@ -179,7 +180,7 @@ function WordFlashcard({ word, isBookmarked, onBookmark, showPronunciation }: {
 
 export default function WordLearnScreen() {
   const insets = useSafeAreaInsets();
-  const { settings, progress, dailyState, todayWords, dayNumber, bookmarks, markWordLearned, toggleBookmark, isLoading, earnXP } = useApp();
+  const { settings, progress, dailyState, todayWords, dayNumber, bookmarks, markWordLearned, toggleBookmark, isLoading, earnXP, isPremium } = useApp();
   const [currentIndex, setCurrentIndex] = useState(dailyState?.currentWordIndex || 0);
   const flatListRef = useRef<FlatList>(null);
 
@@ -191,6 +192,10 @@ export default function WordLearnScreen() {
   const progressPercent = todayWords.length > 0 ? (learnedCount / todayWords.length) * 100 : 0;
 
   const [showComplete, setShowComplete] = useState(false);
+
+  const isLevelLocked = !isPremium && settings.selectedLevel !== 'topik1-1';
+  const isDayLocked = !isPremium && dayNumber > 10;
+  const isLocked = isLevelLocked || isDayLocked;
 
   const handleNext = useCallback(async () => {
     if (currentIndex < todayWords.length - 1) {
@@ -233,6 +238,28 @@ export default function WordLearnScreen() {
     return (
       <View style={[styles.container, { paddingTop: topPad }]}>
         <ActivityIndicator size="large" color={Colors.primary} />
+      </View>
+    );
+  }
+
+  if (isLocked) {
+    return (
+      <View style={[styles.container, { paddingTop: topPad }]}>
+        <View style={styles.header}>
+          <Pressable onPress={() => router.back()} style={styles.backBtn}>
+            <Ionicons name="arrow-back" size={24} color={Colors.text} />
+          </Pressable>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.dayLabel}>Day {dayNumber}</Text>
+            <Text style={styles.levelLabel}>{level?.sublevel} {level?.title}</Text>
+          </View>
+        </View>
+        <PremiumGate
+          title={isLevelLocked ? 'Level Locked' : 'Free Trial Complete'}
+          description={isLevelLocked 
+            ? 'Free users can only access Level 1. Upgrade to Premium to unlock all 6 TOPIK levels with 7,200 words.'
+            : 'You\'ve completed your free 10-day trial of 200 words! Upgrade to Premium to continue learning all 1,200 Level 1 words and unlock all 6 levels.'}
+        />
       </View>
     );
   }

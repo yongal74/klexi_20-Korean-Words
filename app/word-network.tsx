@@ -9,6 +9,8 @@ import * as Speech from 'expo-speech';
 import * as Haptics from 'expo-haptics';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Colors from '@/constants/colors';
+import { useApp } from '@/lib/AppContext';
+import PremiumGate from '@/components/PremiumGate';
 import { getAllWords, Word } from '@/lib/vocabulary';
 import {
   getWordConnections, getPersonalizedConnections,
@@ -108,6 +110,7 @@ export default function WordNetworkScreen() {
   const insets = useSafeAreaInsets();
   const webTopInset = Platform.OS === 'web' ? 67 : 0;
   const topPad = insets.top + webTopInset;
+  const { isPremium } = useApp();
 
   const allWords = useMemo(() => getAllWords(), []);
   const categories = useMemo(() => {
@@ -120,6 +123,9 @@ export default function WordNetworkScreen() {
       .map(([category, words]) => ({ category, words, count: words.length }))
       .sort((a, b) => b.count - a.count);
   }, [allWords]);
+
+  const FREE_CATEGORY_LIMIT = 5;
+  const visibleCategories = !isPremium ? categories.slice(0, FREE_CATEGORY_LIMIT) : categories;
 
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedWord, setSelectedWord] = useState<Word | null>(null);
@@ -205,7 +211,7 @@ export default function WordNetworkScreen() {
               Words are connected using semantic fields, morphological analysis, antonym/synonym relations, collocation patterns, and honorific systems
             </Text>
           </View>
-          {categories.map((cat) => {
+          {visibleCategories.map((cat) => {
             const color = CATEGORY_COLORS[cat.category] || Colors.primary;
             return (
               <Pressable
@@ -222,6 +228,14 @@ export default function WordNetworkScreen() {
               </Pressable>
             );
           })}
+          {!isPremium && categories.length > FREE_CATEGORY_LIMIT && (
+            <View style={{ marginTop: 16, marginHorizontal: 8 }}>
+              <PremiumGate
+                title={`${categories.length - FREE_CATEGORY_LIMIT} More Categories`}
+                description="Upgrade to Premium to explore all word categories and connections."
+              />
+            </View>
+          )}
         </ScrollView>
       ) : !selectedWord ? (
         <View style={{ flex: 1 }}>

@@ -10,15 +10,21 @@ import Colors from '@/constants/colors';
 import { useApp } from '@/lib/AppContext';
 import { TOPIK_LEVELS } from '@/lib/vocabulary';
 import AdBanner from '@/components/AdBanner';
+import PremiumGate from '@/components/PremiumGate';
 
 export default function SettingsScreen() {
   const insets = useSafeAreaInsets();
-  const { settings, updateSettings, resetDaily, progress, wrongAnswers, customWords, userProfile, signOut, isLoading } = useApp();
+  const { settings, updateSettings, resetDaily, progress, wrongAnswers, customWords, userProfile, signOut, isLoading, isPremium } = useApp();
   const webTopInset = Platform.OS === 'web' ? 67 : 0;
   const topPad = insets.top + webTopInset;
   const webBottomInset = Platform.OS === 'web' ? 34 : 0;
 
   const handleLevelChange = (levelId: string) => {
+    if (!isPremium && levelId !== 'topik1-1') {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Warning);
+      router.push('/premium');
+      return;
+    }
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     updateSettings({ selectedLevel: levelId });
   };
@@ -116,6 +122,9 @@ export default function SettingsScreen() {
                   <Text style={styles.levelDays}>{lvl.days}</Text>
                   {isSelected && (
                     <Ionicons name="checkmark-circle" size={20} color={lvl.color} style={{ marginTop: 4 }} />
+                  )}
+                  {!isPremium && lvl.id !== 'topik1-1' && !isSelected && (
+                    <Ionicons name="lock-closed" size={14} color={Colors.textMuted} style={{ marginTop: 4 }} />
                   )}
                 </View>
               </Pressable>
