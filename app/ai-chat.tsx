@@ -14,11 +14,15 @@ import { fetch as expoFetch } from 'expo/fetch';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
+import { Audio } from 'expo-av';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Haptics from 'expo-haptics';
 import Colors from '@/constants/colors';
 import { useApp } from '@/lib/AppContext';
 
 const CHAT_STORAGE_KEY = '@daily_korean_ai_chat';
+const CHAT_COUNT_KEY = '@daily_korean_ai_chat_count';
+const FREE_MESSAGE_LIMIT = 5;
 const API_BASE = Platform.OS === 'web'
   ? `${typeof window !== 'undefined' ? window.location.protocol : 'https:'}//${process.env.EXPO_PUBLIC_DOMAIN || 'localhost:5000'}`
   : `https://${process.env.EXPO_PUBLIC_DOMAIN || 'localhost:5000'}`;
@@ -39,19 +43,28 @@ const SUGGESTIONS = [
 
 export default function AIChatScreen() {
   const insets = useSafeAreaInsets();
-  const { settings } = useApp();
+  const { settings, isPremium } = useApp();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [messageCount, setMessageCount] = useState(0);
+  const [isSpeaking, setIsSpeaking] = useState(false);
   const flatListRef = useRef<FlatList>(null);
+  const soundRef = useRef<Audio.Sound | null>(null);
   const topPad = insets.top + (Platform.OS === 'web' ? 67 : 0);
   const bottomPad = Platform.OS === 'web' ? 34 : insets.bottom;
+
+  const freeMessagesLeft = Math.max(0, FREE_MESSAGE_LIMIT - messageCount);
+  const isLocked = !isPremium && messageCount >= FREE_MESSAGE_LIMIT;
 
   useEffect(() => {
     AsyncStorage.getItem(CHAT_STORAGE_KEY).then((data) => {
       if (data) {
         try { setMessages(JSON.parse(data)); } catch {}
       }
+    });
+    AsyncStorage.getItem(CHAT_COUNT_KEY).then((data) => {
+      if (data) setMessageCount(parseInt(data) || 0);
     });
   }, []);
 
@@ -61,8 +74,61 @@ export default function AIChatScreen() {
     }
   }, [messages]);
 
+  useEffect(() => {
+    return () => {
+      if (soundRef.current) {
+        soundRef.current.unloadAsync();
+      }
+    };
+  }, []);
+
+  const speakText = useCallback(async (text: string) => {
+    try {
+      if (soundRef.current) {
+        await soundRef.current.unloadAsync();
+        soundRef.current = null;
+      }
+      setIsSpeaking(true);
+
+      const response = await fetch(`${API_BASE}/api/ai-tts`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text, voice: 'nova' }),
+      });
+
+      if (!response.ok) {
+        setIsSpeaking(false);
+        return;
+      }
+
+      const blob = await response.blob();
+      const reader = new FileReader();
+      reader.onloadend = async () => {
+        try {
+          const base64 = (reader.result as string).split(',')[1];
+          const uri = `data:audio/mpeg;base64,${base64}`;
+          const { sound } = await Audio.Sound.createAsync({ uri });
+          soundRef.current = sound;
+          sound.setOnPlaybackStatusUpdate((status) => {
+            if ('didJustFinish' in status && status.didJustFinish) {
+              setIsSpeaking(false);
+            }
+          });
+          await sound.playAsync();
+        } catch {
+          setIsSpeaking(false);
+        }
+      };
+      reader.readAsDataURL(blob);
+    } catch {
+      setIsSpeaking(false);
+    }
+  }, []);
+
   const sendMessage = useCallback(async (text: string) => {
-    if (!text.trim() || isLoading) return;
+    if (!text.trim() || isLoading || isLocked) return;
+
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
     const userMsg: ChatMessage = {
       id: Date.now().toString(),
@@ -75,6 +141,10 @@ export default function AIChatScreen() {
     setMessages(updatedMessages);
     setInput('');
     setIsLoading(true);
+
+    const newCount = messageCount + 1;
+    setMessageCount(newCount);
+    AsyncStorage.setItem(CHAT_COUNT_KEY, newCount.toString());
 
     const assistantMsg: ChatMessage = {
       id: (Date.now() + 1).toString(),
@@ -139,6 +209,10 @@ export default function AIChatScreen() {
           }
         }
       }
+
+      if (fullContent) {
+        speakText(fullContent);
+      }
     } catch (error) {
       setMessages((prev) => {
         const updated = [...prev];
@@ -146,7 +220,7 @@ export default function AIChatScreen() {
         if (last && last.role === 'assistant' && !last.content) {
           updated[updated.length - 1] = {
             ...last,
-            content: 'Sorry, I couldn\'t respond right now. Please try again! 😊',
+            content: 'Sorry, I couldn\'t respond right now. Please try again!',
           };
         }
         return updated;
@@ -154,7 +228,7 @@ export default function AIChatScreen() {
     } finally {
       setIsLoading(false);
     }
-  }, [messages, isLoading, settings.selectedLevel]);
+  }, [messages, isLoading, settings.selectedLevel, messageCount, isLocked, speakText]);
 
   const clearChat = useCallback(() => {
     setMessages([]);
@@ -171,6 +245,15 @@ export default function AIChatScreen() {
               <Text style={styles.avatarText}>달</Text>
             </View>
             <Text style={styles.botName}>Dalli</Text>
+            {!isUser && item.content && (
+              <Pressable
+                onPress={() => speakText(item.content)}
+                style={styles.speakBtn}
+                hitSlop={8}
+              >
+                <Ionicons name={isSpeaking ? 'volume-high' : 'volume-medium-outline'} size={16} color={Colors.primary} />
+              </Pressable>
+            )}
           </View>
         )}
         <Text style={[styles.messageText, isUser && styles.userText]}>
@@ -178,7 +261,7 @@ export default function AIChatScreen() {
         </Text>
       </View>
     );
-  }, [isLoading]);
+  }, [isLoading, isSpeaking, speakText]);
 
   return (
     <View style={[styles.container, { paddingTop: topPad }]}>
@@ -190,6 +273,12 @@ export default function AIChatScreen() {
           <Text style={styles.title}>Korean Chat</Text>
           <Text style={styles.subtitle}>Practice with AI Tutor</Text>
         </View>
+        {!isPremium && (
+          <View style={styles.freeCountBadge}>
+            <Ionicons name="chatbubble-outline" size={12} color={freeMessagesLeft > 0 ? Colors.primary : Colors.error} />
+            <Text style={[styles.freeCountText, freeMessagesLeft === 0 && { color: Colors.error }]}>{freeMessagesLeft}</Text>
+          </View>
+        )}
         <Pressable onPress={clearChat} style={styles.clearBtn}>
           <Ionicons name="trash-outline" size={20} color={Colors.textSecondary} />
         </Pressable>
@@ -209,10 +298,16 @@ export default function AIChatScreen() {
             <Text style={styles.emptyDesc}>
               Your Korean conversation partner.{'\n'}Ask me anything or practice chatting in Korean!
             </Text>
+            {!isPremium && (
+              <View style={styles.freeBanner}>
+                <Ionicons name="gift-outline" size={16} color={Colors.primary} />
+                <Text style={styles.freeBannerText}>{freeMessagesLeft} free messages remaining</Text>
+              </View>
+            )}
             <View style={styles.suggestions}>
               {SUGGESTIONS.map((s, i) => (
-                <Pressable key={i} style={styles.suggestionBtn} onPress={() => sendMessage(s)}>
-                  <Text style={styles.suggestionText}>{s}</Text>
+                <Pressable key={i} style={[styles.suggestionBtn, isLocked && styles.suggestionBtnLocked]} onPress={() => !isLocked && sendMessage(s)} disabled={isLocked}>
+                  <Text style={[styles.suggestionText, isLocked && styles.suggestionTextLocked]}>{s}</Text>
                 </Pressable>
               ))}
             </View>
@@ -229,31 +324,45 @@ export default function AIChatScreen() {
           />
         )}
 
-        <View style={[styles.inputBar, { paddingBottom: Math.max(bottomPad, 12) }]}>
-          <TextInput
-            style={styles.textInput}
-            value={input}
-            onChangeText={setInput}
-            placeholder="Type in Korean or English..."
-            placeholderTextColor={Colors.textMuted}
-            multiline
-            maxLength={500}
-            editable={!isLoading}
-            onSubmitEditing={() => sendMessage(input)}
-            returnKeyType="send"
-          />
-          <Pressable
-            style={[styles.sendBtn, (!input.trim() || isLoading) && styles.sendBtnDisabled]}
-            onPress={() => sendMessage(input)}
-            disabled={!input.trim() || isLoading}
-          >
-            {isLoading ? (
-              <ActivityIndicator size="small" color="#1A1A1A" />
-            ) : (
-              <Ionicons name="send" size={20} color="#1A1A1A" />
-            )}
-          </Pressable>
-        </View>
+        {isLocked ? (
+          <View style={[styles.lockedBar, { paddingBottom: Math.max(bottomPad, 12) }]}>
+            <Ionicons name="lock-closed" size={18} color={Colors.streak} />
+            <Text style={styles.lockedText}>Free messages used up</Text>
+            <Pressable
+              style={styles.upgradeBtn}
+              onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); router.push('/premium'); }}
+            >
+              <Ionicons name="diamond" size={14} color="#1A1A1A" />
+              <Text style={styles.upgradeBtnText}>Upgrade</Text>
+            </Pressable>
+          </View>
+        ) : (
+          <View style={[styles.inputBar, { paddingBottom: Math.max(bottomPad, 12) }]}>
+            <TextInput
+              style={styles.textInput}
+              value={input}
+              onChangeText={setInput}
+              placeholder="Type in Korean or English..."
+              placeholderTextColor={Colors.textMuted}
+              multiline
+              maxLength={500}
+              editable={!isLoading}
+              onSubmitEditing={() => sendMessage(input)}
+              returnKeyType="send"
+            />
+            <Pressable
+              style={[styles.sendBtn, (!input.trim() || isLoading) && styles.sendBtnDisabled]}
+              onPress={() => sendMessage(input)}
+              disabled={!input.trim() || isLoading}
+            >
+              {isLoading ? (
+                <ActivityIndicator size="small" color="#1A1A1A" />
+              ) : (
+                <Ionicons name="send" size={20} color="#1A1A1A" />
+              )}
+            </Pressable>
+          </View>
+        )}
       </KeyboardAvoidingView>
     </View>
   );
@@ -289,6 +398,21 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontFamily: 'NotoSansKR_400Regular',
     color: Colors.textSecondary,
+  },
+  freeCountBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: Colors.card,
+    borderRadius: 12,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    marginRight: 4,
+  },
+  freeCountText: {
+    fontSize: 12,
+    fontFamily: 'NotoSansKR_700Bold',
+    color: Colors.primary,
   },
   clearBtn: {
     width: 40,
@@ -329,7 +453,22 @@ const styles = StyleSheet.create({
     color: Colors.textSecondary,
     textAlign: 'center',
     lineHeight: 22,
-    marginBottom: 24,
+    marginBottom: 16,
+  },
+  freeBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: Colors.primary + '10',
+    borderRadius: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    marginBottom: 20,
+  },
+  freeBannerText: {
+    fontSize: 13,
+    fontFamily: 'NotoSansKR_500Medium',
+    color: Colors.primary,
   },
   suggestions: {
     width: '100%',
@@ -343,10 +482,16 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.border,
   },
+  suggestionBtnLocked: {
+    opacity: 0.4,
+  },
   suggestionText: {
     fontSize: 14,
     fontFamily: 'NotoSansKR_500Medium',
     color: Colors.text,
+  },
+  suggestionTextLocked: {
+    color: Colors.textMuted,
   },
   messageList: {
     paddingHorizontal: 16,
@@ -393,6 +538,10 @@ const styles = StyleSheet.create({
     fontFamily: 'NotoSansKR_500Medium',
     color: Colors.primary,
   },
+  speakBtn: {
+    marginLeft: 'auto',
+    padding: 2,
+  },
   messageText: {
     fontSize: 15,
     fontFamily: 'NotoSansKR_400Regular',
@@ -435,5 +584,36 @@ const styles = StyleSheet.create({
   },
   sendBtnDisabled: {
     opacity: 0.5,
+  },
+  lockedBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 16,
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: Colors.border,
+    backgroundColor: Colors.background,
+    gap: 10,
+  },
+  lockedText: {
+    fontSize: 14,
+    fontFamily: 'NotoSansKR_500Medium',
+    color: Colors.textSecondary,
+    flex: 1,
+  },
+  upgradeBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: Colors.streak,
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+  },
+  upgradeBtnText: {
+    fontSize: 14,
+    fontFamily: 'NotoSansKR_700Bold',
+    color: '#1A1A1A',
   },
 });
