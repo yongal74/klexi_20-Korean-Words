@@ -50,7 +50,7 @@ export default function QuizScreen() {
   }));
 
   const speakWord = useCallback((text: string) => {
-    Speech.speak(text, { language: 'ko-KR', rate: 0.85, pitch: 1.0 });
+    Speech.speak(text, { language: 'ko-KR', rate: 0.9, pitch: 1.05 });
   }, []);
 
   const handleAnswer = useCallback((answer: string) => {

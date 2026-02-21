@@ -49,25 +49,25 @@ function WordFlashcard({ word, isBookmarked, onBookmark, showPronunciation }: {
     flipProgress.value = withSpring(next ? 1 : 0, { damping: 15, stiffness: 100 });
   }, [flipped, flipProgress]);
 
-  const speakWord = useCallback((rate: number = 0.85) => {
-    Speech.speak(word.korean, { language: 'ko-KR', rate, pitch: 1.0 });
+  const speakWord = useCallback((rate: number = 0.9) => {
+    Speech.speak(word.korean, { language: 'ko-KR', rate, pitch: 1.05 });
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   }, [word.korean]);
 
   const speakSlow = useCallback(() => {
-    Speech.speak(word.korean, { language: 'ko-KR', rate: 0.5, pitch: 1.0 });
+    Speech.speak(word.korean, { language: 'ko-KR', rate: 0.55, pitch: 1.0 });
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   }, [word.korean]);
 
   const speakRepeat = useCallback(() => {
-    Speech.speak(word.korean, { language: 'ko-KR', rate: 0.85, pitch: 1.0, onDone: () => {
-      setTimeout(() => Speech.speak(word.korean, { language: 'ko-KR', rate: 0.85, pitch: 1.0 }), 500);
+    Speech.speak(word.korean, { language: 'ko-KR', rate: 0.9, pitch: 1.05, onDone: () => {
+      setTimeout(() => Speech.speak(word.korean, { language: 'ko-KR', rate: 0.9, pitch: 1.05 }), 600);
     }});
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   }, [word.korean]);
 
   const speakExample = useCallback(() => {
-    Speech.speak(word.example, { language: 'ko-KR', rate: 0.8, pitch: 1.0 });
+    Speech.speak(word.example, { language: 'ko-KR', rate: 0.85, pitch: 1.05 });
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   }, [word.example]);
 

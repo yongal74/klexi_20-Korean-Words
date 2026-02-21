@@ -20,12 +20,12 @@ export default function ReviewScreen() {
   const playingRef = useRef(false);
 
   const speakWord = useCallback((korean: string) => {
-    Speech.speak(korean, { language: 'ko-KR', rate: 0.85, pitch: 1.0 });
+    Speech.speak(korean, { language: 'ko-KR', rate: 0.9, pitch: 1.05 });
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   }, []);
 
   const speakSentence = useCallback((sentence: string) => {
-    Speech.speak(sentence, { language: 'ko-KR', rate: 0.8, pitch: 1.0 });
+    Speech.speak(sentence, { language: 'ko-KR', rate: 0.85, pitch: 1.05 });
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   }, []);
 
@@ -50,8 +50,8 @@ export default function ReviewScreen() {
       await new Promise<void>((resolve) => {
         Speech.speak(w.korean, {
           language: 'ko-KR',
-          rate: 0.85,
-          pitch: 1.0,
+          rate: 0.9,
+          pitch: 1.05,
           onDone: () => resolve(),
           onError: () => resolve(),
         });
@@ -77,8 +77,8 @@ export default function ReviewScreen() {
         await new Promise<void>((resolve) => {
           Speech.speak(w.sentence, {
             language: 'ko-KR',
-            rate: 0.8,
-            pitch: 1.0,
+            rate: 0.85,
+            pitch: 1.05,
             onDone: () => resolve(),
             onError: () => resolve(),
           });
