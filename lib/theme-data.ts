@@ -15,8 +15,12 @@ export interface ThemeLessonMeta {
   description: string;
 }
 
+export interface ThemeWordWithLevel extends ThemeWord {
+  level: number;
+}
+
 export interface ThemeLesson extends ThemeLessonMeta {
-  words: ThemeWord[];
+  words: ThemeWordWithLevel[];
 }
 
 import { KDRAMA_WORDS } from './theme-vocab/kdrama';
@@ -86,11 +90,13 @@ const THEME_WORDS_MAP: Record<string, Record<number, ThemeWord[]>> = {
   manners: MANNERS_WORDS,
 };
 
-export function getThemeWords(themeId: string, level?: number): ThemeWord[] {
+export function getThemeWords(themeId: string, level?: number): ThemeWordWithLevel[] {
   const themeWords = THEME_WORDS_MAP[themeId];
   if (!themeWords) return [];
-  if (level && themeWords[level]) return themeWords[level];
-  return Object.values(themeWords).flat();
+  if (level && themeWords[level]) return themeWords[level].map(w => ({ ...w, level }));
+  return Object.entries(themeWords).flatMap(([lvl, words]) =>
+    words.map(w => ({ ...w, level: Number(lvl) }))
+  );
 }
 
 export function getThemeWordCount(themeId: string, level?: number): number {

@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import {
-  StyleSheet, Text, View, ScrollView, Pressable, Platform, FlatList,
+  StyleSheet, Text, View, ScrollView, Pressable, Platform, FlatList, SectionList,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -8,17 +8,19 @@ import { router, useLocalSearchParams } from 'expo-router';
 import * as Speech from 'expo-speech';
 import * as Haptics from 'expo-haptics';
 import Colors from '@/constants/colors';
-import { THEME_META, getThemeWords, ThemeWord, ThemeLessonMeta } from '@/lib/theme-data';
+import { THEME_META, getThemeWords, ThemeWordWithLevel, ThemeLessonMeta } from '@/lib/theme-data';
 import { useApp } from '@/lib/AppContext';
 
-const LEVEL_LABELS = ['All', 'TOPIK 1', 'TOPIK 2', 'TOPIK 3', 'TOPIK 4', 'TOPIK 5', 'TOPIK 6'];
+const LEVEL_LABELS = ['All', 'Lv.1', 'Lv.2', 'Lv.3', 'Lv.4', 'Lv.5', 'Lv.6'];
+const LEVEL_FULL_LABELS = ['All Levels', 'TOPIK 1 · 입문', 'TOPIK 2 · 초급', 'TOPIK 3 · 중급', 'TOPIK 4 · 중상급', 'TOPIK 5 · 고급', 'TOPIK 6 · 최상급'];
 const LEVEL_COLORS = ['#888', '#8BC34A', '#66BB9A', '#5BA8C8', '#C98A5E', '#B89B6A', '#9B8EC4'];
 
-function WordCard({ word, index, isExpanded, onToggle }: {
-  word: ThemeWord;
+function WordCard({ word, index, isExpanded, onToggle, showLevel }: {
+  word: ThemeWordWithLevel;
   index: number;
   isExpanded: boolean;
   onToggle: () => void;
+  showLevel: boolean;
 }) {
   const speak = useCallback((text: string) => {
     Speech.speak(text, { language: 'ko-KR', rate: 0.85, pitch: 1.0 });
@@ -35,6 +37,11 @@ function WordCard({ word, index, isExpanded, onToggle }: {
           <Text style={styles.wordKorean}>{word.korean}</Text>
           <Text style={styles.wordEnglish}>{word.english}</Text>
         </View>
+        {showLevel && (
+          <View style={[styles.levelBadge, { backgroundColor: LEVEL_COLORS[word.level] + '20', borderColor: LEVEL_COLORS[word.level] + '50' }]}>
+            <Text style={[styles.levelBadgeText, { color: LEVEL_COLORS[word.level] }]}>Lv.{word.level}</Text>
+          </View>
+        )}
         <Pressable onPress={(e) => { e.stopPropagation(); speak(word.korean); }} hitSlop={12}>
           <Ionicons name="volume-high" size={20} color={Colors.primary} />
         </Pressable>
@@ -72,6 +79,22 @@ export default function ThemeLessonsScreen() {
     if (!selectedTheme) return [];
     return getThemeWords(selectedTheme, selectedLevel === 0 ? undefined : selectedLevel);
   }, [selectedTheme, selectedLevel]);
+
+  const sections = useMemo(() => {
+    if (selectedLevel !== 0 || words.length === 0) return [];
+    const grouped: Record<number, ThemeWordWithLevel[]> = {};
+    words.forEach(w => {
+      if (!grouped[w.level]) grouped[w.level] = [];
+      grouped[w.level].push(w);
+    });
+    return Object.entries(grouped)
+      .sort(([a], [b]) => Number(a) - Number(b))
+      .map(([lvl, data]) => ({
+        level: Number(lvl),
+        title: `TOPIK ${lvl}`,
+        data,
+      }));
+  }, [words, selectedLevel]);
 
   if (!selectedTheme || !theme) {
     return (
@@ -111,6 +134,8 @@ export default function ThemeLessonsScreen() {
     );
   }
 
+  const showAllSections = selectedLevel === 0;
+
   return (
     <View style={[styles.container, { paddingTop: topPad }]}>
       <View style={styles.header}>
@@ -126,34 +151,85 @@ export default function ThemeLessonsScreen() {
         </View>
       </View>
 
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.levelTabs} contentContainerStyle={styles.levelTabsContent}>
-        {LEVEL_LABELS.map((label, i) => (
-          <Pressable
-            key={i}
-            style={[styles.levelTab, selectedLevel === i && { backgroundColor: LEVEL_COLORS[i] }]}
-            onPress={() => { setSelectedLevel(i); setExpandedWord(null); }}
-          >
-            <Text style={[styles.levelTabText, selectedLevel === i && styles.levelTabTextActive]}>
-              {label}
-            </Text>
-          </Pressable>
-        ))}
-      </ScrollView>
+      <View style={styles.levelButtonsContainer}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.levelButtonsScroll}>
+          {LEVEL_LABELS.map((label, i) => {
+            const isActive = selectedLevel === i;
+            const count = i === 0 ? words.length : getThemeWords(selectedTheme, i).length;
+            return (
+              <Pressable
+                key={i}
+                style={[
+                  styles.levelButton,
+                  isActive && { backgroundColor: LEVEL_COLORS[i], borderColor: LEVEL_COLORS[i] },
+                  !isActive && { borderColor: LEVEL_COLORS[i] + '60' },
+                ]}
+                onPress={() => { setSelectedLevel(i); setExpandedWord(null); Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); }}
+              >
+                <Text style={[
+                  styles.levelButtonLabel,
+                  isActive && { color: i === 0 ? '#fff' : '#1A1A1A' },
+                  !isActive && { color: LEVEL_COLORS[i] },
+                ]}>
+                  {label}
+                </Text>
+                <Text style={[
+                  styles.levelButtonCount,
+                  isActive && { color: i === 0 ? 'rgba(255,255,255,0.8)' : 'rgba(26,26,26,0.6)' },
+                  !isActive && { color: Colors.textMuted },
+                ]}>
+                  {count}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </ScrollView>
+      </View>
 
-      <FlatList
-        data={words}
-        keyExtractor={(_, i) => `${theme.id}-${selectedLevel}-${i}`}
-        renderItem={({ item, index }) => (
-          <WordCard
-            word={item}
-            index={index}
-            isExpanded={expandedWord === index}
-            onToggle={() => setExpandedWord(expandedWord === index ? null : index)}
-          />
-        )}
-        contentContainerStyle={styles.wordList}
-        showsVerticalScrollIndicator={false}
-      />
+      {showAllSections ? (
+        <SectionList
+          sections={sections}
+          keyExtractor={(item, i) => `${theme.id}-all-${item.level}-${i}`}
+          renderSectionHeader={({ section }) => (
+            <View style={[styles.sectionHeader, { borderLeftColor: LEVEL_COLORS[section.level] }]}>
+              <View style={[styles.sectionHeaderDot, { backgroundColor: LEVEL_COLORS[section.level] }]} />
+              <Text style={styles.sectionHeaderText}>{section.title}</Text>
+              <Text style={[styles.sectionHeaderLevel, { color: LEVEL_COLORS[section.level] }]}>{LEVEL_FULL_LABELS[section.level]}</Text>
+              <Text style={styles.sectionHeaderCount}>{section.data.length}</Text>
+            </View>
+          )}
+          renderItem={({ item, index, section }) => (
+            <View style={styles.sectionWordWrapper}>
+              <WordCard
+                word={item}
+                index={index}
+                isExpanded={expandedWord === index + section.level * 1000}
+                onToggle={() => setExpandedWord(expandedWord === index + section.level * 1000 ? null : index + section.level * 1000)}
+                showLevel={false}
+              />
+            </View>
+          )}
+          contentContainerStyle={styles.wordList}
+          showsVerticalScrollIndicator={false}
+          stickySectionHeadersEnabled={false}
+        />
+      ) : (
+        <FlatList
+          data={words}
+          keyExtractor={(_, i) => `${theme.id}-${selectedLevel}-${i}`}
+          renderItem={({ item, index }) => (
+            <WordCard
+              word={item}
+              index={index}
+              isExpanded={expandedWord === index}
+              onToggle={() => setExpandedWord(expandedWord === index ? null : index)}
+              showLevel={false}
+            />
+          )}
+          contentContainerStyle={styles.wordList}
+          showsVerticalScrollIndicator={false}
+        />
+      )}
     </View>
   );
 }
@@ -240,27 +316,83 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontFamily: 'NotoSansKR_500Medium',
   },
-  levelTabs: {
-    maxHeight: 42,
-    marginBottom: 4,
+  levelButtonsContainer: {
+    paddingBottom: 8,
   },
-  levelTabsContent: {
+  levelButtonsScroll: {
     paddingHorizontal: 16,
     gap: 8,
   },
-  levelTab: {
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 20,
-    backgroundColor: Colors.surface,
+  levelButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 12,
+    backgroundColor: Colors.card,
+    borderWidth: 2,
+    borderColor: Colors.border,
+    alignItems: 'center',
+    minWidth: 60,
   },
-  levelTabText: {
-    fontSize: 12,
+  levelButtonLabel: {
+    fontSize: 14,
     fontFamily: 'NotoSansKR_700Bold',
     color: Colors.textSecondary,
   },
-  levelTabTextActive: {
-    color: '#fff',
+  levelButtonCount: {
+    fontSize: 11,
+    fontFamily: 'NotoSansKR_400Regular',
+    color: Colors.textMuted,
+    marginTop: 2,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 4,
+    marginTop: 8,
+    marginBottom: 4,
+    borderLeftWidth: 3,
+    borderLeftColor: Colors.primary,
+    paddingLeft: 12,
+    gap: 8,
+  },
+  sectionHeaderDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+  },
+  sectionHeaderText: {
+    fontSize: 16,
+    fontFamily: 'NotoSansKR_700Bold',
+    color: Colors.text,
+  },
+  sectionHeaderLevel: {
+    fontSize: 12,
+    fontFamily: 'NotoSansKR_400Regular',
+    flex: 1,
+  },
+  sectionHeaderCount: {
+    fontSize: 12,
+    fontFamily: 'NotoSansKR_500Medium',
+    color: Colors.textMuted,
+    backgroundColor: Colors.surface,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 8,
+    overflow: 'hidden',
+  },
+  sectionWordWrapper: {
+    paddingHorizontal: 0,
+  },
+  levelBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 8,
+    borderWidth: 1,
+  },
+  levelBadgeText: {
+    fontSize: 10,
+    fontFamily: 'NotoSansKR_700Bold',
   },
   wordList: {
     padding: 20,
