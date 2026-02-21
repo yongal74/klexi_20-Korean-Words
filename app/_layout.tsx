@@ -24,6 +24,8 @@ function RootLayoutNav() {
       <Stack.Screen name="related-words-screen" options={{ headerShown: false, presentation: 'card' }} />
       <Stack.Screen name="theme-lessons" options={{ headerShown: false, presentation: 'card' }} />
       <Stack.Screen name="word-network" options={{ headerShown: false, presentation: 'card' }} />
+      <Stack.Screen name="sentence-practice" options={{ headerShown: false, presentation: 'card' }} />
+      <Stack.Screen name="daily-missions" options={{ headerShown: false, presentation: 'card' }} />
     </Stack>
   );
 }

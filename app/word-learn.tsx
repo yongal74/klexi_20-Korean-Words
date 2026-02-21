@@ -16,6 +16,19 @@ import type { Word } from '@/lib/vocabulary';
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CARD_WIDTH = SCREEN_WIDTH - 48;
 
+function PronunciationBreakdown({ pronunciation }: { pronunciation: string }) {
+  const syllables = pronunciation.split('-');
+  return (
+    <View style={styles.breakdownRow}>
+      {syllables.map((s, i) => (
+        <View key={i} style={styles.syllableChip}>
+          <Text style={styles.syllableText}>{s}</Text>
+        </View>
+      ))}
+    </View>
+  );
+}
+
 function WordFlashcard({ word, isBookmarked, onBookmark, showPronunciation }: {
   word: Word;
   isBookmarked: boolean;
@@ -23,17 +36,31 @@ function WordFlashcard({ word, isBookmarked, onBookmark, showPronunciation }: {
   showPronunciation: boolean;
 }) {
   const [flipped, setFlipped] = useState(false);
+  const [showBreakdown, setShowBreakdown] = useState(false);
   const flipProgress = useSharedValue(0);
 
   const handleFlip = useCallback(() => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     const next = !flipped;
     setFlipped(next);
+    setShowBreakdown(false);
     flipProgress.value = withSpring(next ? 1 : 0, { damping: 15, stiffness: 100 });
   }, [flipped, flipProgress]);
 
-  const speakWord = useCallback(() => {
-    Speech.speak(word.korean, { language: 'ko', rate: 0.7 });
+  const speakWord = useCallback((rate: number = 0.7) => {
+    Speech.speak(word.korean, { language: 'ko', rate });
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  }, [word.korean]);
+
+  const speakSlow = useCallback(() => {
+    Speech.speak(word.korean, { language: 'ko', rate: 0.35 });
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  }, [word.korean]);
+
+  const speakRepeat = useCallback(() => {
+    Speech.speak(word.korean, { language: 'ko', rate: 0.7, onDone: () => {
+      setTimeout(() => Speech.speak(word.korean, { language: 'ko', rate: 0.7 }), 400);
+    }});
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   }, [word.korean]);
 
@@ -60,7 +87,7 @@ function WordFlashcard({ word, isBookmarked, onBookmark, showPronunciation }: {
             <Text style={[styles.categoryText, { color: Colors.primary }]}>{word.category}</Text>
           </View>
           <View style={styles.cardActions}>
-            <Pressable onPress={(e) => { e.stopPropagation(); speakWord(); }} hitSlop={12}>
+            <Pressable onPress={(e) => { e.stopPropagation(); speakWord(); }} hitSlop={12} testID="speak-word">
               <Ionicons name="volume-high" size={20} color={Colors.primary} />
             </Pressable>
             <Pressable onPress={(e) => { e.stopPropagation(); onBookmark(); }} hitSlop={12}>
@@ -75,15 +102,31 @@ function WordFlashcard({ word, isBookmarked, onBookmark, showPronunciation }: {
         <View style={styles.cardCenter}>
           <Text style={styles.koreanText}>{word.korean}</Text>
           {showPronunciation && (
-            <Text style={styles.pronunciationText}>[{word.pronunciation}]</Text>
+            <Pressable onPress={(e) => { e.stopPropagation(); setShowBreakdown(!showBreakdown); }}>
+              <Text style={styles.pronunciationText}>[{word.pronunciation}]</Text>
+            </Pressable>
+          )}
+          {showPronunciation && showBreakdown && (
+            <PronunciationBreakdown pronunciation={word.pronunciation} />
           )}
           <View style={[styles.posBadge, { backgroundColor: Colors.secondary + '20' }]}>
             <Text style={[styles.posText, { color: Colors.secondary }]}>{word.partOfSpeech}</Text>
           </View>
         </View>
-        <View style={styles.tapHint}>
-          <Ionicons name="sync-outline" size={16} color={Colors.textMuted} />
-          <Text style={styles.tapHintText}>Tap to reveal meaning</Text>
+        <View style={styles.ttsRow}>
+          <Pressable onPress={(e) => { e.stopPropagation(); speakSlow(); }} style={styles.ttsChip}>
+            <Ionicons name="play-back" size={14} color={Colors.textSecondary} />
+            <Text style={styles.ttsChipText}>Slow</Text>
+          </Pressable>
+          <Pressable onPress={(e) => { e.stopPropagation(); speakRepeat(); }} style={styles.ttsChip}>
+            <Ionicons name="repeat" size={14} color={Colors.textSecondary} />
+            <Text style={styles.ttsChipText}>Repeat</Text>
+          </Pressable>
+          <View style={{ flex: 1 }} />
+          <View style={styles.tapHint}>
+            <Ionicons name="sync-outline" size={14} color={Colors.textMuted} />
+            <Text style={styles.tapHintText}>Flip</Text>
+          </View>
         </View>
       </Animated.View>
 
@@ -419,14 +462,52 @@ const styles = StyleSheet.create({
     fontFamily: 'NotoSansKR_400Regular',
     color: Colors.textSecondary,
   },
+  breakdownRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    gap: 6,
+    marginTop: 4,
+  },
+  syllableChip: {
+    backgroundColor: Colors.primary + '15',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: Colors.primary + '30',
+  },
+  syllableText: {
+    fontSize: 14,
+    fontFamily: 'NotoSansKR_500Medium',
+    color: Colors.primary,
+  },
+  ttsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  ttsChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    backgroundColor: Colors.surface,
+    borderRadius: 10,
+  },
+  ttsChipText: {
+    fontSize: 12,
+    fontFamily: 'NotoSansKR_400Regular',
+    color: Colors.textSecondary,
+  },
   tapHint: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    gap: 6,
+    gap: 4,
   },
   tapHintText: {
-    fontSize: 13,
+    fontSize: 12,
     fontFamily: 'NotoSansKR_400Regular',
     color: Colors.textMuted,
   },

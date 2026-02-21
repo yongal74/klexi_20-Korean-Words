@@ -147,12 +147,20 @@ export default function HomeScreen() {
       </View>
 
       <View style={styles.quickGrid}>
-        <Pressable style={styles.quickCard} onPress={() => router.push('/custom-words')}>
+        <Pressable style={styles.quickCard} onPress={() => router.push('/sentence-practice')}>
           <View style={[styles.quickIcon, { backgroundColor: Colors.primary + '15' }]}>
-            <Ionicons name="create-outline" size={20} color={Colors.primary} />
+            <Ionicons name="text-outline" size={20} color={Colors.primary} />
           </View>
-          <Text style={styles.quickLabel}>My Words</Text>
-          <Text style={styles.quickCount}>{customWords.length}</Text>
+          <Text style={styles.quickLabel}>Sentences</Text>
+          <Text style={styles.quickSubLabel}>Practice</Text>
+        </Pressable>
+
+        <Pressable style={styles.quickCard} onPress={() => router.push('/daily-missions')}>
+          <View style={[styles.quickIcon, { backgroundColor: Colors.streak + '15' }]}>
+            <Ionicons name="flag-outline" size={20} color={Colors.streak} />
+          </View>
+          <Text style={styles.quickLabel}>Missions</Text>
+          <Text style={styles.quickSubLabel}>Daily</Text>
         </Pressable>
 
         <Pressable style={styles.quickCard} onPress={() => router.push('/review')}>
@@ -163,12 +171,12 @@ export default function HomeScreen() {
           <Text style={styles.quickCount}>{wrongAnswers.length}</Text>
         </Pressable>
 
-        <Pressable style={styles.quickCard} onPress={() => router.push('/(tabs)/quiz')}>
-          <View style={[styles.quickIcon, { backgroundColor: Colors.secondary + '15' }]}>
-            <Ionicons name="checkmark-circle-outline" size={20} color={Colors.secondary} />
+        <Pressable style={styles.quickCard} onPress={() => router.push('/custom-words')}>
+          <View style={[styles.quickIcon, { backgroundColor: Colors.accent + '15' }]}>
+            <Ionicons name="create-outline" size={20} color={Colors.accent} />
           </View>
-          <Text style={styles.quickLabel}>Quiz</Text>
-          <Text style={styles.quickCount}>{dailyState?.quizCompleted ? 'Done' : 'Go'}</Text>
+          <Text style={styles.quickLabel}>My Words</Text>
+          <Text style={styles.quickCount}>{customWords.length}</Text>
         </Pressable>
       </View>
 
@@ -356,16 +364,18 @@ const styles = StyleSheet.create({
   },
   quickGrid: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     paddingHorizontal: 24,
     gap: 10,
   },
   quickCard: {
-    flex: 1,
+    width: '47%',
+    flexGrow: 1,
     backgroundColor: Colors.card,
     borderRadius: 14,
     padding: 14,
     alignItems: 'center',
-    gap: 8,
+    gap: 6,
     borderWidth: 1,
     borderColor: Colors.border,
   },
@@ -385,6 +395,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: 'NotoSansKR_700Bold',
     color: Colors.text,
+  },
+  quickSubLabel: {
+    fontSize: 11,
+    fontFamily: 'NotoSansKR_400Regular',
+    color: Colors.textMuted,
   },
   statsRow: {
     flexDirection: 'row',
