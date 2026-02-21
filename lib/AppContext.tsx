@@ -11,6 +11,8 @@ import {
   getUserProfile, saveUserProfile, clearUserProfile,
 } from './storage';
 import { getDailyWords, Word } from './vocabulary';
+import { getSRSData, SRSData, reviewWord, getWordsForReview, getReviewCount, initWordSRS, SRSWordData } from './srs';
+import { getGamificationData, GamificationData, addXP, checkAchievements, XP_REWARDS, calculateLevel, Achievement } from './gamification';
 
 interface AppContextValue {
   settings: UserSettings;
@@ -36,6 +38,15 @@ interface AppContextValue {
   clearWrongAnswers: () => Promise<void>;
   signIn: (profile: UserProfile) => Promise<void>;
   signOut: () => Promise<void>;
+  srsData: SRSData;
+  gamification: GamificationData;
+  reviewCount: number;
+  userLevel: { level: number; currentXP: number; xpForNext: number; progress: number };
+  reviewSRSWord: (wordId: string, quality: number) => Promise<void>;
+  initSRSWord: (wordId: string) => Promise<void>;
+  earnXP: (amount: number, source: string) => Promise<{ levelUp: boolean; newLevel: number }>;
+  refreshGamification: () => Promise<void>;
+  getWordsForSRSReview: () => Promise<SRSWordData[]>;
 }
 
 const AppContext = createContext<AppContextValue | null>(null);
@@ -62,11 +73,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [customWords, setCustomWords] = useState<CustomWord[]>([]);
   const [wrongAnswers, setWrongAnswers] = useState<WrongAnswer[]>([]);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [srsData, setSrsData] = useState<SRSData>({ words: {} });
+  const [gamification, setGamification] = useState<GamificationData>({ totalXP: 0, level: 1, achievements: {}, xpHistory: [] });
+  const [reviewCount, setReviewCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     (async () => {
-      const [s, p, d, b, cw, wa, up] = await Promise.all([
+      const [s, p, d, b, cw, wa, up, srs, gam] = await Promise.all([
         getSettings(),
         getProgress(),
         getDailyState(),
@@ -74,6 +88,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         getCustomWords(),
         getWrongAnswers(),
         getUserProfile(),
+        getSRSData(),
+        getGamificationData(),
       ]);
       setSettings(s);
       setProgress(p);
@@ -82,6 +98,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setCustomWords(cw);
       setWrongAnswers(wa);
       setUserProfile(up);
+      setSrsData(srs);
+      setGamification(gam);
+      const count = await getReviewCount();
+      setReviewCount(count);
       setIsLoading(false);
     })();
   }, []);
@@ -118,6 +138,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
     await saveDailyState(current);
     setDailyState({ ...current });
+
+    await initWordSRS(wordId);
+    const srsUpdated = await getSRSData();
+    setSrsData(srsUpdated);
   }, [dailyState, todayWords.length]);
 
   const completeQuiz = useCallback(async (score: number, total: number) => {
@@ -200,6 +224,40 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const isAuthenticated = !!userProfile;
 
+  const userLevel = useMemo(() => calculateLevel(gamification.totalXP), [gamification.totalXP]);
+
+  const reviewSRSWordCb = useCallback(async (wordId: string, quality: number) => {
+    await reviewWord(wordId, quality);
+    const updated = await getSRSData();
+    setSrsData(updated);
+    const count = await getReviewCount();
+    setReviewCount(count);
+  }, []);
+
+  const initSRSWordCb = useCallback(async (wordId: string) => {
+    await initWordSRS(wordId);
+    const updated = await getSRSData();
+    setSrsData(updated);
+  }, []);
+
+  const earnXPCb = useCallback(async (amount: number, source: string) => {
+    const result = await addXP(amount, source);
+    const updated = await getGamificationData();
+    setGamification(updated);
+    return { levelUp: result.levelUp, newLevel: result.newLevel };
+  }, []);
+
+  const refreshGamificationCb = useCallback(async () => {
+    const updated = await getGamificationData();
+    setGamification(updated);
+    const count = await getReviewCount();
+    setReviewCount(count);
+  }, []);
+
+  const getWordsForSRSReviewCb = useCallback(async () => {
+    return await getWordsForReview();
+  }, []);
+
   const value = useMemo(() => ({
     settings,
     progress,
@@ -224,7 +282,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
     clearWrongAnswers: clearWrongAnswersCb,
     signIn: signInCb,
     signOut: signOutCb,
-  }), [settings, progress, dailyState, bookmarks, todayWords, dayNumber, isLoading, customWords, wrongAnswers, userProfile, isAuthenticated, updateSettings, markWordLearned, completeQuiz, toggleBookmarkCb, resetDaily, addCustomWordCb, removeCustomWordCb, addWrongAnswerCb, removeWrongAnswerCb, clearWrongAnswersCb, signInCb, signOutCb]);
+    srsData,
+    gamification,
+    reviewCount,
+    userLevel,
+    reviewSRSWord: reviewSRSWordCb,
+    initSRSWord: initSRSWordCb,
+    earnXP: earnXPCb,
+    refreshGamification: refreshGamificationCb,
+    getWordsForSRSReview: getWordsForSRSReviewCb,
+  }), [settings, progress, dailyState, bookmarks, todayWords, dayNumber, isLoading, customWords, wrongAnswers, userProfile, isAuthenticated, updateSettings, markWordLearned, completeQuiz, toggleBookmarkCb, resetDaily, addCustomWordCb, removeCustomWordCb, addWrongAnswerCb, removeWrongAnswerCb, clearWrongAnswersCb, signInCb, signOutCb, srsData, gamification, reviewCount, userLevel, reviewSRSWordCb, initSRSWordCb, earnXPCb, refreshGamificationCb, getWordsForSRSReviewCb]);
 
   return (
     <AppContext.Provider value={value}>

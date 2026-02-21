@@ -53,7 +53,7 @@ const LEARNING_THEMES = [
 
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
-  const { settings, progress, dailyState, todayWords, dayNumber, userProfile, isAuthenticated, wrongAnswers, customWords, isLoading } = useApp();
+  const { settings, progress, dailyState, todayWords, dayNumber, userProfile, isAuthenticated, wrongAnswers, customWords, isLoading, gamification, userLevel, reviewCount } = useApp();
   const [showOnboarding, setShowOnboarding] = useState<boolean | null>(null);
 
   const webTopInset = Platform.OS === 'web' ? 67 : 0;
@@ -111,6 +111,20 @@ export default function HomeScreen() {
         </View>
       </View>
 
+      <View style={styles.xpCard}>
+        <View style={styles.xpHeader}>
+          <View style={styles.levelBadge}>
+            <Ionicons name="shield" size={16} color={Colors.primary} />
+            <Text style={styles.levelText}>Lv.{userLevel.level}</Text>
+          </View>
+          <Text style={styles.xpText}>{gamification.totalXP} XP</Text>
+        </View>
+        <View style={styles.xpBarBg}>
+          <View style={[styles.xpBarFill, { width: `${Math.min(userLevel.progress * 100, 100)}%` }]} />
+        </View>
+        <Text style={styles.xpNextLevel}>{userLevel.currentXP}/{userLevel.xpForNext} XP to Level {userLevel.level + 1}</Text>
+      </View>
+
       <View style={styles.todayCard}>
         <View style={styles.todayHeader}>
           <View style={{ flex: 1 }}>
@@ -132,6 +146,22 @@ export default function HomeScreen() {
           <Text style={styles.progressText}>{learnedCount}/{todayWords.length}</Text>
         </View>
       </View>
+
+      {reviewCount > 0 && (
+        <Pressable
+          style={styles.reviewBanner}
+          onPress={() => { router.push('/review'); Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); }}
+        >
+          <View style={styles.reviewBannerIcon}>
+            <Ionicons name="refresh-circle" size={24} color={Colors.secondary} />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.reviewBannerTitle}>{reviewCount} words due for review</Text>
+            <Text style={styles.reviewBannerSub}>Spaced repetition keeps your memory sharp</Text>
+          </View>
+          <Ionicons name="chevron-forward" size={18} color={Colors.textMuted} />
+        </Pressable>
+      )}
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Learning Paths</Text>
@@ -195,6 +225,22 @@ export default function HomeScreen() {
           </View>
           <Text style={styles.quickLabel}>My Words</Text>
           <Text style={styles.quickCount}>{customWords.length}</Text>
+        </Pressable>
+
+        <Pressable style={styles.quickCard} onPress={() => router.push('/pronunciation-practice')}>
+          <View style={[styles.quickIcon, { backgroundColor: '#FF6B6B15' }]}>
+            <Ionicons name="mic-outline" size={20} color="#FF6B6B" />
+          </View>
+          <Text style={styles.quickLabel}>Pronounce</Text>
+          <Text style={styles.quickSubLabel}>Practice</Text>
+        </Pressable>
+
+        <Pressable style={styles.quickCard} onPress={() => router.push('/premium')}>
+          <View style={[styles.quickIcon, { backgroundColor: Colors.streak + '15' }]}>
+            <Ionicons name="diamond-outline" size={20} color={Colors.streak} />
+          </View>
+          <Text style={styles.quickLabel}>Premium</Text>
+          <Text style={styles.quickSubLabel}>Upgrade</Text>
         </Pressable>
       </View>
 
@@ -449,5 +495,87 @@ const styles = StyleSheet.create({
   statDivider: {
     width: 1,
     backgroundColor: Colors.border,
+  },
+  xpCard: {
+    marginHorizontal: 24,
+    marginTop: 12,
+    backgroundColor: Colors.card,
+    borderRadius: 14,
+    padding: 14,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    gap: 8,
+  },
+  xpHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  levelBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: Colors.primary + '15',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  levelText: {
+    fontSize: 14,
+    fontFamily: 'NotoSansKR_700Bold',
+    color: Colors.primary,
+  },
+  xpText: {
+    fontSize: 13,
+    fontFamily: 'NotoSansKR_500Medium',
+    color: Colors.textSecondary,
+  },
+  xpBarBg: {
+    height: 6,
+    backgroundColor: Colors.surface,
+    borderRadius: 3,
+    overflow: 'hidden',
+  },
+  xpBarFill: {
+    height: '100%',
+    backgroundColor: Colors.primary,
+    borderRadius: 3,
+  },
+  xpNextLevel: {
+    fontSize: 11,
+    fontFamily: 'NotoSansKR_400Regular',
+    color: Colors.textMuted,
+    textAlign: 'right',
+  },
+  reviewBanner: {
+    marginHorizontal: 24,
+    marginTop: 12,
+    backgroundColor: Colors.secondary + '12',
+    borderRadius: 14,
+    padding: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    borderWidth: 1,
+    borderColor: Colors.secondary + '30',
+  },
+  reviewBannerIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    backgroundColor: Colors.secondary + '20',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  reviewBannerTitle: {
+    fontSize: 14,
+    fontFamily: 'NotoSansKR_700Bold',
+    color: Colors.text,
+  },
+  reviewBannerSub: {
+    fontSize: 11,
+    fontFamily: 'NotoSansKR_400Regular',
+    color: Colors.textSecondary,
+    marginTop: 2,
   },
 });

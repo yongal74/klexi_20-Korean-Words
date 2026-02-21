@@ -1,6 +1,6 @@
 import React, { useState, useRef, useCallback } from 'react';
 import {
-  StyleSheet, Text, View, Pressable, Dimensions, Platform, FlatList, ActivityIndicator,
+  StyleSheet, Text, View, Pressable, Dimensions, Platform, FlatList, ActivityIndicator, ScrollView,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -246,20 +246,75 @@ export default function WordLearnScreen() {
             <Text style={styles.levelLabel}>{level?.sublevel} {level?.title}</Text>
           </View>
         </View>
-        <View style={styles.completeContainer}>
+        <ScrollView contentContainerStyle={styles.completeScroll} showsVerticalScrollIndicator={false}>
           <View style={styles.completeIconBg}>
             <Ionicons name="checkmark-circle" size={64} color={Colors.primary} />
           </View>
           <Text style={styles.completeTitle}>Great Job!</Text>
           <Text style={styles.completeSubtitle}>You finished today's {todayWords.length} words</Text>
-          <Pressable
-            style={styles.sentencePracticeBtn}
-            onPress={() => router.push('/sentence-practice')}
-            testID="practice-sentences-btn"
-          >
-            <Ionicons name="text-outline" size={22} color="#fff" />
-            <Text style={styles.sentencePracticeBtnText}>Practice Sentences</Text>
-          </Pressable>
+          
+          <View style={styles.whatsNextSection}>
+            <Text style={styles.whatsNextTitle}>What's Next?</Text>
+            
+            <Pressable
+              style={[styles.nextActionCard, { borderColor: Colors.secondary + '40' }]}
+              onPress={() => router.push('/(tabs)/quiz')}
+              testID="take-quiz-btn"
+            >
+              <View style={[styles.nextActionIcon, { backgroundColor: Colors.secondary + '15' }]}>
+                <Ionicons name="help-circle-outline" size={24} color={Colors.secondary} />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.nextActionTitle}>Take Today's Quiz</Text>
+                <Text style={styles.nextActionDesc}>Test what you just learned</Text>
+              </View>
+              <Ionicons name="chevron-forward" size={18} color={Colors.textMuted} />
+            </Pressable>
+
+            <Pressable
+              style={[styles.nextActionCard, { borderColor: Colors.primary + '40' }]}
+              onPress={() => router.push('/sentence-practice')}
+              testID="practice-sentences-btn"
+            >
+              <View style={[styles.nextActionIcon, { backgroundColor: Colors.primary + '15' }]}>
+                <Ionicons name="text-outline" size={24} color={Colors.primary} />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.nextActionTitle}>Practice Sentences</Text>
+                <Text style={styles.nextActionDesc}>Build sentences with new words</Text>
+              </View>
+              <Ionicons name="chevron-forward" size={18} color={Colors.textMuted} />
+            </Pressable>
+
+            <Pressable
+              style={[styles.nextActionCard, { borderColor: '#FF6B6B40' }]}
+              onPress={() => router.push('/pronunciation-practice')}
+            >
+              <View style={[styles.nextActionIcon, { backgroundColor: '#FF6B6B15' }]}>
+                <Ionicons name="mic-outline" size={24} color="#FF6B6B" />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.nextActionTitle}>Practice Pronunciation</Text>
+                <Text style={styles.nextActionDesc}>Record and compare your voice</Text>
+              </View>
+              <Ionicons name="chevron-forward" size={18} color={Colors.textMuted} />
+            </Pressable>
+
+            <Pressable
+              style={[styles.nextActionCard, { borderColor: Colors.streak + '40' }]}
+              onPress={() => router.push('/daily-missions')}
+            >
+              <View style={[styles.nextActionIcon, { backgroundColor: Colors.streak + '15' }]}>
+                <Ionicons name="flag-outline" size={24} color={Colors.streak} />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.nextActionTitle}>Daily Missions</Text>
+                <Text style={styles.nextActionDesc}>Complete tasks for bonus XP</Text>
+              </View>
+              <Ionicons name="chevron-forward" size={18} color={Colors.textMuted} />
+            </Pressable>
+          </View>
+
           <Pressable
             style={styles.reviewAgainBtn}
             onPress={() => { setShowComplete(false); setCurrentIndex(0); flatListRef.current?.scrollToIndex({ index: 0, animated: false }); }}
@@ -274,7 +329,7 @@ export default function WordLearnScreen() {
             <Ionicons name="home-outline" size={18} color={Colors.textMuted} />
             <Text style={styles.goHomeBtnText}>Back to Home</Text>
           </Pressable>
-        </View>
+        </ScrollView>
       </View>
     );
   }
@@ -685,5 +740,49 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: 'NotoSansKR_400Regular',
     color: Colors.textMuted,
+  },
+  completeScroll: {
+    alignItems: 'center',
+    paddingTop: 40,
+    paddingHorizontal: 24,
+    paddingBottom: 100,
+  },
+  whatsNextSection: {
+    width: '100%',
+    marginTop: 32,
+    gap: 10,
+  },
+  whatsNextTitle: {
+    fontSize: 18,
+    fontFamily: 'NotoSansKR_700Bold',
+    color: Colors.text,
+    marginBottom: 4,
+  },
+  nextActionCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.card,
+    borderRadius: 14,
+    padding: 14,
+    gap: 12,
+    borderWidth: 1,
+  },
+  nextActionIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  nextActionTitle: {
+    fontSize: 14,
+    fontFamily: 'NotoSansKR_700Bold',
+    color: Colors.text,
+  },
+  nextActionDesc: {
+    fontSize: 12,
+    fontFamily: 'NotoSansKR_400Regular',
+    color: Colors.textSecondary,
+    marginTop: 2,
   },
 });
