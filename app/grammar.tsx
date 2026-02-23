@@ -275,18 +275,20 @@ const styles = StyleSheet.create({
     color: Colors.textSecondary,
   },
   categoryTabs: {
-    maxHeight: 44,
+    minHeight: 48,
+    maxHeight: 48,
     borderBottomWidth: 1,
     borderBottomColor: Colors.border,
   },
   categoryTabsContent: {
     paddingHorizontal: 12,
-    paddingVertical: 6,
+    paddingVertical: 10,
     gap: 6,
+    alignItems: 'center',
   },
   categoryTab: {
     paddingHorizontal: 12,
-    paddingVertical: 5,
+    paddingVertical: 6,
     borderRadius: 14,
     borderWidth: 1,
     borderColor: Colors.border,
