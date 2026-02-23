@@ -238,6 +238,17 @@ export default function SettingsScreen() {
           </View>
           <Ionicons name="chevron-forward" size={18} color={Colors.textMuted} />
         </Pressable>
+
+        <Pressable style={styles.toolButton} onPress={() => router.push('/grammar')}>
+          <View style={[styles.toolIcon, { backgroundColor: '#5BA8C815' }]}>
+            <Ionicons name="construct-outline" size={20} color="#5BA8C8" />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.toolText}>Grammar</Text>
+            <Text style={styles.toolSubtext}>TOPIK grammar patterns by level</Text>
+          </View>
+          <Ionicons name="chevron-forward" size={18} color={Colors.textMuted} />
+        </Pressable>
       </View>
 
       <View style={styles.section}>

@@ -31,6 +31,7 @@ function RootLayoutNav() {
       <Stack.Screen name="achievements" options={{ headerShown: false, presentation: 'card' }} />
       <Stack.Screen name="premium" options={{ headerShown: false, presentation: 'modal' }} />
       <Stack.Screen name="ai-chat" options={{ headerShown: false, presentation: 'card' }} />
+      <Stack.Screen name="grammar" options={{ headerShown: false, presentation: 'card' }} />
     </Stack>
   );
 }

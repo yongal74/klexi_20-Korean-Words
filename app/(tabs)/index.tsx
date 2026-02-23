@@ -50,6 +50,15 @@ const LEARNING_THEMES = [
     color: Colors.accent,
     route: '/hangeul' as const,
   },
+  {
+    id: 'grammar',
+    title: 'Grammar',
+    titleKr: 'TOPIK Patterns',
+    description: '108 essential grammar points by level',
+    icon: 'construct' as const,
+    color: '#5BA8C8',
+    route: '/grammar' as const,
+  },
 ];
 
 export default function HomeScreen() {
