@@ -7,7 +7,7 @@ Kloop Korean (tagline: "Daily Korean in 20 Words") is a comprehensive Korean lan
 ## Recent Changes (Feb 2026)
 
 - Added authentication system with email signup/login, social login placeholders (Google, Apple, Kakao), and guest mode
-- Redesigned Home tab as learning hub with 4 theme cards: Word Learning, K-Culture Themes, Word Network, Korean Alphabet
+- Redesigned Home tab as learning hub with 5 theme cards: Word Learning, K-Culture Themes, Word Network, Korean Alphabet, Grammar
 - Added K-Culture Themed Lessons with 6 categories: K-Drama, K-Pop, K-Food, Travel, Internet Slang, Manners (3,600 words: 100 per theme per TOPIK level)
 - Added Word Network screen for exploring category-based word connections with visual graph
 - Moved flashcard learning to dedicated /word-learn route
@@ -50,6 +50,12 @@ Kloop Korean (tagline: "Daily Korean in 20 Words") is a comprehensive Korean lan
 - AI Chat OpenAI TTS voice: Dalli's responses auto-play via OpenAI gpt-audio model (nova voice), speaker icon for replay on each assistant message, server endpoint at /api/ai-tts
 - Improved TTS naturalness: raised rate to 0.9 and pitch to 1.05 across all screens (word-learn, quiz, review)
 - Improved onboarding screen readability: larger fonts, better spacing, card-style bullet items, enhanced contrast
+- Added TOPIK Grammar learning screen (app/grammar.tsx) with 108 grammar points across 6 TOPIK levels, category filtering, expandable cards with explanations, examples, structure, and tips
+- Grammar data in lib/grammar-data.ts: 15 categories including Particles, Verb Endings, Connectors, Indirect Speech, Passive & Causative, Literary Forms, Archaic Forms
+- AI Chat cost optimization: free users use device TTS (expo-speech), premium users get OpenAI TTS (nova voice); common response caching for frequent queries; max_tokens reduced to 250; conversation history limited to 8 messages
+- Added ShareCard component (components/ShareCard.tsx) with ShareProgressCard and ShareDailyCard for viral social sharing via native Share API
+- Updated premium pricing: $5.99/month, $39.99/year (save 44%), $79.99 lifetime
+- Added promo/marketing assets in assets/promo/ (app store listing, marketing content kit, 6 promotional images)
 
 ## User Preferences
 
