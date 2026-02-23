@@ -20,8 +20,9 @@ const LEVEL_COLORS = [
 function GrammarCard({ item, isExpanded, onToggle, color }: {
   item: GrammarPoint; isExpanded: boolean; onToggle: () => void; color: string;
 }) {
-  const speakExample = useCallback((text: string) => {
-    Speech.speak(text, { language: 'ko-KR', rate: 0.85, pitch: 1.05 });
+  const speakKorean = useCallback((text: string) => {
+    const padded = text.length <= 2 ? text + '.' : text;
+    Speech.speak(padded, { language: 'ko-KR', rate: 0.8, pitch: 1.05 });
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   }, []);
 
@@ -39,7 +40,7 @@ function GrammarCard({ item, isExpanded, onToggle, color }: {
 
       <View style={styles.titleRow}>
         <Text style={[styles.grammarTitle, { color }]}>{item.title}</Text>
-        <Pressable onPress={() => speakExample(item.title)} hitSlop={10} style={styles.speakSmall}>
+        <Pressable onPress={() => speakKorean(item.title)} hitSlop={10} style={styles.speakSmall}>
           <Ionicons name="volume-high" size={16} color={color} />
         </Pressable>
       </View>
@@ -61,7 +62,7 @@ function GrammarCard({ item, isExpanded, onToggle, color }: {
           <View style={styles.examplesSection}>
             <Text style={styles.examplesLabel}>Examples</Text>
             {item.examples.map((ex, i) => (
-              <Pressable key={i} onPress={() => speakExample(ex.korean)} style={styles.exampleCard}>
+              <Pressable key={i} onPress={() => speakKorean(ex.korean)} style={styles.exampleCard}>
                 <View style={styles.exampleKoreanRow}>
                   <Text style={styles.exampleKorean}>{ex.korean}</Text>
                   <Ionicons name="volume-medium-outline" size={14} color={color} />

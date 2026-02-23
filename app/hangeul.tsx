@@ -11,8 +11,13 @@ import Colors from '@/constants/colors';
 import { HANGEUL_SECTIONS, SYLLABLE_EXAMPLES, HANGEUL_PRINCIPLES, HangeulChar } from '@/lib/hangeul';
 
 function CharCard({ char, isExpanded, onToggle }: { char: HangeulChar; isExpanded: boolean; onToggle: () => void }) {
-  const speak = useCallback(() => {
-    Speech.speak(char.example, { language: 'ko-KR', rate: 0.85, pitch: 1.0 });
+  const speakName = useCallback(() => {
+    Speech.speak(char.name, { language: 'ko-KR', rate: 0.8, pitch: 1.0 });
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  }, [char.name]);
+
+  const speakExample = useCallback(() => {
+    Speech.speak(char.example, { language: 'ko-KR', rate: 0.8, pitch: 1.0 });
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   }, [char.example]);
 
@@ -25,23 +30,25 @@ function CharCard({ char, isExpanded, onToggle }: { char: HangeulChar; isExpande
       <View style={styles.charRow}>
         <Text style={[styles.charText, { color: typeColor }]}>{char.char}</Text>
         <View style={styles.charInfo}>
+          <Text style={styles.charName}>{char.name}</Text>
           <Text style={styles.charRoman}>{char.romanization}</Text>
-          <Text style={styles.charSound} numberOfLines={1}>{char.sound}</Text>
         </View>
-        <Pressable onPress={speak} hitSlop={10} style={[styles.speakBtn, { backgroundColor: typeColor + '15' }]}>
+        <Pressable onPress={speakName} hitSlop={10} style={[styles.speakBtn, { backgroundColor: typeColor + '15' }]}>
           <Ionicons name="volume-high" size={18} color={typeColor} />
         </Pressable>
       </View>
+      <Text style={styles.charSound} numberOfLines={2}>{char.sound}</Text>
       {isExpanded && (
         <View style={styles.charExpanded}>
           <View style={styles.tipBox}>
             <Ionicons name="bulb-outline" size={14} color={Colors.accent} />
             <Text style={styles.tipText}>{char.tip}</Text>
           </View>
-          <View style={styles.exampleRow}>
+          <Pressable onPress={speakExample} style={styles.exampleRow}>
             <Text style={styles.exampleWord}>{char.example}</Text>
             <Text style={styles.exampleMeaning}>= {char.exampleMeaning}</Text>
-          </View>
+            <Ionicons name="volume-medium-outline" size={14} color={typeColor} style={{ marginLeft: 6 }} />
+          </Pressable>
         </View>
       )}
     </Pressable>
@@ -220,8 +227,9 @@ const styles = StyleSheet.create({
   charRow: { flexDirection: 'row', alignItems: 'center', gap: 14 },
   charText: { fontSize: 36, fontFamily: 'NotoSansKR_700Bold', width: 50, textAlign: 'center' },
   charInfo: { flex: 1, gap: 2 },
-  charRoman: { fontSize: 16, fontFamily: 'NotoSansKR_700Bold', color: Colors.text },
-  charSound: { fontSize: 12, fontFamily: 'NotoSansKR_400Regular', color: Colors.textSecondary },
+  charName: { fontSize: 15, fontFamily: 'NotoSansKR_700Bold', color: Colors.text },
+  charRoman: { fontSize: 13, fontFamily: 'NotoSansKR_500Medium', color: Colors.primary },
+  charSound: { fontSize: 12, fontFamily: 'NotoSansKR_400Regular', color: Colors.textSecondary, marginTop: 4, paddingLeft: 64 },
   speakBtn: { width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center' },
   charExpanded: { marginTop: 12, gap: 8, borderTopWidth: 1, borderTopColor: Colors.border, paddingTop: 12 },
   tipBox: { flexDirection: 'row', gap: 8, alignItems: 'flex-start', backgroundColor: Colors.accent + '10', borderRadius: 10, padding: 10 },
