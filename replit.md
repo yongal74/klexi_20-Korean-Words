@@ -54,7 +54,7 @@ Kloop Korean (tagline: "Daily Korean in 20 Words") is a comprehensive Korean lan
 - Grammar data in lib/grammar-data.ts: 15 categories including Particles, Verb Endings, Connectors, Indirect Speech, Passive & Causative, Literary Forms, Archaic Forms
 - AI Chat cost optimization: free users use device TTS (expo-speech), premium users get OpenAI TTS (nova voice); common response caching for frequent queries; max_tokens reduced to 250; conversation history limited to 8 messages
 - Added ShareCard component (components/ShareCard.tsx) with ShareProgressCard and ShareDailyCard for viral social sharing via native Share API
-- Updated premium pricing: $5.99/month, $39.99/year (save 44%), $79.99 lifetime
+- Updated premium pricing: $7.99/month, $49.99/year (save 48%), $99.99 lifetime
 - Added promo/marketing assets in assets/promo/ (app store listing, marketing content kit, 6 promotional images)
 
 ## User Preferences

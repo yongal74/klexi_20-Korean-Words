@@ -85,9 +85,9 @@ Premium unlocks:
 - Ad-free experience
 
 Premium Plans:
-- Monthly: $5.99/month
-- Yearly: $39.99/year (save 44%)
-- Lifetime: $79.99 one-time purchase
+- Monthly: $7.99/month
+- Yearly: $49.99/year (save 48%)
+- Lifetime: $99.99 one-time purchase
 
 ## Keywords (100 chars max)
 korean,learn korean,topik,hangeul,korean vocabulary,kpop,kdrama,korean language,korean words,hangul
