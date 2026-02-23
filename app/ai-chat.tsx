@@ -15,6 +15,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { Audio } from 'expo-av';
+import * as Speech from 'expo-speech';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Haptics from 'expo-haptics';
 import Colors from '@/constants/colors';
@@ -82,7 +83,21 @@ export default function AIChatScreen() {
     };
   }, []);
 
-  const speakText = useCallback(async (text: string) => {
+  const speakWithDeviceTTS = useCallback((text: string) => {
+    const koreanOnly = text.replace(/[a-zA-Z\(\)\/\-\[\]'"!?.,:;@#$%^&*0-9\n]/g, ' ').replace(/\s+/g, ' ').trim();
+    const textToSpeak = koreanOnly.length > 5 ? koreanOnly : text;
+    Speech.stop();
+    setIsSpeaking(true);
+    Speech.speak(textToSpeak, {
+      language: 'ko-KR',
+      rate: 0.9,
+      pitch: 1.05,
+      onDone: () => setIsSpeaking(false),
+      onError: () => setIsSpeaking(false),
+    });
+  }, []);
+
+  const speakWithAITTS = useCallback(async (text: string) => {
     try {
       if (soundRef.current) {
         await soundRef.current.unloadAsync();
@@ -97,7 +112,7 @@ export default function AIChatScreen() {
       });
 
       if (!response.ok) {
-        setIsSpeaking(false);
+        speakWithDeviceTTS(text);
         return;
       }
 
@@ -121,9 +136,17 @@ export default function AIChatScreen() {
       };
       reader.readAsDataURL(blob);
     } catch {
-      setIsSpeaking(false);
+      speakWithDeviceTTS(text);
     }
-  }, []);
+  }, [speakWithDeviceTTS]);
+
+  const speakText = useCallback((text: string) => {
+    if (isPremium) {
+      speakWithAITTS(text);
+    } else {
+      speakWithDeviceTTS(text);
+    }
+  }, [isPremium, speakWithAITTS, speakWithDeviceTTS]);
 
   const sendMessage = useCallback(async (text: string) => {
     if (!text.trim() || isLoading || isLocked) return;
