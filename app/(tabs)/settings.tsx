@@ -306,10 +306,10 @@ export default function SettingsScreen() {
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>About</Text>
         <View style={styles.aboutCard}>
-          <Text style={styles.aboutName}>Kloop Korean</Text>
+          <Text style={styles.aboutName}>Twenty Korean</Text>
           <Text style={styles.aboutVersion}>Version 3.0.0</Text>
           <Text style={styles.aboutDesc}>
-            Kloop Korean helps you build real Korean with just 20 smart words a day.
+            Twenty Korean helps you build real Korean with just 20 smart words a day.
           </Text>
         </View>
       </View>

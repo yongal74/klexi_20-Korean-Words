@@ -134,7 +134,7 @@ export default function PremiumScreen() {
           <View style={styles.crownCircle}>
             <Ionicons name="diamond" size={40} color={Colors.streak} />
           </View>
-          <Text style={styles.heroTitle}>Kloop Korean Premium</Text>
+          <Text style={styles.heroTitle}>Twenty Korean Premium</Text>
           <Text style={styles.heroSubtitle}>Unlock the full Korean learning experience</Text>
         </View>
 

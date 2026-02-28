@@ -12,15 +12,15 @@ interface ShareCardProps {
   compact?: boolean;
 }
 
-const APP_URL = 'https://kloopkorean.com';
-const SHARE_HASHTAG = '#KloopKorean #LearnKorean #한국어';
+const APP_URL = 'https://twentykorean.com';
+const SHARE_HASHTAG = '#TwentyKorean #LearnKorean #한국어';
 
 export function ShareProgressCard({ streak, wordsLearned, dayNumber, level, compact = false }: ShareCardProps) {
   const handleShare = async () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 
     const streakEmoji = streak >= 30 ? '🏆' : streak >= 7 ? '🔥' : '✨';
-    const message = `${streakEmoji} Day ${dayNumber} of learning Korean with Kloop Korean!\n\n📚 ${wordsLearned} words learned\n🔥 ${streak} day streak\n📊 ${level}\n\nJust 20 smart words a day. Try it!\n${APP_URL}\n\n${SHARE_HASHTAG}`;
+    const message = `${streakEmoji} Day ${dayNumber} of learning Korean with Twenty Korean!\n\n📚 ${wordsLearned} words learned\n🔥 ${streak} day streak\n📊 ${level}\n\nJust 20 smart words a day. Try it!\n${APP_URL}\n\n${SHARE_HASHTAG}`;
 
     try {
       await Share.share({
@@ -47,7 +47,7 @@ export function ShareProgressCard({ streak, wordsLearned, dayNumber, level, comp
             <Text style={styles.logoText}>한</Text>
           </View>
           <View>
-            <Text style={styles.appName}>Kloop Korean</Text>
+            <Text style={styles.appName}>Twenty Korean</Text>
             <Text style={styles.tagline}>Daily Korean in 20 Words</Text>
           </View>
         </View>
@@ -85,7 +85,7 @@ export function ShareDailyCard({ wordsCount, dayNumber, level }: { wordsCount: n
   const handleShare = async () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 
-    const message = `✅ Just finished Day ${dayNumber} — ${wordsCount} new Korean words learned!\n\n📖 ${level} on Kloop Korean\n💡 Daily Korean in 20 Words\n\n${APP_URL}\n\n${SHARE_HASHTAG}`;
+    const message = `✅ Just finished Day ${dayNumber} — ${wordsCount} new Korean words learned!\n\n📖 ${level} on Twenty Korean\n💡 Daily Korean in 20 Words\n\n${APP_URL}\n\n${SHARE_HASHTAG}`;
 
     try {
       await Share.share({

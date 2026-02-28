@@ -1,7 +1,7 @@
-# Kloop Korean - App Store Listing
+# Twenty Korean - App Store Listing
 
 ## App Name
-Kloop Korean - Learn Korean Daily
+Twenty Korean - Learn Korean Daily
 
 ## Subtitle (30 chars)
 Daily Korean in 20 Words
@@ -11,7 +11,7 @@ Build real Korean with just 20 smart words a day. AI conversation practice, K-Cu
 
 ## Description
 
-Kloop Korean helps you build real Korean with just 20 smart words a day.
+Twenty Korean helps you build real Korean with just 20 smart words a day.
 
 Not hundreds of random words. Just 20 curated, high-frequency words daily — the ones native speakers actually use. Complete all 6 TOPIK levels in 360 days.
 
@@ -71,7 +71,7 @@ Progress & Gamification
 
 SUBSCRIPTION
 
-Kloop Korean offers a free tier with:
+Twenty Korean offers a free tier with:
 - Full Hangeul alphabet learning
 - Level 1 vocabulary (200 words / 10 days)
 - Daily missions and quizzes
@@ -115,9 +115,9 @@ Learn Korean with 20 smart words a day. AI tutor, K-Culture, TOPIK vocabulary.
 
 ## Full Description
 
-Kloop Korean helps you build real Korean with just 20 smart words a day.
+Twenty Korean helps you build real Korean with just 20 smart words a day.
 
-Stop memorizing random vocabulary lists. Kloop Korean teaches you the words native Koreans actually use, organized by TOPIK proficiency levels. Master all 6 levels in just 360 days — that's 7,200 essential Korean words.
+Stop memorizing random vocabulary lists. Twenty Korean teaches you the words native Koreans actually use, organized by TOPIK proficiency levels. Master all 6 levels in just 360 days — that's 7,200 essential Korean words.
 
 ★ SMART DAILY LEARNING
 Learn exactly 20 words per day with flashcards featuring Korean text, English translation, pronunciation guide, and real example sentences. Each word is carefully selected based on frequency data and TOPIK curriculum.
@@ -142,7 +142,7 @@ Explore how Korean words connect through meaning with our visual word network �
 
 Free to start. Premium unlocks all 6 TOPIK levels, unlimited AI conversations, and the complete learning experience.
 
-Download Kloop Korean and start your Korean journey today! 🇰🇷
+Download Twenty Korean and start your Korean journey today! 🇰🇷
 
 ## Tags
 Education, Language Learning, Korean, TOPIK, Vocabulary, Flashcards, AI Tutor

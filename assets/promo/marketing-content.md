@@ -1,4 +1,4 @@
-# Kloop Korean - Marketing Content Kit
+# Twenty Korean - Marketing Content Kit
 
 ---
 
@@ -8,7 +8,7 @@
 **Title:** I built a free Korean learning app with AI conversation practice — 20 words/day, TOPIK curriculum
 
 **Body:**
-Hey everyone! I've been working on a Korean learning app called Kloop Korean and wanted to share it with the community.
+Hey everyone! I've been working on a Korean learning app called Twenty Korean and wanted to share it with the community.
 
 The concept is simple: learn just 20 high-frequency Korean words per day, organized by TOPIK levels. In 360 days, you cover 7,200 essential words across all 6 TOPIK levels.
 
@@ -28,7 +28,7 @@ It's free to start (Level 1 + Hangeul + 5 AI chat messages). Would love to get f
 **Body:**
 If you've ever wanted to understand what your favorite idols/actors are really saying, I made an app that teaches Korean vocabulary through K-Culture themes.
 
-Kloop Korean has dedicated vocabulary sets for:
+Twenty Korean has dedicated vocabulary sets for:
 - K-Drama expressions (the ones you hear all the time!)
 - K-Pop song lyrics vocabulary
 - Korean food and restaurant phrases
@@ -57,26 +57,26 @@ Free to try!
 3. 아이고 (aigo) - "Oh my!"
 4. 진짜 (jinjja) - "Really?!"
 5. 오빠 (oppa) - "Older brother/term of endearment"
-**CTA (25-30s):** "Learn 20 Korean words daily with Kloop Korean"
+**CTA (25-30s):** "Learn 20 Korean words daily with Twenty Korean"
 
 ### Script 3: "AI Teaches Me Korean"
 **Hook (0-3s):** "This AI speaks Korean better than my Korean teacher"
 **Body (3-20s):** Screen record chatting with Dalli, show natural Korean voice response
-**CTA (20-25s):** "Kloop Korean - free AI Korean tutor. Link in bio."
+**CTA (20-25s):** "Twenty Korean - free AI Korean tutor. Link in bio."
 
 ### Script 4: "Before/After"
 **Hook (0-3s):** "Day 1 vs Day 30 of learning Korean"
 **Body (3-15s):** 
 - Day 1: Struggling with 안녕하세요
 - Day 30: Having a conversation with AI in Korean
-**CTA (15-20s):** "20 words a day adds up. Try Kloop Korean."
+**CTA (15-20s):** "20 words a day adds up. Try Twenty Korean."
 
 ---
 
 ## Instagram Captions
 
 ### Post 1 (App Launch)
-🇰🇷 Introducing Kloop Korean — Daily Korean in 20 Words.
+🇰🇷 Introducing Twenty Korean — Daily Korean in 20 Words.
 
 Not hundreds of random words. Just 20 curated, high-frequency words daily — the ones native speakers actually use.
 
@@ -90,12 +90,12 @@ Your Korean journey starts with one word. Then 20. Then 7,200.
 
 Link in bio 👆
 
-#LearnKorean #KoreanLanguage #TOPIK #KloopKorean #한국어 #한국어공부 #KDrama #KPop #LanguageLearning #StudyKorean
+#LearnKorean #KoreanLanguage #TOPIK #TwentyKorean #한국어 #한국어공부 #KDrama #KPop #LanguageLearning #StudyKorean
 
 ### Post 2 (K-Culture)
 Ever watched a K-Drama and wished you understood what they were saying?
 
-Kloop Korean teaches you the actual expressions used in Korean dramas, K-Pop songs, and everyday conversation.
+Twenty Korean teaches you the actual expressions used in Korean dramas, K-Pop songs, and everyday conversation.
 
 20 words a day. That's it. That's the whole plan.
 
@@ -105,28 +105,28 @@ Kloop Korean teaches you the actual expressions used in Korean dramas, K-Pop son
 ✈️ Travel essentials
 💬 Internet slang
 
-#KDrama #KPop #LearnKorean #KloopKorean #한국어
+#KDrama #KPop #LearnKorean #TwentyKorean #한국어
 
 ### Post 3 (Progress Share)
-POV: You just completed your 30-day streak on Kloop Korean 🔥
+POV: You just completed your 30-day streak on Twenty Korean 🔥
 
 600 Korean words learned.
 30 days of consistency.
 1 step closer to understanding Korean without subtitles.
 
-Share your streak! Tag us @KloopKorean
+Share your streak! Tag us @TwentyKorean
 
-#KoreanStudy #LanguageLearning #StudyMotivation #KloopKorean
+#KoreanStudy #LanguageLearning #StudyMotivation #TwentyKorean
 
 ---
 
 ## Discord / Community Post
 
-**Introducing Kloop Korean — A free Korean learning app**
+**Introducing Twenty Korean — A free Korean learning app**
 
 Hey everyone! 👋
 
-I wanted to share a Korean learning app I've been working on. It's called **Kloop Korean** and the concept is straightforward:
+I wanted to share a Korean learning app I've been working on. It's called **Twenty Korean** and the concept is straightforward:
 
 **Learn 20 Korean words per day, organized by TOPIK levels.**
 

@@ -142,7 +142,7 @@ export default function WelcomeScreen() {
           <View style={styles.logoContainer}>
             <Text style={styles.logoKorean}>한</Text>
           </View>
-          <Text style={styles.appTitle}>Kloop Korean</Text>
+          <Text style={styles.appTitle}>Twenty Korean</Text>
           <Text style={styles.appSubtitle}>Daily Korean in 20 Words</Text>
         </View>
 
