@@ -42,6 +42,15 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "router": {
+        "origin": "https://replit.com/"
+      },
+      "eas": {
+        "projectId": "7b9fd84f-b6ae-497e-ac0f-55f8f777b6aa"
+      }
+    },
+    "owner": "yongal74"
   }
 }
