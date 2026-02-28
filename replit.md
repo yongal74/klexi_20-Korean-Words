@@ -107,8 +107,8 @@ Preferred communication style: Simple, everyday language.
 - **Routes**: Defined in `server/routes.ts` — includes Polar payment routes
 - **Polar Integration**: `server/polar.ts` — Checkout session creation, product listing, subscription management, webhook handling via @polar-sh/sdk. Polar acts as MoR (Merchant of Record) using Stripe internally
 - **Static Serving**: In production, serves the Expo web build from `dist/`. In development, proxies to Metro
-- **Required Secrets for Payments**: POLAR_ACCESS_TOKEN, POLAR_WEBHOOK_SECRET (not yet configured)
-- **Required Env Vars for Payments**: POLAR_ENV (sandbox/production), EXPO_PUBLIC_POLAR_MONTHLY_ID, EXPO_PUBLIC_POLAR_YEARLY_ID, EXPO_PUBLIC_POLAR_LIFETIME_ID (product IDs from Polar dashboard)
+- **Payment Secrets (All Configured)**: POLAR_ACCESS_TOKEN, POLAR_WEBHOOK_SECRET — live and active
+- **Payment Env Vars (All Configured)**: POLAR_ENV=production, EXPO_PUBLIC_POLAR_MONTHLY_ID, EXPO_PUBLIC_POLAR_YEARLY_ID, EXPO_PUBLIC_POLAR_LIFETIME_ID — product IDs registered in Polar dashboard
 
 ### Database Schema (Drizzle + PostgreSQL)
 
