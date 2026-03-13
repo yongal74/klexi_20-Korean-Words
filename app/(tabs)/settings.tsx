@@ -21,7 +21,7 @@ export default function SettingsScreen() {
 
   const handleLevelChange = (levelId: string) => {
     if (!isPremium && levelId !== 'topik1-1') {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Warning);
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
       router.push('/premium');
       return;
     }

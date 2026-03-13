@@ -11,6 +11,8 @@ import {
   getUserProfile, saveUserProfile, clearUserProfile,
   getPremiumStatus, savePremiumStatus,
 } from './storage';
+import { supabase } from './supabase';
+import { pushSyncData, pullSyncData } from './sync';
 import { getDailyWords, Word } from './vocabulary';
 import { getSRSData, SRSData, reviewWord, getWordsForReview, getReviewCount, initWordSRS, SRSWordData } from './srs';
 import { getGamificationData, GamificationData, addXP, checkAchievements, XP_REWARDS, calculateLevel, Achievement } from './gamification';
@@ -84,14 +86,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     (async () => {
-      const [s, p, d, b, cw, wa, up, srs, gam, prem] = await Promise.all([
+      const [s, p, d, b, cw, wa, srs, gam, prem] = await Promise.all([
         getSettings(),
         getProgress(),
         getDailyState(),
         getBookmarks(),
         getCustomWords(),
         getWrongAnswers(),
-        getUserProfile(),
         getSRSData(),
         getGamificationData(),
         getPremiumStatus(),
@@ -102,14 +103,81 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setBookmarks(b);
       setCustomWords(cw);
       setWrongAnswers(wa);
-      setUserProfile(up);
       setSrsData(srs);
       setGamification(gam);
       setIsPremium(prem);
       const count = await getReviewCount();
       setReviewCount(count);
+
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        const { data: profile } = await supabase.from('profiles').select('*').eq('id', session.user.id).single();
+        if (profile) {
+          setUserProfile({
+            id: profile.id,
+            name: profile.name || '',
+            email: profile.email || '',
+            provider: profile.provider,
+            createdAt: profile.created_at,
+          });
+        } else {
+          setUserProfile({
+            id: session.user.id,
+            name: 'User',
+            email: session.user.email || '',
+            provider: 'email',
+            createdAt: new Date().toISOString(),
+          });
+        }
+      } else {
+        setUserProfile(null);
+      }
+      
+      // After getting initial profile, pull remote sync data if it exists
+      if (session?.user) {
+        await pullSyncData();
+      }
+
+      // Re-fetch everything to ensure components see latest state
+      const [s2, p2, d2, b2, cw2, wa2, srs2, gam2, prem2] = await Promise.all([
+        getSettings(), getProgress(), getDailyState(), getBookmarks(), getCustomWords(), getWrongAnswers(), getSRSData(), getGamificationData(), getPremiumStatus()
+      ]);
+      setSettings(s2); setProgress(p2); setDailyState(d2); setBookmarks(b2); setCustomWords(cw2); setWrongAnswers(wa2); setSrsData(srs2); setGamification(gam2); setIsPremium(prem2);
+      
+      const count2 = await getReviewCount();
+      setReviewCount(count2);
       setIsLoading(false);
     })();
+
+    const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (session?.user) {
+        const { data: profile } = await supabase.from('profiles').select('*').eq('id', session.user.id).single();
+        if (profile) {
+          setUserProfile({
+            id: profile.id,
+            name: profile.name || '',
+            email: profile.email || '',
+            provider: profile.provider,
+            createdAt: profile.created_at,
+          });
+        }
+        if (event === 'SIGNED_IN') {
+           // Pull data from cloud when signed in 
+           await pullSyncData();
+           
+           const [s, p, d, b, cw, wa, srs, gam, prem] = await Promise.all([
+             getSettings(), getProgress(), getDailyState(), getBookmarks(), getCustomWords(), getWrongAnswers(), getSRSData(), getGamificationData(), getPremiumStatus()
+           ]);
+           setSettings(s); setProgress(p); setDailyState(d); setBookmarks(b); setCustomWords(cw); setWrongAnswers(wa); setSrsData(srs); setGamification(gam); setIsPremium(prem);
+        }
+      } else {
+        setUserProfile(null);
+      }
+    });
+
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
   }, []);
 
   const dayNumber = getDayNumber(progress);
@@ -123,6 +191,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const updateSettings = useCallback(async (s: Partial<UserSettings>) => {
     const updated = await saveSettings(s);
     setSettings(updated);
+    pushSyncData();
   }, []);
 
   const markWordLearned = useCallback(async (wordId: string) => {
@@ -148,6 +217,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     await initWordSRS(wordId);
     const srsUpdated = await getSRSData();
     setSrsData(srsUpdated);
+    pushSyncData();
   }, [dailyState, todayWords.length]);
 
   const completeQuiz = useCallback(async (score: number, total: number) => {
@@ -172,11 +242,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const learnedCount = current.learnedWordIds.length;
     const updatedProgress = await recordDayComplete(learnedCount, score, total);
     setProgress(updatedProgress);
+    pushSyncData();
   }, [dailyState]);
 
   const toggleBookmarkCb = useCallback(async (wordId: string) => {
     const updated = await toggleBookmarkStorage(wordId);
     setBookmarks([...updated]);
+    pushSyncData();
   }, []);
 
   const resetDaily = useCallback(async () => {
@@ -191,41 +263,47 @@ export function AppProvider({ children }: { children: ReactNode }) {
     };
     await saveDailyState(newState);
     setDailyState(newState);
+    pushSyncData();
   }, []);
 
   const addCustomWordCb = useCallback(async (word: CustomWord) => {
     const updated = await saveCustomWordStorage(word);
     setCustomWords([...updated]);
+    pushSyncData();
   }, []);
 
   const removeCustomWordCb = useCallback(async (id: string) => {
     const updated = await deleteCustomWordStorage(id);
     setCustomWords([...updated]);
+    pushSyncData();
   }, []);
 
   const addWrongAnswerCb = useCallback(async (word: { korean: string; english: string; pronunciation: string; example: string; exampleTranslation: string }) => {
     const updated = await addWrongAnswerStorage(word);
     setWrongAnswers([...updated]);
+    pushSyncData();
   }, []);
 
   const removeWrongAnswerCb = useCallback(async (id: string) => {
     const updated = await removeWrongAnswerStorage(id);
     setWrongAnswers([...updated]);
+    pushSyncData();
   }, []);
 
   const clearWrongAnswersCb = useCallback(async () => {
     await clearWrongAnswersStorage();
     setWrongAnswers([]);
+    pushSyncData();
   }, []);
 
   const signInCb = useCallback(async (profile: UserProfile) => {
-    await saveUserProfile(profile);
     setUserProfile(profile);
   }, []);
 
   const signOutCb = useCallback(async () => {
-    await clearUserProfile();
+    await supabase.auth.signOut();
     setUserProfile(null);
+    await clearUserProfile();
   }, []);
 
   const isAuthenticated = !!userProfile;
@@ -238,18 +316,21 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setSrsData(updated);
     const count = await getReviewCount();
     setReviewCount(count);
+    pushSyncData();
   }, []);
 
   const initSRSWordCb = useCallback(async (wordId: string) => {
     await initWordSRS(wordId);
     const updated = await getSRSData();
     setSrsData(updated);
+    pushSyncData();
   }, []);
 
   const earnXPCb = useCallback(async (amount: number, source: string) => {
     const result = await addXP(amount, source);
     const updated = await getGamificationData();
     setGamification(updated);
+    pushSyncData();
     return { levelUp: result.levelUp, newLevel: result.newLevel };
   }, []);
 
@@ -258,6 +339,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setGamification(updated);
     const count = await getReviewCount();
     setReviewCount(count);
+    pushSyncData();
   }, []);
 
   const getWordsForSRSReviewCb = useCallback(async () => {

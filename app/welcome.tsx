@@ -8,6 +8,7 @@ import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
 import Colors from '@/constants/colors';
 import { useApp } from '@/lib/AppContext';
+import { supabase } from '@/lib/supabase';
 import type { UserProfile } from '@/lib/storage';
 
 export default function WelcomeScreen() {
@@ -33,20 +34,45 @@ export default function WelcomeScreen() {
       setError('Please enter your email');
       return;
     }
-    if (!password.trim() || password.length < 4) {
-      setError('Password must be at least 4 characters');
+    if (!password.trim() || password.length < 6) {
+      setError('Password must be at least 6 characters');
       return;
     }
 
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    const profile: UserProfile = {
-      id: `user-${Date.now()}`,
-      name: mode === 'signup' ? name.trim() : email.split('@')[0],
-      email: email.trim(),
-      provider: 'email',
-      createdAt: new Date().toISOString(),
-    };
-    await signIn(profile);
+
+    if (mode === 'signup') {
+      const { data, error: signUpError } = await supabase.auth.signUp({
+        email: email.trim(),
+        password,
+      });
+
+      if (signUpError) {
+        setError(signUpError.message);
+        return;
+      }
+
+      if (data.user) {
+        const { error: profileError } = await supabase.from('profiles').insert({
+          id: data.user.id,
+          email: email.trim(),
+          name: name.trim(),
+          provider: 'email',
+        });
+        if (profileError) console.error('Profile creation error:', profileError);
+      }
+    } else {
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: email.trim(),
+        password,
+      });
+
+      if (signInError) {
+        setError(signInError.message);
+        return;
+      }
+    }
+
     router.replace('/(tabs)');
   };
 
@@ -72,14 +98,31 @@ export default function WelcomeScreen() {
       return;
     }
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    const profile: UserProfile = {
-      id: pendingProvider === 'guest' ? `guest-${Date.now()}` : `${pendingProvider}-${Date.now()}`,
-      name: name.trim(),
-      email: pendingProvider === 'guest' ? '' : `user@${pendingProvider}.com`,
-      provider: pendingProvider === 'guest' ? 'email' : pendingProvider!,
-      createdAt: new Date().toISOString(),
-    };
-    await signIn(profile);
+
+    const dummyEmail = pendingProvider === 'guest' 
+      ? `guest-${Date.now()}@twentykorean.local` 
+      : `${pendingProvider}-${Date.now()}@twentykorean.local`;
+    const dummyPassword = `pass-${Date.now()}`;
+
+    const { data, error: signUpError } = await supabase.auth.signUp({
+      email: dummyEmail,
+      password: dummyPassword,
+    });
+
+    if (signUpError) {
+      setError(signUpError.message);
+      return;
+    }
+
+    if (data.user) {
+      await supabase.from('profiles').insert({
+        id: data.user.id,
+        email: pendingProvider === 'guest' ? null : dummyEmail,
+        name: name.trim(),
+        provider: pendingProvider || 'guest',
+      });
+    }
+
     router.replace('/(tabs)');
   };
 

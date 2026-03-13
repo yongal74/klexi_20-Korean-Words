@@ -1,0 +1,52 @@
+[
+  {
+    "id": "c6b47afb-83f4-439c-b834-896b82b4d6cb",
+    "status": "FINISHED",
+    "platform": "ANDROID",
+    "artifacts": {
+      "buildUrl": "https://expo.dev/artifacts/eas/qx9gzugnWhwy3okpEv8XRe.aab",
+      "applicationArchiveUrl": "https://expo.dev/artifacts/eas/qx9gzugnWhwy3okpEv8XRe.aab"
+    },
+    "fingerprint": {
+      "id": "019cdc3a-3aa4-72bf-82a8-86facda4c068",
+      "hash": "7ee9840e4878cee9edeafed2f44fa8b5a78bcb7d"
+    },
+    "initiatingActor": {
+      "id": "469e3064-5567-4d32-8041-1e43b53bc93a",
+      "displayName": "yongal74"
+    },
+    "logFiles": [
+      "https://job-logs.eascdn.net/production/c6b47afb-83f4-439c-b834-896b82b4d6cb/1773221329978-c7d4ac21-4a74-45b6-8545-e5beceeecaaf.txt?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=www-production%40exponentjs.iam.gserviceaccount.com%2F20260311%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20260311T094015Z&X-Goog-Expires=900&X-Goog-SignedHeaders=host&X-Goog-Signature=6c554d9526311411eaf5faf9eba0546e324caf002f59044f48b919d3f219dbe69e9fe57e3264e06a4f736720cd00d59ed9e58fa7d8cdfa766a3245c8c4c459ea8ede4e7f6742459554367ab5ccfc53834fce6b0e1873f74225f36a74c515410fef7cf131e6aab408d4f242ffd4dbbba115f46493d97111e06a1781436694d37e1d0697d5f902c66d36a0e25831fcb832137a44b5f66b7a5ad9ca46c5bf67c7c20952be63fecb9347b83b5eac33c354dc3d3f646949e8d3e144392625a5ad1fb1d4c475d69161497c2585fa95895090f4ee6a1751539bc52b9ac4eaf65d7bc461370c614fde2395e6d165c2547861ff96a4f950b0dba33b4ca1b891fbf4862409",
+      "https://job-logs.eascdn.net/production/c6b47afb-83f4-439c-b834-896b82b4d6cb/1773221476534-d3892ff4-85db-4786-a0ad-e1b4a8f726eb.txt?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=www-production%40exponentjs.iam.gserviceaccount.com%2F20260311%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20260311T094606Z&X-Goog-Expires=900&X-Goog-SignedHeaders=host&X-Goog-Signature=2f1d986fec53b66c547e09b0efbd44829ed03967d5040d90e321254fd08df530c1e315477fe5be12fc3040c3d33a00691a2b395b104d4dcf48db56708e671b46b10c9b239722c94a601a081e1a6af8dad9e0526ff7c7072cb41e1f260ef0eacf927434b8d477bcabb72c01ebbc19a5274c10b2453314f61d44928c0be904302dd45ee137a49d18e495bd138297fd75992bb74546abe91ff2452b1de385c98aecf5049b841d1cf2e3eba30092ee519e4fd1f2903e4396fa7a6def14c1619b0e2ed2770ae895a907c33f9d45d1ee4e763b7a521e8826a3bd192688518329f8a1a5915014a0606342d1d9df3bafcffce88dd0a99e3dd0edb829e334fe71f6828b57",
+      "https://job-logs.eascdn.net/production/c6b47afb-83f4-439c-b834-896b82b4d6cb/1773221476782-8ec8cf7f-7951-4c35-8892-33ace3ef26d7.txt?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=www-production%40exponentjs.iam.gserviceaccount.com%2F20260311%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20260311T094606Z&X-Goog-Expires=900&X-Goog-SignedHeaders=host&X-Goog-Signature=c0d534f9c459ae05c46dbb9e1225305046fa5953240439907cf8d6c3373c1f0531ede92ea26184ab884dc2a603942bc52332f78b3cabd7707b931d5e4972194f0d4f96afdbffec1f14450292f20556aad7ddd0be12d85aa07020ed401251765ecd685f82fadc1fd9d7788865326a0318d6be4a80298603834c41f6b9e4df9e43b3db94c155c25f6b7f0f705017b9f0dbe5fbaf42a3ccdeb0fbfc33e5e75e924864399c0c2eeec78ddda73e7572e85d2b886474d0ff870a0ce7180affce92cdac6bb0de39b1914b49cfee124616c4256b0332c4f509a7755d9abfa4bf7601c81665f2ae5f16f0d0fef81cd11b29d29b96bba638fb6b4e2b66e981ae48145c71db",
+      "https://job-logs.eascdn.net/production/c6b47afb-83f4-439c-b834-896b82b4d6cb/1773221476944-82c8ac17-6108-462a-9dcf-f2a68a7ecf7f.txt?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=www-production%40exponentjs.iam.gserviceaccount.com%2F20260311%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20260311T094606Z&X-Goog-Expires=900&X-Goog-SignedHeaders=host&X-Goog-Signature=6e38abc6bc63bad65871a32b27e82a4e067e3edc8ddac8fd2b61d33d2c5486fdd104e8f8d4ca6a859936535597ad5fd9b7977b7446a3bc2a2096aa287ef11e06f9505c6dfaf5152d0a769d893957c12e5c0e164385c3cfb6ed8414803ca81eaf52649a9843dbed05f1b00c5cf3a002d77f87bc162e1351a68ea438be278f57f72620ea2fa50ba24510f2355d8ea7205aae403c571d81e1da86367e7806ea0eb7d34adfca127c82d3cccd0e77786eb3c3c91ef7547be4e707735eb70283435b9e3afc4a8893d1616eb11bab5ee929fbcbac8292aa68a8472f7c2ad4d32b0f9361491b2401a8e2e98d6a3bf5d8e818da42146d6eeb856454c2f486d3654057abe8"
+    ],
+    "project": {
+      "id": "7b9fd84f-b6ae-497e-ac0f-55f8f777b6aa",
+      "name": "twenty-korean",
+      "slug": "twenty-korean",
+      "ownerAccount": {
+        "id": "ebce7d90-3d9b-4ba9-a042-4ec56dd58522",
+        "name": "yongal74"
+      }
+    },
+    "distribution": "STORE",
+    "buildProfile": "production",
+    "sdkVersion": "54.0.0",
+    "appVersion": "1.0.0",
+    "appBuildVersion": "3",
+    "gitCommitHash": "5deb4b51316517594cc45a2122f29fa5e92886ba",
+    "gitCommitMessage": "Configure project for Android builds and add build script\n\nAdd EAS project ID and owner to app.json, remove submit configuration from eas.json, and introduce a build-android.sh script to automate the Android build process using Expo EAS CLI.\n\nReplit-Commit-Author: Agent\nReplit-Commit-Session-Id: 445757ba-2aed-4600-af8d-354febc8ba93\nReplit-Commit-Checkpoint-Type: full_checkpoint\nReplit-Commit-Event-Id: 67d8c0b6-0e45-4624-a85c-6c574e1d5cf6\nReplit-Commit-Screenshot-Url: https://storage.googleapis.com/screenshot-production-us-central1/98162867-c18c-465b-8235-80f5e2c335d9/445757ba-2aed-4600-af8d-354febc8ba93/3YLY3Qh\nReplit-Helium-Checkpoint-Created: true",
+    "priority": "NORMAL",
+    "createdAt": "2026-03-11T09:28:49.188Z",
+    "updatedAt": "2026-03-11T09:43:06.051Z",
+    "completedAt": "2026-03-11T09:43:01.336Z",
+    "expirationDate": "2026-04-10T09:28:49.481Z",
+    "isForIosSimulator": false,
+    "metrics": {
+      "buildWaitTime": 677,
+      "buildQueueTime": 185527,
+      "buildDuration": 664861
+    }
+  }
+]
