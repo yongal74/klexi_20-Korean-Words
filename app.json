@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "Twenty Korean",
+    "name": "Klexi: 20 Korean Words",
     "slug": "twenty-korean",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
@@ -25,7 +25,7 @@
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
-      "versionCode": 5
+      "versionCode": 9
     },
     "web": {
       "favicon": "./assets/images/favicon.png"
