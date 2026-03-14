@@ -2,8 +2,7 @@ import OpenAI from "openai";
 import type { Express, Request, Response } from "express";
 
 const openai = new OpenAI({
-  apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
-  baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
+  apiKey: process.env.OPENAI_API_KEY,
 });
 
 const SYSTEM_PROMPT = `You are a friendly Korean language tutor named "달리 (Dalli)". You help users practice Korean conversation.
@@ -121,7 +120,7 @@ export function setupAIChatRoutes(app: Express): void {
       res.setHeader("Connection", "keep-alive");
 
       const stream = await openai.chat.completions.create({
-        model: "gpt-5-mini",
+        model: "gpt-4o-mini",
         messages: [systemMessage, ...messages.slice(-8)],
         stream: true,
         max_tokens: 250,

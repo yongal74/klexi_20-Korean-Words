@@ -1,5 +1,9 @@
+import OpenAI from "openai";
 import type { Express, Request, Response } from "express";
-import { textToSpeech } from "./replit_integrations/audio/client";
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
 export function setupAITTSRoutes(app: Express): void {
   app.post("/api/ai-tts", async (req: Request, res: Response) => {
@@ -17,7 +21,14 @@ export function setupAITTSRoutes(app: Express): void {
         return res.status(400).json({ error: "Text too long (max 500 chars)" });
       }
 
-      const audioBuffer = await textToSpeech(text, voice, "mp3");
+      const response = await openai.audio.speech.create({
+        model: "tts-1",
+        input: text,
+        voice,
+        speed: 0.9,
+      });
+
+      const audioBuffer = Buffer.from(await response.arrayBuffer());
 
       res.setHeader("Content-Type", "audio/mpeg");
       res.setHeader("Content-Length", audioBuffer.length.toString());
