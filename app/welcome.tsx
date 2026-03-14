@@ -9,7 +9,7 @@ import { router } from 'expo-router';
 import Colors from '@/constants/colors';
 import { useApp } from '@/lib/AppContext';
 import { supabase } from '@/lib/supabase';
-import type { UserProfile } from '@/lib/storage';
+import { Image } from 'react-native';
 
 export default function WelcomeScreen() {
   const insets = useSafeAreaInsets();
@@ -60,9 +60,17 @@ export default function WelcomeScreen() {
           provider: 'email',
         });
         if (profileError) console.error('Profile creation error:', profileError);
+        
+        await signIn({
+          id: data.user.id,
+          name: name.trim(),
+          email: email.trim(),
+          provider: 'email',
+          createdAt: new Date().toISOString(),
+        });
       }
     } else {
-      const { error: signInError } = await supabase.auth.signInWithPassword({
+      const { data, error: signInError } = await supabase.auth.signInWithPassword({
         email: email.trim(),
         password,
       });
@@ -71,9 +79,21 @@ export default function WelcomeScreen() {
         setError(signInError.message);
         return;
       }
+      
+      if (data.user) {
+        await signIn({
+          id: data.user.id,
+          name: 'Learner', // Will be overwritten by listener eventually
+          email: email.trim(),
+          provider: 'email',
+          createdAt: new Date().toISOString(),
+        });
+      }
     }
 
-    router.replace('/(tabs)');
+    setTimeout(() => {
+      router.replace('/(tabs)');
+    }, 100);
   };
 
   const handleSocialLogin = (provider: 'google' | 'apple' | 'facebook') => {
@@ -115,15 +135,29 @@ export default function WelcomeScreen() {
     }
 
     if (data.user) {
-      await supabase.from('profiles').insert({
+      const { error: profileError } = await supabase.from('profiles').insert({
         id: data.user.id,
         email: pendingProvider === 'guest' ? null : dummyEmail,
         name: name.trim(),
         provider: pendingProvider || 'guest',
       });
+      
+      // Update local state explicitly to avoid race condition with auth listener
+      if (!profileError) {
+        await signIn({
+          id: data.user.id,
+          name: name.trim(),
+          email: dummyEmail,
+          provider: pendingProvider || 'guest',
+          createdAt: new Date().toISOString(),
+        });
+      }
     }
 
-    router.replace('/(tabs)');
+    // Give the auth listener a tiny bit of time to settle just in case
+    setTimeout(() => {
+      router.replace('/(tabs)');
+    }, 100);
   };
 
   if (mode === 'nickname') {
@@ -182,10 +216,12 @@ export default function WelcomeScreen() {
     return (
       <View style={[styles.container, { paddingTop: topPad }]}>
         <View style={styles.heroSection}>
-          <View style={styles.logoContainer}>
-            <Text style={styles.logoKorean}>한</Text>
-          </View>
-          <Text style={styles.appTitle}>Twenty Korean</Text>
+          <Image
+            source={require('@/assets/images/icon.png')}
+            style={styles.logoImage}
+            resizeMode="contain"
+          />
+          <Text style={styles.appTitle}>Klexi: 20 Korean Words</Text>
           <Text style={styles.appSubtitle}>Daily Korean in 20 Words</Text>
         </View>
 
@@ -352,22 +388,14 @@ const styles = StyleSheet.create({
     paddingTop: 40,
     paddingBottom: 20,
   },
-  logoContainer: {
-    width: 80,
-    height: 80,
+  logoImage: {
+    width: 100,
+    height: 100,
     borderRadius: 24,
-    backgroundColor: Colors.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
     marginBottom: 16,
   },
-  logoKorean: {
-    fontSize: 40,
-    fontFamily: 'NotoSansKR_700Bold',
-    color: '#fff',
-  },
   appTitle: {
-    fontSize: 28,
+    fontSize: 26,
     fontFamily: 'NotoSansKR_700Bold',
     color: Colors.text,
   },

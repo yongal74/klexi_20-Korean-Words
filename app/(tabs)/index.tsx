@@ -94,7 +94,7 @@ export default function HomeScreen() {
   const progressPercent = todayWords.length > 0 ? (learnedCount / todayWords.length) * 100 : 0;
   const userName = userProfile?.name || 'Learner';
 
-  if (isLoading || !isAuthenticated) {
+  if (isLoading || !isAuthenticated || showOnboarding === null) {
     return (
       <View style={[styles.container, { paddingTop: topPad }]}>
         <ActivityIndicator size="large" color={Colors.primary} />

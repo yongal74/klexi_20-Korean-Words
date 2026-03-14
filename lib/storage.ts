@@ -14,8 +14,8 @@ const KEYS = {
 export interface UserProfile {
   id: string;
   name: string;
-  email: string;
-  provider: 'email' | 'google' | 'apple' | 'facebook';
+  email: string | null;
+  provider: 'email' | 'google' | 'apple' | 'facebook' | 'guest';
   avatar?: string;
   createdAt: string;
 }
