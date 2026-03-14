@@ -26,8 +26,8 @@ const CHAT_STORAGE_KEY = '@daily_korean_ai_chat';
 const CHAT_COUNT_KEY = '@daily_korean_ai_chat_count';
 const FREE_MESSAGE_LIMIT = 5;
 const API_BASE = Platform.OS === 'web'
-  ? `${typeof window !== 'undefined' ? window.location.protocol : 'https:'}//${process.env.EXPO_PUBLIC_DOMAIN || 'localhost:5000'}`
-  : `https://${process.env.EXPO_PUBLIC_DOMAIN || 'localhost:5000'}`;
+  ? ''
+  : process.env.EXPO_PUBLIC_API_URL || 'http://localhost:5000';
 
 interface ChatMessage {
   id: string;

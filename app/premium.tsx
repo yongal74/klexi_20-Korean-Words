@@ -85,7 +85,7 @@ export default function PremiumScreen() {
 
     setIsLoading(true);
     try {
-      const response = await fetch(`${API_BASE}/api/polar/checkout`, {
+      const response = await fetch(`${API_BASE}/polar-checkout`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
