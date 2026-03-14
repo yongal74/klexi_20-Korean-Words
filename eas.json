@@ -15,7 +15,7 @@
       "credentialsSource": "local",
       "autoIncrement": true,
       "env": {
-        "EXPO_PUBLIC_DOMAIN": "daily-word-mastery.replit.app",
+        "EXPO_PUBLIC_API_URL": "https://rvmgzmageeqtlyzlvuhc.supabase.co/functions/v1",
         "EXPO_PUBLIC_SUPABASE_URL": "https://rvmgzmageeqtlyzlvuhc.supabase.co",
         "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ2bWd6bWFnZWVxdGx5emx2dWhjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI5NTgxODEsImV4cCI6MjA4ODUzNDE4MX0.gvEI9GLos3uqKjZBc-uMSud0JL6JXuH57eZGFF6SjkA"
       }
