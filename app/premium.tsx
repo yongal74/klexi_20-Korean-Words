@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet, Text, View, ScrollView, Pressable, Platform, Alert, ActivityIndicator, Linking,
 } from 'react-native';
@@ -7,6 +7,7 @@ import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
 import Colors from '@/constants/colors';
+import { Analytics } from '@/lib/analytics';
 
 const API_BASE = Platform.OS === 'web'
   ? ''
@@ -62,6 +63,10 @@ export default function PremiumScreen() {
 
   const [selectedPlan, setSelectedPlan] = useState('yearly');
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    Analytics.premiumViewed('settings');
+  }, []);
 
   const handleSubscribe = async () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);

@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet, Text, View, ScrollView, Pressable, Platform, Switch, Alert, ActivityIndicator,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
@@ -11,6 +12,11 @@ import { useApp } from '@/lib/AppContext';
 import { TOPIK_LEVELS } from '@/lib/vocabulary';
 import AdBanner from '@/components/AdBanner';
 import PremiumGate from '@/components/PremiumGate';
+import {
+  requestNotificationPermission,
+  scheduleDailyReminder,
+  cancelAllNotifications,
+} from '@/lib/notifications';
 
 export default function SettingsScreen() {
   const insets = useSafeAreaInsets();
@@ -18,6 +24,29 @@ export default function SettingsScreen() {
   const webTopInset = Platform.OS === 'web' ? 67 : 0;
   const topPad = insets.top + webTopInset;
   const webBottomInset = Platform.OS === 'web' ? 34 : 0;
+
+  const [notifyEnabled, setNotifyEnabled] = useState(false);
+
+  useEffect(() => {
+    AsyncStorage.getItem('@klexi_notify_enabled').then((v) => {
+      if (v === 'true') setNotifyEnabled(true);
+    });
+  }, []);
+
+  const handleNotifyToggle = async (value: boolean) => {
+    if (value) {
+      const granted = await requestNotificationPermission();
+      if (!granted) {
+        Alert.alert('알림 권한 필요', '설정에서 알림 권한을 허용해주세요.');
+        return;
+      }
+      await scheduleDailyReminder(20, progress.streak);
+    } else {
+      await cancelAllNotifications();
+    }
+    setNotifyEnabled(value);
+    await AsyncStorage.setItem('@klexi_notify_enabled', String(value));
+  };
 
   const handleLevelChange = (levelId: string) => {
     if (!isPremium && levelId !== 'topik1-1') {
@@ -145,6 +174,25 @@ export default function SettingsScreen() {
             onValueChange={(v) => updateSettings({ showPronunciation: v })}
             trackColor={{ false: Colors.surface, true: Colors.primary + '50' }}
             thumbColor={settings.showPronunciation ? Colors.primary : Colors.textMuted}
+          />
+        </View>
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Notifications</Text>
+        <View style={styles.settingItem}>
+          <View style={styles.settingInfo}>
+            <Ionicons name="notifications-outline" size={20} color={Colors.textSecondary} />
+            <View>
+              <Text style={styles.settingLabel}>Daily Reminder</Text>
+              <Text style={styles.settingSubLabel}>학습 알림 (오후 8시)</Text>
+            </View>
+          </View>
+          <Switch
+            value={notifyEnabled}
+            onValueChange={handleNotifyToggle}
+            trackColor={{ false: Colors.surface, true: Colors.primary + '50' }}
+            thumbColor={notifyEnabled ? Colors.primary : Colors.textMuted}
           />
         </View>
       </View>
@@ -448,6 +496,12 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontFamily: 'NotoSansKR_500Medium',
     color: Colors.text,
+  },
+  settingSubLabel: {
+    fontSize: 12,
+    fontFamily: 'NotoSansKR_400Regular',
+    color: Colors.textMuted,
+    marginTop: 2,
   },
   toolButton: {
     flexDirection: 'row',

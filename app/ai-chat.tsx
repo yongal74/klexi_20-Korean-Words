@@ -20,6 +20,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Haptics from 'expo-haptics';
 import Colors from '@/constants/colors';
 import { useApp } from '@/lib/AppContext';
+import { Analytics } from '@/lib/analytics';
 
 const CHAT_STORAGE_KEY = '@daily_korean_ai_chat';
 const CHAT_COUNT_KEY = '@daily_korean_ai_chat_count';
@@ -152,6 +153,7 @@ export default function AIChatScreen() {
     if (!text.trim() || isLoading || isLocked) return;
 
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    Analytics.aiChatSent(text.trim().length, parseInt(settings.selectedLevel?.replace(/\D/g, '') || '1') || 1);
 
     const userMsg: ChatMessage = {
       id: Date.now().toString(),

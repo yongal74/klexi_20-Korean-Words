@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  StyleSheet, Text, View, Pressable, Platform, TextInput, KeyboardAvoidingView, ScrollView,
+  StyleSheet, Text, View, Pressable, Platform, TextInput, KeyboardAvoidingView, ScrollView, ActivityIndicator,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -9,6 +9,7 @@ import { router } from 'expo-router';
 import Colors from '@/constants/colors';
 import { useApp } from '@/lib/AppContext';
 import { supabase } from '@/lib/supabase';
+import { signInWithGoogle } from '@/lib/auth';
 import { Image } from 'react-native';
 
 export default function WelcomeScreen() {
@@ -24,6 +25,7 @@ export default function WelcomeScreen() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [pendingProvider, setPendingProvider] = useState<'google' | 'apple' | 'facebook' | 'guest' | null>(null);
+  const [socialLoading, setSocialLoading] = useState(false);
 
   const handleEmailAuth = async () => {
     if (!name.trim() && mode === 'signup') {
@@ -96,8 +98,23 @@ export default function WelcomeScreen() {
     }, 100);
   };
 
-  const handleSocialLogin = (provider: 'google' | 'apple' | 'facebook') => {
+  const handleSocialLogin = async (provider: 'google' | 'apple' | 'facebook') => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+
+    if (provider === 'google') {
+      setSocialLoading(true);
+      setError('');
+      const { success, error: authError } = await signInWithGoogle();
+      setSocialLoading(false);
+      if (success) {
+        router.replace('/(tabs)');
+      } else {
+        setError(authError || 'Google 로그인에 실패했어요');
+      }
+      return;
+    }
+
+    // Apple / Facebook: 닉네임 먼저
     setPendingProvider(provider);
     setName('');
     setError('');
@@ -241,10 +258,18 @@ export default function WelcomeScreen() {
         </View>
 
         <View style={styles.authButtons}>
-          <Pressable style={[styles.socialBtn, styles.googleBtn]} onPress={() => handleSocialLogin('google')}>
-            <View style={styles.googleIconWrap}>
-              <Ionicons name="logo-google" size={18} color="#4285F4" />
-            </View>
+          <Pressable
+            style={[styles.socialBtn, styles.googleBtn, socialLoading && { opacity: 0.6 }]}
+            onPress={() => handleSocialLogin('google')}
+            disabled={socialLoading}
+          >
+            {socialLoading ? (
+              <ActivityIndicator size="small" color="#4285F4" style={{ marginRight: 8 }} />
+            ) : (
+              <View style={styles.googleIconWrap}>
+                <Ionicons name="logo-google" size={18} color="#4285F4" />
+              </View>
+            )}
             <Text style={[styles.socialBtnText, { color: '#333' }]}>Continue with Google</Text>
           </Pressable>
 
