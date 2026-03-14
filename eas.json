@@ -17,7 +17,10 @@
       "env": {
         "EXPO_PUBLIC_API_URL": "https://rvmgzmageeqtlyzlvuhc.supabase.co/functions/v1",
         "EXPO_PUBLIC_SUPABASE_URL": "https://rvmgzmageeqtlyzlvuhc.supabase.co",
-        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ2bWd6bWFnZWVxdGx5emx2dWhjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI5NTgxODEsImV4cCI6MjA4ODUzNDE4MX0.gvEI9GLos3uqKjZBc-uMSud0JL6JXuH57eZGFF6SjkA"
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ2bWd6bWFnZWVxdGx5emx2dWhjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI5NTgxODEsImV4cCI6MjA4ODUzNDE4MX0.gvEI9GLos3uqKjZBc-uMSud0JL6JXuH57eZGFF6SjkA",
+        "EXPO_PUBLIC_POLAR_MONTHLY_ID": "97e1d0d7-f3f5-489a-b75a-c24add5f96a8",
+        "EXPO_PUBLIC_POLAR_YEARLY_ID": "df746d7f-9eeb-40a9-a4d4-aec6a160c62e",
+        "EXPO_PUBLIC_POLAR_LIFETIME_ID": "34028926-3dc2-42d2-b307-0c3c29727cf9"
       }
     }
   }
