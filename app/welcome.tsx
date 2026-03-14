@@ -24,7 +24,7 @@ export default function WelcomeScreen() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
-  const [pendingProvider, setPendingProvider] = useState<'google' | 'apple' | 'facebook' | 'guest' | null>(null);
+  const [pendingProvider, setPendingProvider] = useState<'guest' | null>(null);
   const [socialLoading, setSocialLoading] = useState(false);
 
   const handleEmailAuth = async () => {
@@ -62,7 +62,7 @@ export default function WelcomeScreen() {
           provider: 'email',
         });
         if (profileError) console.error('Profile creation error:', profileError);
-        
+
         await signIn({
           id: data.user.id,
           name: name.trim(),
@@ -70,6 +70,7 @@ export default function WelcomeScreen() {
           provider: 'email',
           createdAt: new Date().toISOString(),
         });
+        router.replace('/(tabs)');
       }
     } else {
       const { data, error: signInError } = await supabase.auth.signInWithPassword({
@@ -81,44 +82,49 @@ export default function WelcomeScreen() {
         setError(signInError.message);
         return;
       }
-      
+
       if (data.user) {
+        const { data: profile } = await supabase.from('profiles').select('*').eq('id', data.user.id).single();
         await signIn({
           id: data.user.id,
-          name: 'Learner', // Will be overwritten by listener eventually
+          name: profile?.name || 'Learner',
           email: email.trim(),
           provider: 'email',
-          createdAt: new Date().toISOString(),
+          createdAt: profile?.created_at || new Date().toISOString(),
         });
+        router.replace('/(tabs)');
       }
     }
-
-    setTimeout(() => {
-      router.replace('/(tabs)');
-    }, 100);
   };
 
-  const handleSocialLogin = async (provider: 'google' | 'apple' | 'facebook') => {
+  const handleGoogleLogin = async () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setSocialLoading(true);
+    setError('');
 
-    if (provider === 'google') {
-      setSocialLoading(true);
-      setError('');
-      const { success, error: authError } = await signInWithGoogle();
+    const { success, error: authError } = await signInWithGoogle();
+
+    if (!success) {
       setSocialLoading(false);
-      if (success) {
-        router.replace('/(tabs)');
-      } else {
-        setError(authError || 'Google 로그인에 실패했어요');
-      }
+      setError(authError || 'Google 로그인에 실패했어요');
       return;
     }
 
-    // Apple / Facebook: 닉네임 먼저
-    setPendingProvider(provider);
-    setName('');
-    setError('');
-    setMode('nickname');
+    // 로그인 성공 후 context에 profile을 먼저 세팅하고 이동 (race condition 방지)
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+      await signIn({
+        id: user.id,
+        name: profile?.name || user.user_metadata?.full_name || 'Learner',
+        email: user.email || '',
+        provider: 'google',
+        createdAt: profile?.created_at || new Date().toISOString(),
+      });
+    }
+
+    setSocialLoading(false);
+    router.replace('/(tabs)');
   };
 
   const handleSkip = () => {
@@ -136,9 +142,7 @@ export default function WelcomeScreen() {
     }
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
 
-    const dummyEmail = pendingProvider === 'guest' 
-      ? `guest-${Date.now()}@twentykorean.local` 
-      : `${pendingProvider}-${Date.now()}@twentykorean.local`;
+    const dummyEmail = `guest-${Date.now()}@twentykorean.local`;
     const dummyPassword = `pass-${Date.now()}`;
 
     const { data, error: signUpError } = await supabase.auth.signUp({
@@ -154,27 +158,22 @@ export default function WelcomeScreen() {
     if (data.user) {
       const { error: profileError } = await supabase.from('profiles').insert({
         id: data.user.id,
-        email: pendingProvider === 'guest' ? null : dummyEmail,
+        email: null,
         name: name.trim(),
-        provider: pendingProvider || 'guest',
+        provider: 'guest',
       });
       
-      // Update local state explicitly to avoid race condition with auth listener
       if (!profileError) {
         await signIn({
           id: data.user.id,
           name: name.trim(),
           email: dummyEmail,
-          provider: pendingProvider || 'guest',
+          provider: 'guest',
           createdAt: new Date().toISOString(),
         });
+        router.replace('/(tabs)');
       }
     }
-
-    // Give the auth listener a tiny bit of time to settle just in case
-    setTimeout(() => {
-      router.replace('/(tabs)');
-    }, 100);
   };
 
   if (mode === 'nickname') {
@@ -260,7 +259,7 @@ export default function WelcomeScreen() {
         <View style={styles.authButtons}>
           <Pressable
             style={[styles.socialBtn, styles.googleBtn, socialLoading && { opacity: 0.6 }]}
-            onPress={() => handleSocialLogin('google')}
+            onPress={handleGoogleLogin}
             disabled={socialLoading}
           >
             {socialLoading ? (
@@ -271,16 +270,6 @@ export default function WelcomeScreen() {
               </View>
             )}
             <Text style={[styles.socialBtnText, { color: '#333' }]}>Continue with Google</Text>
-          </Pressable>
-
-          <Pressable style={[styles.socialBtn, styles.appleBtn]} onPress={() => handleSocialLogin('apple')}>
-            <Ionicons name="logo-apple" size={22} color="#fff" />
-            <Text style={styles.socialBtnText}>Continue with Apple</Text>
-          </Pressable>
-
-          <Pressable style={[styles.socialBtn, styles.facebookBtn]} onPress={() => handleSocialLogin('facebook')}>
-            <Ionicons name="logo-facebook" size={20} color="#fff" />
-            <Text style={styles.socialBtnText}>Continue with Facebook</Text>
           </Pressable>
 
           <View style={styles.dividerRow}>
@@ -471,12 +460,6 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  appleBtn: {
-    backgroundColor: '#000',
-  },
-  facebookBtn: {
-    backgroundColor: '#2C2C3A',
   },
   socialBtnText: {
     fontSize: 15,
