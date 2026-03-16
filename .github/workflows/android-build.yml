@@ -29,11 +29,7 @@ jobs:
         run: npm ci
 
       - name: Setup Expo
-        uses: expo/expo-github-action@v8
-        with:
-          expo-version: latest
-          eas-version: latest
-          token: ${{ secrets.EXPO_TOKEN }}
+        run: npm install -g expo-cli @expo/cli
 
       - name: Create .env file
         run: |
@@ -46,6 +42,8 @@ jobs:
 
       - name: Expo Prebuild
         run: npx expo prebuild --platform android --no-install
+        env:
+          EXPO_NO_TELEMETRY: 1
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
