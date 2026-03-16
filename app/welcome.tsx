@@ -14,7 +14,7 @@ import { Image } from 'react-native';
 
 export default function WelcomeScreen() {
   const insets = useSafeAreaInsets();
-  const { signIn, isAuthenticated, hasCompletedOnboarding } = useApp();
+  const { signIn, isAuthenticated, hasCompletedOnboarding, isLoading } = useApp();
   const webTopInset = Platform.OS === 'web' ? 67 : 0;
   const topPad = insets.top + webTopInset;
 
@@ -27,8 +27,9 @@ export default function WelcomeScreen() {
   const [pendingProvider, setPendingProvider] = useState<'guest' | null>(null);
   const [socialLoading, setSocialLoading] = useState(false);
 
-  // 상태가 실제로 업데이트된 후에 navigate — race condition 방지
+  // isLoading이 완료된 후에만 navigate — 초기화 전 중간 상태로 인한 오작동 방지
   useEffect(() => {
+    if (isLoading) return;
     if (isAuthenticated) {
       if (hasCompletedOnboarding) {
         router.replace('/(tabs)');
@@ -36,7 +37,7 @@ export default function WelcomeScreen() {
         router.replace('/onboarding');
       }
     }
-  }, [isAuthenticated, hasCompletedOnboarding]);
+  }, [isLoading, isAuthenticated, hasCompletedOnboarding]);
 
   const handleEmailAuth = async () => {
     if (!name.trim() && mode === 'signup') {

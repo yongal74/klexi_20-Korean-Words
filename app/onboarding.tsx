@@ -111,17 +111,18 @@ export default function OnboardingScreen() {
   const scrollRef = useRef<ScrollView>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const { width: screenWidth } = useWindowDimensions();
-  const { completeOnboarding, hasCompletedOnboarding } = useApp();
+  const { completeOnboarding, hasCompletedOnboarding, isAuthenticated, isLoading } = useApp();
 
   const topPad = insets.top + (Platform.OS === 'web' ? 67 : 0);
   const bottomPad = Platform.OS === 'web' ? 34 : insets.bottom;
 
-  // 상태 커밋 후 navigate — race condition 방지
+  // isLoading 완료 후, 인증+온보딩 완료 시에만 navigate
   useEffect(() => {
-    if (hasCompletedOnboarding) {
+    if (isLoading) return;
+    if (hasCompletedOnboarding && isAuthenticated) {
       router.replace('/(tabs)');
     }
-  }, [hasCompletedOnboarding]);
+  }, [isLoading, hasCompletedOnboarding, isAuthenticated]);
 
   const handleGetStarted = async () => {
     await completeOnboarding();
@@ -169,7 +170,7 @@ export default function OnboardingScreen() {
             <Text style={[styles.tagline, { color: item.iconColor }]}>{item.tagline}</Text>
 
             <View style={[styles.iconContainer, { backgroundColor: item.iconColor + '15' }]}>
-              <Ionicons name={item.icon} size={56} color={item.iconColor} />
+              <Ionicons name={item.icon} size={40} color={item.iconColor} />
             </View>
 
             <Text style={styles.title}>{item.title}</Text>
@@ -247,80 +248,80 @@ const styles = StyleSheet.create({
     paddingHorizontal: 32,
   },
   tagline: {
-    fontSize: 12,
+    fontSize: 11,
     fontFamily: 'NotoSansKR_700Bold',
-    letterSpacing: 2,
+    letterSpacing: 1.5,
     textTransform: 'uppercase',
-    marginBottom: 20,
+    marginBottom: 14,
     opacity: 0.9,
   },
   iconContainer: {
-    width: 88,
-    height: 88,
-    borderRadius: 24,
+    width: 72,
+    height: 72,
+    borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 28,
+    marginBottom: 20,
   },
   title: {
-    fontSize: 28,
+    fontSize: 22,
     fontFamily: 'NotoSansKR_700Bold',
     color: Colors.text,
     textAlign: 'center',
-    marginBottom: 14,
-    lineHeight: 38,
+    marginBottom: 10,
+    lineHeight: 30,
     letterSpacing: -0.3,
   },
   description: {
-    fontSize: 15,
+    fontSize: 13,
     fontFamily: 'NotoSansKR_400Regular',
-    color: '#C0C0C0',
+    color: '#B0B0B0',
     textAlign: 'center',
-    lineHeight: 24,
-    marginBottom: 28,
+    lineHeight: 20,
+    marginBottom: 20,
     paddingHorizontal: 4,
   },
   bulletsContainer: {
     width: '100%',
-    gap: 14,
+    gap: 10,
     paddingHorizontal: 4,
   },
   bulletRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 14,
+    gap: 12,
     backgroundColor: Colors.card + '80',
-    borderRadius: 14,
-    paddingVertical: 12,
-    paddingHorizontal: 14,
+    borderRadius: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
   },
   bulletIcon: {
-    width: 36,
-    height: 36,
-    borderRadius: 12,
+    width: 32,
+    height: 32,
+    borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'center',
     flexShrink: 0,
   },
   bulletText: {
-    fontSize: 15,
-    fontFamily: 'NotoSansKR_500Medium',
-    color: '#E8E8E8',
+    fontSize: 13,
+    fontFamily: 'NotoSansKR_400Regular',
+    color: '#D8D8D8',
     flex: 1,
-    lineHeight: 22,
+    lineHeight: 19,
   },
   getStartedBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
     backgroundColor: Colors.primary,
-    borderRadius: 16,
-    paddingHorizontal: 32,
-    paddingVertical: 16,
-    marginTop: 32,
+    borderRadius: 14,
+    paddingHorizontal: 28,
+    paddingVertical: 14,
+    marginTop: 24,
   },
   getStartedText: {
-    fontSize: 18,
+    fontSize: 16,
     fontFamily: 'NotoSansKR_700Bold',
     color: '#1A1A1A',
   },
