@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import {
   StyleSheet,
   Text,
@@ -111,14 +111,21 @@ export default function OnboardingScreen() {
   const scrollRef = useRef<ScrollView>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const { width: screenWidth } = useWindowDimensions();
-  const { completeOnboarding } = useApp();
+  const { completeOnboarding, hasCompletedOnboarding } = useApp();
 
   const topPad = insets.top + (Platform.OS === 'web' ? 67 : 0);
   const bottomPad = Platform.OS === 'web' ? 34 : insets.bottom;
 
+  // 상태 커밋 후 navigate — race condition 방지
+  useEffect(() => {
+    if (hasCompletedOnboarding) {
+      router.replace('/(tabs)');
+    }
+  }, [hasCompletedOnboarding]);
+
   const handleGetStarted = async () => {
     await completeOnboarding();
-    router.replace('/(tabs)');
+    // navigation handled by useEffect watching hasCompletedOnboarding
   };
 
   const handleSkip = () => {
