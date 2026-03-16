@@ -71,6 +71,8 @@ export default function WelcomeScreen() {
           createdAt: new Date().toISOString(),
         });
         router.replace('/(tabs)');
+      } else {
+        setError('계정 생성에 실패했어요. 이메일을 확인해 주세요.');
       }
     } else {
       const { data, error: signInError } = await supabase.auth.signInWithPassword({
@@ -93,6 +95,8 @@ export default function WelcomeScreen() {
           createdAt: profile?.created_at || new Date().toISOString(),
         });
         router.replace('/(tabs)');
+      } else {
+        setError('로그인에 실패했어요. 이메일과 비밀번호를 확인해 주세요.');
       }
     }
   };
@@ -102,26 +106,22 @@ export default function WelcomeScreen() {
     setSocialLoading(true);
     setError('');
 
-    const { success, error: authError } = await signInWithGoogle();
+    const { success, error: authError, user } = await signInWithGoogle();
 
-    if (!success) {
+    if (!success || !user) {
       setSocialLoading(false);
       setError(authError || 'Google 로그인에 실패했어요');
       return;
     }
 
-    // 로그인 성공 후 context에 profile을 먼저 세팅하고 이동 (race condition 방지)
-    const { data: { user } } = await supabase.auth.getUser();
-    if (user) {
-      const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single();
-      await signIn({
-        id: user.id,
-        name: profile?.name || user.user_metadata?.full_name || 'Learner',
-        email: user.email || '',
-        provider: 'google',
-        createdAt: profile?.created_at || new Date().toISOString(),
-      });
-    }
+    const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+    await signIn({
+      id: user.id,
+      name: profile?.name || (user.user_metadata?.full_name as string) || 'Learner',
+      email: (user.email as string) || '',
+      provider: 'google',
+      createdAt: profile?.created_at || new Date().toISOString(),
+    });
 
     setSocialLoading(false);
     router.replace('/(tabs)');

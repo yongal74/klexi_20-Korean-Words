@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo, ReactNode } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   UserSettings, ProgressData, DailyState, CustomWord, WrongAnswer, UserProfile,
   getSettings, saveSettings,
@@ -11,6 +12,8 @@ import {
   getUserProfile, saveUserProfile, clearUserProfile,
   getPremiumStatus, savePremiumStatus,
 } from './storage';
+
+const ONBOARDING_KEY = '@daily_korean_onboarding_complete';
 import { supabase } from './supabase';
 import { pushSyncData, pullSyncData } from './sync';
 import { getDailyWords, Word } from './vocabulary';
@@ -29,6 +32,8 @@ interface AppContextValue {
   wrongAnswers: WrongAnswer[];
   userProfile: UserProfile | null;
   isAuthenticated: boolean;
+  hasCompletedOnboarding: boolean;
+  completeOnboarding: () => Promise<void>;
   updateSettings: (s: Partial<UserSettings>) => Promise<void>;
   markWordLearned: (wordId: string) => Promise<void>;
   completeQuiz: (score: number, total: number) => Promise<void>;
@@ -83,10 +88,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [reviewCount, setReviewCount] = useState(0);
   const [isPremium, setIsPremium] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState(false);
 
   useEffect(() => {
     (async () => {
-      const [s, p, d, b, cw, wa, srs, gam, prem] = await Promise.all([
+      const [s, p, d, b, cw, wa, srs, gam, prem, onboardingVal] = await Promise.all([
         getSettings(),
         getProgress(),
         getDailyState(),
@@ -96,6 +102,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         getSRSData(),
         getGamificationData(),
         getPremiumStatus(),
+        AsyncStorage.getItem(ONBOARDING_KEY),
       ]);
       setSettings(s);
       setProgress(p);
@@ -106,6 +113,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setSrsData(srs);
       setGamification(gam);
       setIsPremium(prem);
+      setHasCompletedOnboarding(onboardingVal === 'true');
       const count = await getReviewCount();
       setReviewCount(count);
 
@@ -149,29 +157,36 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setIsLoading(false);
     })();
 
-    const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
+    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_OUT') {
+        setUserProfile(null);
+        return;
+      }
+
       if (session?.user) {
-        const { data: profile } = await supabase.from('profiles').select('*').eq('id', session.user.id).single();
-        if (profile) {
-          setUserProfile({
-            id: profile.id,
-            name: profile.name || '',
-            email: profile.email || '',
-            provider: profile.provider,
-            createdAt: profile.created_at,
+        // async 작업은 onAuthStateChange 바깥에서 처리 (Supabase 권장 패턴)
+        supabase.from('profiles').select('*').eq('id', session.user.id).single().then(({ data: profile }) => {
+          if (profile) {
+            setUserProfile({
+              id: profile.id,
+              name: profile.name || '',
+              email: profile.email || '',
+              provider: profile.provider,
+              createdAt: profile.created_at,
+            });
+          }
+        });
+
+        if (event === 'SIGNED_IN') {
+          // Pull data from cloud when signed in
+          pullSyncData().then(() => {
+            Promise.all([
+              getSettings(), getProgress(), getDailyState(), getBookmarks(), getCustomWords(), getWrongAnswers(), getSRSData(), getGamificationData(), getPremiumStatus()
+            ]).then(([s, p, d, b, cw, wa, srs, gam, prem]) => {
+              setSettings(s); setProgress(p); setDailyState(d); setBookmarks(b); setCustomWords(cw); setWrongAnswers(wa); setSrsData(srs); setGamification(gam); setIsPremium(prem);
+            });
           });
         }
-        if (event === 'SIGNED_IN') {
-           // Pull data from cloud when signed in 
-           await pullSyncData();
-           
-           const [s, p, d, b, cw, wa, srs, gam, prem] = await Promise.all([
-             getSettings(), getProgress(), getDailyState(), getBookmarks(), getCustomWords(), getWrongAnswers(), getSRSData(), getGamificationData(), getPremiumStatus()
-           ]);
-           setSettings(s); setProgress(p); setDailyState(d); setBookmarks(b); setCustomWords(cw); setWrongAnswers(wa); setSrsData(srs); setGamification(gam); setIsPremium(prem);
-        }
-      } else {
-        setUserProfile(null);
       }
     });
 
@@ -306,6 +321,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
     await clearUserProfile();
   }, []);
 
+  const completeOnboardingCb = useCallback(async () => {
+    await AsyncStorage.setItem(ONBOARDING_KEY, 'true');
+    setHasCompletedOnboarding(true);
+  }, []);
+
   const isAuthenticated = !!userProfile;
 
   const userLevel = useMemo(() => calculateLevel(gamification.totalXP), [gamification.totalXP]);
@@ -375,6 +395,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
     clearWrongAnswers: clearWrongAnswersCb,
     signIn: signInCb,
     signOut: signOutCb,
+    hasCompletedOnboarding,
+    completeOnboarding: completeOnboardingCb,
     srsData,
     gamification,
     reviewCount,
@@ -386,7 +408,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     getWordsForSRSReview: getWordsForSRSReviewCb,
     isPremium,
     setPremiumStatus: setPremiumStatusCb,
-  }), [settings, progress, dailyState, bookmarks, todayWords, dayNumber, isLoading, customWords, wrongAnswers, userProfile, isAuthenticated, updateSettings, markWordLearned, completeQuiz, toggleBookmarkCb, resetDaily, addCustomWordCb, removeCustomWordCb, addWrongAnswerCb, removeWrongAnswerCb, clearWrongAnswersCb, signInCb, signOutCb, srsData, gamification, reviewCount, userLevel, reviewSRSWordCb, initSRSWordCb, earnXPCb, refreshGamificationCb, getWordsForSRSReviewCb, isPremium, setPremiumStatusCb]);
+  }), [settings, progress, dailyState, bookmarks, todayWords, dayNumber, isLoading, customWords, wrongAnswers, userProfile, isAuthenticated, hasCompletedOnboarding, updateSettings, markWordLearned, completeQuiz, toggleBookmarkCb, resetDaily, addCustomWordCb, removeCustomWordCb, addWrongAnswerCb, removeWrongAnswerCb, clearWrongAnswersCb, signInCb, signOutCb, completeOnboardingCb, srsData, gamification, reviewCount, userLevel, reviewSRSWordCb, initSRSWordCb, earnXPCb, refreshGamificationCb, getWordsForSRSReviewCb, isPremium, setPremiumStatusCb]);
 
   return (
     <AppContext.Provider value={value}>

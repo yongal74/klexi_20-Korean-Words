@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import {
   StyleSheet, Text, View, ScrollView, Pressable, Platform, ActivityIndicator,
 } from 'react-native';
@@ -6,7 +6,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import Colors from '@/constants/colors';
 import { useApp } from '@/lib/AppContext';
 import { TOPIK_LEVELS } from '@/lib/vocabulary';
@@ -63,30 +62,20 @@ const LEARNING_THEMES = [
 
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
-  const { settings, progress, dailyState, todayWords, dayNumber, userProfile, isAuthenticated, wrongAnswers, customWords, isLoading, gamification, userLevel, reviewCount } = useApp();
-  const [showOnboarding, setShowOnboarding] = useState<boolean | null>(null);
+  const { settings, progress, dailyState, todayWords, dayNumber, userProfile, isAuthenticated, wrongAnswers, customWords, isLoading, gamification, userLevel, reviewCount, hasCompletedOnboarding } = useApp();
 
   const webTopInset = Platform.OS === 'web' ? 67 : 0;
   const topPad = insets.top + webTopInset;
   const webBottomInset = Platform.OS === 'web' ? 34 : 0;
 
   useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
+    if (isLoading) return;
+    if (!isAuthenticated) {
       router.replace('/welcome');
+    } else if (!hasCompletedOnboarding) {
+      router.replace('/onboarding');
     }
-  }, [isLoading, isAuthenticated]);
-
-  useEffect(() => {
-    if (!isLoading && isAuthenticated) {
-      AsyncStorage.getItem('@daily_korean_onboarding_complete').then((value) => {
-        if (value !== 'true') {
-          router.replace('/onboarding');
-        } else {
-          setShowOnboarding(false);
-        }
-      });
-    }
-  }, [isLoading, isAuthenticated]);
+  }, [isLoading, isAuthenticated, hasCompletedOnboarding]);
 
   const level = TOPIK_LEVELS.find(l => l.id === settings.selectedLevel);
   const rawLearnedCount = dailyState?.learnedWordIds?.length || 0;
@@ -94,7 +83,7 @@ export default function HomeScreen() {
   const progressPercent = todayWords.length > 0 ? (learnedCount / todayWords.length) * 100 : 0;
   const userName = userProfile?.name || 'Learner';
 
-  if (isLoading || !isAuthenticated || showOnboarding === null) {
+  if (isLoading || !isAuthenticated || !hasCompletedOnboarding) {
     return (
       <View style={[styles.container, { paddingTop: topPad }]}>
         <ActivityIndicator size="large" color={Colors.primary} />

@@ -13,10 +13,8 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import Colors from '@/constants/colors';
-
-const ONBOARDING_KEY = '@daily_korean_onboarding_complete';
+import { useApp } from '@/lib/AppContext';
 
 interface BulletPoint {
   icon: keyof typeof Ionicons.glyphMap;
@@ -113,12 +111,13 @@ export default function OnboardingScreen() {
   const scrollRef = useRef<ScrollView>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const { width: screenWidth } = useWindowDimensions();
+  const { completeOnboarding } = useApp();
 
   const topPad = insets.top + (Platform.OS === 'web' ? 67 : 0);
   const bottomPad = Platform.OS === 'web' ? 34 : insets.bottom;
 
   const handleGetStarted = async () => {
-    await AsyncStorage.setItem(ONBOARDING_KEY, 'true');
+    await completeOnboarding();
     router.replace('/(tabs)');
   };
 
