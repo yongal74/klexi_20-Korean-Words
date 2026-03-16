@@ -1,18 +1,30 @@
 import { useEffect } from 'react';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
+import { router } from 'expo-router';
 import Colors from '@/constants/colors';
+import { useApp } from '@/lib/AppContext';
 
-// This screen handles the OAuth redirect for Android Chrome Custom Tabs.
-// When klexi://auth?code=... is received, this component must render and call
-// maybeCompleteAuthSession() to close the Custom Tab and return control to
-// the openAuthSessionAsync promise in auth.ts.
+// OAuth 콜백 화면: Chrome Custom Tab 닫기 + 인증 완료 후 라우팅
 WebBrowser.maybeCompleteAuthSession();
 
 export default function AuthCallbackScreen() {
+  const { isAuthenticated, hasCompletedOnboarding, isLoading } = useApp();
+
   useEffect(() => {
     WebBrowser.maybeCompleteAuthSession();
   }, []);
+
+  useEffect(() => {
+    if (isLoading) return;
+    if (isAuthenticated) {
+      if (hasCompletedOnboarding) {
+        router.replace('/(tabs)');
+      } else {
+        router.replace('/onboarding');
+      }
+    }
+  }, [isLoading, isAuthenticated, hasCompletedOnboarding]);
 
   return (
     <View style={styles.container}>
