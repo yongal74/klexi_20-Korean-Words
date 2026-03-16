@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet, Text, View, Pressable, Platform, TextInput, KeyboardAvoidingView, ScrollView, ActivityIndicator,
 } from 'react-native';
@@ -14,7 +14,7 @@ import { Image } from 'react-native';
 
 export default function WelcomeScreen() {
   const insets = useSafeAreaInsets();
-  const { signIn } = useApp();
+  const { signIn, isAuthenticated, hasCompletedOnboarding } = useApp();
   const webTopInset = Platform.OS === 'web' ? 67 : 0;
   const topPad = insets.top + webTopInset;
 
@@ -26,6 +26,17 @@ export default function WelcomeScreen() {
   const [error, setError] = useState('');
   const [pendingProvider, setPendingProvider] = useState<'guest' | null>(null);
   const [socialLoading, setSocialLoading] = useState(false);
+
+  // 상태가 실제로 업데이트된 후에 navigate — race condition 방지
+  useEffect(() => {
+    if (isAuthenticated) {
+      if (hasCompletedOnboarding) {
+        router.replace('/(tabs)');
+      } else {
+        router.replace('/onboarding');
+      }
+    }
+  }, [isAuthenticated, hasCompletedOnboarding]);
 
   const handleEmailAuth = async () => {
     if (!name.trim() && mode === 'signup') {
@@ -70,7 +81,7 @@ export default function WelcomeScreen() {
           provider: 'email',
           createdAt: new Date().toISOString(),
         });
-        router.replace('/(tabs)');
+        // navigation handled by useEffect watching isAuthenticated
       } else {
         setError('계정 생성에 실패했어요. 이메일을 확인해 주세요.');
       }
@@ -94,7 +105,7 @@ export default function WelcomeScreen() {
           provider: 'email',
           createdAt: profile?.created_at || new Date().toISOString(),
         });
-        router.replace('/(tabs)');
+        // navigation handled by useEffect watching isAuthenticated
       } else {
         setError('로그인에 실패했어요. 이메일과 비밀번호를 확인해 주세요.');
       }
@@ -124,7 +135,7 @@ export default function WelcomeScreen() {
     });
 
     setSocialLoading(false);
-    router.replace('/(tabs)');
+    // navigation handled by useEffect watching isAuthenticated
   };
 
   const handleSkip = () => {
@@ -171,7 +182,7 @@ export default function WelcomeScreen() {
           provider: 'guest',
           createdAt: new Date().toISOString(),
         });
-        router.replace('/(tabs)');
+        // navigation handled by useEffect watching isAuthenticated
       }
     }
   };
